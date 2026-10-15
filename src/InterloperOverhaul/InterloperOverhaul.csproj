@@ -4,7 +4,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <!-- Generated IL2CPP attributes conflict with nullable metadata emission. -->
     <Nullable>disable</Nullable>
-    <Version>0.5.0</Version>
+    <Version>0.6.0</Version>
     <DebugType>portable</DebugType>
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>

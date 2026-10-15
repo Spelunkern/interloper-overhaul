@@ -20,6 +20,7 @@ internal static class RestoreDisabledWorldObjects
         if (RewardScope.Active && __instance.m_XPModesToDisable.Contains(Game.ExperienceModeType.Stalker)) return;
         if (__result && WorldObjects.IsInterloper &&
             __instance.m_XPModesToDisable.Contains(Game.ExperienceModeType.Interloper) &&
+            !__instance.m_XPModesToDisable.Contains(Game.ExperienceModeType.Stalker) &&
             WorldObjects.IsRestorable(__instance.gameObject))
             __result = false;
     }
@@ -58,10 +59,10 @@ internal static class RestoreTaggedWorldObjects
         foreach (var tag in __instance.m_DisableIfAnyActive)
         {
             if (!mode.HasActiveTag(tag)) continue;
-            // Ignore only gear restrictions on world containers / collectibles.
+            // Ignore only gear restrictions on restored objects and their prefabs.
             // Preserve any unrelated active tag, including mission and DLC conditions.
             if (!tag.MatchesTagExact("Gameplay.Gear.NoFirearms") && !tag.MatchesTagExact("Gameplay.Gear.NoRifle") &&
-                !(WorldPolicy.IsSpentCasing(__instance.gameObject.name) && tag.MatchesTagExact("Gameplay.Gear.NoRevolver"))) return;
+                !tag.MatchesTagExact("Gameplay.Gear.NoRevolver")) return;
             restrictedByGear = true;
         }
         if (restrictedByGear) __result = false;
@@ -79,13 +80,15 @@ internal static class WorldObjectCounts
             __result = __instance.name == WorldPolicy.NightmareSpawner ? 0 : 1;
             return;
         }
-        // Raise only groups made entirely of containers / collectibles; never gear or wildlife groups.
+        // Restore wholly disabled object groups, including mixed gear groups.
+        // Positive Interloper counts remain untouched until the balancing pass.
+        if (__result > 0) return;
         var objects = __instance.m_ObjectList;
         if (objects == null || objects.Length == 0) return;
         foreach (var go in objects)
             if (!WorldObjects.IsRestorable(go)) return;
         var counts = __instance.m_NumObjectsToEnableByLevel;
         if (counts != null && counts.Length > 1)
-            __result = System.Math.Max(__result, counts[1]); // Medium base resources (Stalker).
+            __result = System.Math.Max(__result, counts[1]); // Authored Medium base resources (Stalker).
     }
 }

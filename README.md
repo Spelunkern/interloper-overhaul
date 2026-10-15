@@ -1,137 +1,119 @@
 # Interloper Overhaul
 
-Mod para **The Long Dark** centrado en cambios de la dificultad **Interloper**,
-con espacio para modificaciones generales en futuras versiones. Autor: Spelunkern.
+A community mod for **The Long Dark**, focused on restoring content excluded from
+standard **Interloper**, with a few general quality-of-life changes. By Spelunkern.
 
-## Versión 0.5.0 — Exploración y creación de partidas
+## Version 0.6.0: full object availability
 
-- **Timberwolf Mountain:** se recuperan los conjuntos normales de contenedores de
-  carga, incluidos los de la cima. Se desactivan sus conjuntos alternativos de
-  Interloper para evitar duplicados. Conservan sus cerraduras, requisitos de sierra,
-  probabilidades y filtros de contenido de Interloper.
-- **Hushed River Valley:** vuelve la mochila de piel de alce de Mysterious Signal
-  Fire. Se mantiene la selección original entre las dos ubicaciones de la hoguera.
-- **Casquillos vacíos:** los de rifle y revólver pueden aparecer mediante las tablas
-  y ubicaciones originales, incluidos contenedores y beachcombing. No se añaden
-  cantidades ni ubicaciones artificiales. Las armas y la munición utilizable siguen
-  restringidas fuera de las excepciones de recompensas de versiones anteriores.
-- **Región inicial:** Interloper permite elegir entre las regiones que el juego
-  ofrece normalmente en Stalker, respetando el contenido instalado. Se conserva
-  la opción aleatoria y el inicio en exteriores de Interloper.
-- **Feats:** se pueden seleccionar hasta **tres feats ya desbloqueadas** al crear
-  una partida. No se desbloquean feats ni se cambia la selección de partidas existentes.
+Interloper's object exclusions are removed for weapons, ammunition, tools, clothing,
+unique variants, containers, collectibles, plants, and other world objects that are
+available in normal survival gameplay. This applies to scene objects, parent groups,
+gear prefabs, native loot-table filtering, and the Trader's item eligibility.
 
-Estos cambios se aplican solamente a Interloper estándar. Las opciones iniciales
-requieren una partida nueva; no se regenera loot de lugares ya visitados.
+- Original loot tables, weights, locations, random selections, and spawn probabilities
+  remain in use. Items are eligible to spawn; every location is not forced to contain
+  every possible item.
+- Entirely disabled random object groups recover their authored Medium-resource
+  (Stalker) count. Existing positive Interloper counts are not increased.
+- The NoFirearms, NoRifle, and NoRevolver gear bans are removed from Interloper's
+  configuration. Unrelated gameplay tags and exclusions shared with Stalker remain.
+- Wildlife and survivor spawn groups retain their original rules. Weather, health,
+  decay, general container quantities, and empty-container settings are not rebalanced.
+- Mission progress, locks, keys, research-set selection, and DLC ownership still apply.
+  Content exclusive to Wintermute or challenges is not imported into Survival.
+- Reduced radio-cache and mountain-cargo alternatives remain disabled alongside
+  their restored normal versions to prevent overlapping duplicate containers.
 
-## Recompensas de Tales
+This is a content-restoration baseline. Item-specific balance changes are deferred.
+All tracked documentation, code comments, test messages, and scripts are in English.
 
-En Interloper estándar se recuperan las recompensas únicas excluidas por dificultad,
-incluidas la **chaqueta táctica** y la **funda del jefe de seguridad**. Los guantes
-tácticos y el cinturón del capataz mantienen sus ubicaciones y requisitos originales.
+## Other included changes
 
-- **Cápsulas de radio y cajas de accidentes:** se habilitan las variantes normales
-  creadas por Hinterland y se deshabilitan las variantes reducidas de Interloper.
-  Se conserva la selección original por investigación, transmisores y señal.
-- **Búnkeres Alpha, Beta, Gamma y Omega:** se recupera el contenido excluido por
-  dificultad, incluida la recompensa de Signal Void. Las misiones, puertas,
-  documentos y la sala final conservan sus requisitos.
-- **Contenido de estos contenedores:** usa los filtros y reducciones de Stalker
-  durante su generación. Las tablas se clonan para que sus filtros almacenados
-  no alteren contenedores del resto del mundo. No se inventan tablas ni cantidades.
-- **Sutherland:** los cinco encargos y sus intercambios desbloqueados admiten sus
-  recompensas normales, incluidas las flechas, el cuchillo y el rifle de búnker.
-  Se mantienen la confianza, costes, entregas y desbloqueos originales. El catálogo
-  común del comerciante sigue con las restricciones de Interloper.
+- **Coastal Highway:** restore intact houses in all five randomized building groups,
+  disable the Interloper-only burnt-house group, and restore the two independently
+  hidden houses, including their interior access.
+- **Prepper caches:** use the original normal distribution of **three furnished and
+  six abandoned interiors**. The game still selects their locations.
+- **Timberwolf Mountain:** restore normal cargo assemblies, including summit cargo,
+  while preserving hacksaw requirements and locks.
+- **Hushed River Valley:** restore the Moose-Hide Satchel at the Mysterious Signal
+  Fire, keeping the original random choice between its two locations.
+- **Tales:** restore unique rewards and normal radio-cache/crash-box variants.
+  Alpha, Beta, Gamma, and Omega bunker contents and radio-cache container rewards
+  use Stalker generation in a synchronous scope. Private loot-table clones prevent
+  their cached filters from affecting ordinary world containers. The original mode
+  and table references are restored before generation returns, including on exceptions.
+- **Sutherland:** restore story rewards and unlocked exchanges, preserving trust,
+  delivery requirements, prices, and progression. General stock now also benefits
+  from the removal of object exclusions.
+- **New games:** allow normal Stalker region choices and random selection, retaining
+  outdoor starts. Allow up to **three already unlocked feats**. Existing saves do not
+  receive a different feat selection.
+- **Direct main menu:** skip boot logos, initial disclaimers, the keypress gate, and
+  the menu introduction movie. Profile loading and error handling still run. This
+  startup change is global; in-game cinematics retain normal playback.
 
-Estos cambios no regeneran recompensas ya recogidas ni rellenan contenedores
-inspeccionados. Para comprobar toda la generación se recomienda una partida nueva.
+Content restoration targets standard Interloper only. Pilgrim, Voyageur, Stalker,
+Misery, Custom, challenges, and story mode retain their own settings.
 
-## Arranque directo
+## Existing saves
 
-Al iniciar el juego se omiten logos, avisos iniciales, la espera de una tecla y el
-video de introducción del menú. El menú principal aparece automáticamente cuando
-termina la carga de perfiles y archivos. Este cambio es general, antes de elegir
-una dificultad. Las cinemáticas durante la partida conservan su reproducción normal.
-El script de lanzamiento también omite la pantalla inicial propia de MelonLoader.
-En Linux desactiva ReadyToRun para el runtime .NET 6, configuración usada durante
-la validación tras observar fallos intermitentes del cargador antes de cargar mods.
-Se puede probar la configuración original con `DOTNET_ReadyToRun=1`.
+Use a **new survival game** to obtain complete world generation and the new setup
+options. Loot in visited scenes is not regenerated, and searched containers are not
+refilled. No save data is deleted or reset.
 
-## Restauración del mundo
+Saved Coastal house selections are redirected to intact variants when loading the
+region. Existing bunker assignments are preserved, including Interloper-specific
+interiors; the normal distribution applies when generating a new world. Restored
+bunker variants remain recognizable when saving and reloading.
 
-Los cambios de restauración se aplican únicamente a Interloper estándar:
+## Setup and use
 
-- **Coastal Highway:** todas las variantes de casas de los cinco grupos de edificios
-  usan las estructuras originales intactas, con sus accesos al interior. Se desactiva
-  el grupo especial de edificios quemados de Interloper y se recuperan las dos casas
-  independientes que la dificultad oculta.
-- **Contenedores y coleccionables del mundo:** se eliminan los filtros de Interloper
-  sobre contenedores, mementos, notas de visera, grupos de escondites y objetos de mapa
-  elegibles. En grupos aleatorios compuestos íntegramente por este contenido se usa
-  como mínimo la cantidad del nivel medio de recursos.
-- **Búnkeres de preparacionistas:** se usa la distribución normal de Stalker:
-  **tres interiores amueblados y seis abandonados**, con ubicaciones elegidas por
-  el distribuidor original del juego. No se convierten los nueve en búnkeres llenos.
+Verified environment: The Long Dark **2.55**, Unity **6000.0.60f1**, Linux x64,
+MelonLoader **0.7.3**, .NET runtime **6.0.36**, .NET SDK **10.0.x**.
 
-Fuera de las recompensas de Tales y sus cápsulas, no se ajustan las tablas de loot,
-sus probabilidades, la condición ni las cantidades por contenedor. Restaurar una
-casa o un interior de preparacionista habilita el contenido original asociado a ese
-lugar, sujeto a los filtros normales de Interloper. Solo se exceptúan los casquillos vacíos de las restricciones generales de equipo.
-No se habilitan globalmente armas, herramientas, plantas ni fauna.
-Pilgrim, Voyageur, Stalker, Misery, desafíos, historia y Custom mantienen sus reglas.
-
-### Partidas existentes
-
-Se recomienda **una partida nueva** para obtener la generación completa del mundo.
-Las selecciones de casas quemadas se redirigen a sus variantes intactas al cargar
-Coastal Highway. No se regenera loot de escenas visitadas ni se limpian datos guardados.
-Los búnkeres ya asignados en partidas existentes se conservan, incluidos los interiores
-exclusivos de Interloper; la distribución normal se aplica al generar un mundo nuevo.
-Las variantes nuevas de búnker también se reconocen al guardar y recargar.
-
-## Preparación y uso
-
-Entorno verificado: The Long Dark **2.55**, Unity **6000.0.60f1**, Linux x64,
-MelonLoader **0.7.3**, runtime .NET **6.0.36**, SDK .NET **10.0.x**.
-
-Herramientas: `git`, SDK .NET 10, `bash`, `curl`, `unzip`, `sha256sum`, `pgrep`.
-Respaldar `~/.local/share/Hinterland/TheLongDark` antes de jugar con mods.
+Requirements: `git`, .NET 10 SDK, `bash`, `curl`, `unzip`, `sha256sum`, and `pgrep`.
+Back up `~/.local/share/Hinterland/TheLongDark` before playing with mods.
 
 ```bash
 ./scripts/setup.sh
-./scripts/launch.sh  # Primera ejecución: esperar la generación de ensamblados y cerrar.
+./scripts/launch.sh  # First run: wait for assembly generation, then close the game.
 ./scripts/deploy.sh
 ./scripts/launch.sh
 ```
 
-El runtime privado se instala en `~/.local/share/tld-modding/dotnet`.
-`deploy.sh` exige cerrar el juego, compila Release e instala `Mods/InterloperOverhaul.dll`.
-Si se conserva el scaffold inicial, retirar `Mods/TheLongDarkMod.dll` para cargar solo
-el mod nuevo. Para compilar sin instalar: `./scripts/build.sh`.
+The private runtime is installed under `~/.local/share/tld-modding/dotnet`.
+`deploy.sh` requires the game to be closed, builds Release, and installs
+`Mods/InterloperOverhaul.dll`. Remove an old `Mods/TheLongDarkMod.dll` scaffold if
+present so only the current mod loads. To build without installing, run
+`./scripts/build.sh`.
 
-Variables opcionales: `TLD_GAME_DIR` para otra ubicación del juego,
-`TLD_DOTNET_ROOT` para otro runtime. `build.sh` también acepta `-p:GameDir=/ruta/al/juego`.
-Los archivos del juego, las partidas y las referencias generadas quedan fuera del repo.
+The launcher skips MelonLoader's own startup screen. On Linux, it disables ReadyToRun
+for the .NET 6 runtime following intermittent loader startup failures observed during
+validation. Set `DOTNET_ReadyToRun=1` to test the original runtime configuration.
+
+Optional variables: `TLD_GAME_DIR` for another game installation and `TLD_DOTNET_ROOT`
+for another runtime. `build.sh` also accepts `-p:GameDir=/path/to/game`.
+Game assets, save files, generated references, and research dumps are excluded from Git.
 
 ### Steam
 
-En Propiedades → General → Opciones de lanzamiento, usar la ruta absoluta del script
-entre comillas, seguida de `%command%`. Con el checkout local actual:
+In Properties > General > Launch Options, enter the absolute launcher path in quotes,
+followed by `%command%`. For this checkout:
 
 ```text
 "/home/franco/Projects/the-long-dark-mod/scripts/launch.sh" %command%
 ```
 
-Quitar esa opción permite iniciar sin MelonLoader. Para retirar solo este mod,
-borrar `Mods/InterloperOverhaul.dll` con el juego cerrado.
+Remove this option to launch without MelonLoader. To remove only this mod, delete
+`Mods/InterloperOverhaul.dll` while the game is closed.
 
-## Desarrollo y validación
+## Development and validation
 
-- Código: `src/InterloperOverhaul/`.
-- Política de selección del mundo: `shared/WorldPolicy.cs`.
-- Referencias: `<juego>/MelonLoader/Il2CppAssemblies/`.
-- Log: `<juego>/MelonLoader/Latest.log`.
+- Source: `src/InterloperOverhaul/`.
+- World selection policies: `shared/WorldPolicy.cs`.
+- Generated references: `<game>/MelonLoader/Il2CppAssemblies/`.
+- Loader log: `<game>/MelonLoader/Latest.log`.
 
 ```bash
 ./scripts/build.sh -p:RestoreLockedMode=true
@@ -139,25 +121,27 @@ dotnet run --project tests/PolicyChecks/PolicyChecks.csproj -c Release
 ./scripts/validate-runtime.sh
 ```
 
-La validación de runtime requiere el juego cerrado y una DLL Release ya desplegada.
-Compila temporalmente una versión de prueba, abre el menú, comprueba el arranque automático del menú y los parches reales
-sobre objetos de prueba y clones de la distribución de búnkeres, y cierra el juego.
-No abre partidas. Restaura la DLL instalada al terminar y deja el informe en
-`.local/runtime-validation.log`. El código de validación no se incluye en Release normal.
+Runtime validation requires a closed game and an installed Release DLL. It temporarily
+builds a validation DLL, opens the main menu without input, and exercises the actual
+Harmony patches against synthetic world objects, real gear prefabs and loot filters,
+and cloned bunker configurations. It never opens a survival save. The installed DLL
+is restored afterward; the report is written to `.local/runtime-validation.log`.
+Validation code is excluded from the production build. Native interop errors fail
+the validation even if individual checks report success. The injected probe may
+require forced termination during Unity/.NET shutdown after reporting its results;
+this does not validate a normal playthrough or normal shutdown behavior.
 
-GitHub Actions verifica las políticas y scripts sin distribuir DLL propietarias.
-La compilación completa y las pruebas con MelonLoader se ejecutan localmente, usando
-una instalación legítima del juego. La DLL del mod se genera en
+GitHub Actions checks policies and scripts without distributing proprietary DLLs.
+Full compilation and MelonLoader validation run locally against a licensed game
+installation. The mod DLL is built at
 `src/InterloperOverhaul/bin/Release/net6.0/InterloperOverhaul.dll`.
 
-## Fuentes de compatibilidad
+## Compatibility references
 
-- [Interloper: restricciones y recompensas](https://thelongdark.fandom.com/wiki/Interloper)
-- La implementación se contrasta con los componentes y escenas de la instalación local 2.55.
-
-
+- [Interloper restrictions and rewards](https://thelongdark.fandom.com/wiki/Interloper)
+- Implementation is checked against components and scenes in the local 2.55 installation.
 - [MelonLoader 0.7.3](https://github.com/LavaGang/MelonLoader/releases/tag/v0.7.3)
-- [Arranque nativo en Linux](https://github.com/LavaGang/MelonWiki/blob/master/docs/gettingstarted.md#linux-native-games)
-- [RerollBurntBuildings, referencia de los grupos de Coastal Highway](https://github.com/GruffCassquatch/RerollBurntBuildings)
+- [Native Linux setup](https://github.com/LavaGang/MelonWiki/blob/master/docs/gettingstarted.md#linux-native-games)
+- [RerollBurntBuildings: Coastal Highway building groups](https://github.com/GruffCassquatch/RerollBurntBuildings)
 
-Proyecto comunitario independiente, sin afiliación con Hinterland.
+An independent community project, not affiliated with Hinterland.

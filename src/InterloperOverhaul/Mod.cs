@@ -1,7 +1,7 @@
 using MelonLoader;
 using InterloperOverhaul;
 
-[assembly: MelonInfo(typeof(Mod), "Interloper Overhaul", "0.5.0", "Spelunkern", "https://github.com/Spelunkern/interloper-overhaul")]
+[assembly: MelonInfo(typeof(Mod), "Interloper Overhaul", "0.6.0", "Spelunkern", "https://github.com/Spelunkern/interloper-overhaul")]
 [assembly: MelonGame("Hinterland", "TheLongDark")]
 
 namespace InterloperOverhaul;
@@ -18,6 +18,6 @@ public sealed class Mod : MelonMod
 
     public override void OnInitializeMelon()
     {
-        LoggerInstance.Msg("Interloper Overhaul 0.5.0 loaded. World and Tales reward restoration enabled for Interloper; direct main menu enabled globally.");
+        LoggerInstance.Msg("Interloper Overhaul 0.6.0 loaded. World and Tales reward restoration enabled for Interloper; direct main menu enabled globally.");
     }
 }

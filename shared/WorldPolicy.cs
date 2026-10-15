@@ -3,6 +3,12 @@ namespace InterloperOverhaul;
 // Independent of Unity so policy boundaries can be checked without game binaries.
 public static class WorldPolicy
 {
+    public static bool IsNonItemSpawnPath(string path) => path.Split('/').Any(segment =>
+        segment is "WildlifeSpawns" or "Wildlife" or "PlayerSpawns" or "PlayerSpawnPoints");
+
+    public static bool IsGearRestrictionTag(string name) => name is
+        "Gameplay.Gear.NoFirearms" or "Gameplay.Gear.NoRifle" or "Gameplay.Gear.NoRevolver";
+
     public static bool IsSpentCasing(string name) => name.Replace("(Clone)", "").Trim() is
         "GEAR_RevolverAmmoCasing" or "GEAR_RifleAmmoCasing";
 

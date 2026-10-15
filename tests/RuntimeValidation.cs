@@ -133,8 +133,19 @@ internal static class RuntimeValidation
                         "real loot table accepts authored casing prefab: " + item);
                 }
                 var liveAmmo = Game.GearItem.LoadGearItemPrefab("GEAR_RifleAmmoSingle");
-                Check(liveAmmo != null && casingTable.ShouldFilterOutPrefab(liveAmmo.gameObject),
-                    "real loot table still excludes live rifle ammunition");
+                Check(liveAmmo != null && !casingTable.ShouldFilterOutPrefab(liveAmmo.gameObject),
+                    "real loot table restores live rifle ammunition");
+                foreach (string name in new[] { "GEAR_Rifle", "GEAR_Revolver", "GEAR_Knife", "GEAR_Hatchet",
+                    "GEAR_Balaclava", "GEAR_HeavyParka", "GEAR_MilitaryParka", "GEAR_MuklukBoots",
+                    "GEAR_RevolverAmmoSingle", "GEAR_RifleAmmoBox", "GEAR_Flashlight",
+                    "GEAR_Bow_Woodwrights", "GEAR_Bow_Manufactured", "GEAR_SurvivalKnife",
+                    "GEAR_Rifle_Barbs", "GEAR_Rifle_Curators", "GEAR_Rifle_Vaughns", "GEAR_Rifle_Trader",
+                    "GEAR_RevolverGreen", "GEAR_RevolverFancy", "GEAR_RevolverStubNosed", "GEAR_JacketLeatherFlightA" })
+                {
+                    var prefab = Game.GearItem.LoadGearItemPrefab(name);
+                    Check(prefab != null && !casingTable.ShouldFilterOutPrefab(prefab.gameObject),
+                        "native loot filter restores formerly excluded item: " + name);
+                }
             }
             finally { UnityEngine.Object.Destroy(casingTable); }
             root = new GameObject("IO_Validation");
@@ -159,7 +170,11 @@ internal static class RuntimeValidation
             gear.AddComponent<Game.GearItem>();
             var gearDisabler = gear.AddComponent<Game.DisableObjectForXPMode>();
             gearDisabler.m_XPModesToDisable = cacheDisabler.m_XPModesToDisable;
-            Check(!WorldObjects.IsRestorable(gear), "ordinary gear excluded from restoration");
+            Check(WorldObjects.IsRestorable(gear) && !gearDisabler.ShouldDisableForCurrentMode(), "ordinary world gear restored");
+            var exclusive = Child("StoryOnlyObject");
+            var exclusiveDisabler = Disabler(exclusive, Game.ExperienceModeType.Interloper);
+            exclusiveDisabler.m_XPModesToDisable.Add(Game.ExperienceModeType.Stalker);
+            Check(exclusiveDisabler.ShouldDisableForCurrentMode(), "object excluded from both survival modes remains excluded");
             var acquired = gear.GetComponent<Game.GearItem>();
             acquired.m_BeenInContainer = true;
             Check(!gearDisabler.ShouldDisableForCurrentMode(), "generated container reward survives outside generation scope");
@@ -178,11 +193,11 @@ internal static class RuntimeValidation
             var exchange = ScriptableObject.CreateInstance<GameAssembly::Il2CppTLD.Trader.TradeExchange>();
             exchange.name = "SpecialRequestGroup4";
             SutherlandRewards.Prefix(exchange, out bool exchangeScope);
-            try { Check(RewardScope.Active && !gearDisabler.ShouldDisableForCurrentMode(), "Sutherland story unlock allows restricted reward"); }
+            try { Check(RewardScope.Active && !gearDisabler.ShouldDisableForCurrentMode(), "Sutherland story unlock accepts restored gear"); }
             finally { SutherlandRewards.Finalizer(exchangeScope); }
             exchange.name = "RifleAmmoBox";
             SutherlandRewards.Prefix(exchange, out bool ordinaryExchangeScope);
-            try { Check(!RewardScope.Active && gearDisabler.ShouldDisableForCurrentMode(), "ordinary trader catalog remains restricted"); }
+            try { Check(!RewardScope.Active && !gearDisabler.ShouldDisableForCurrentMode(), "ordinary trader gear no longer banned"); }
             finally { SutherlandRewards.Finalizer(ordinaryExchangeScope); }
             UnityEngine.Object.Destroy(exchange);
             var rewardGo = new GameObject("CONTAINER_Supply_CacheA");
@@ -191,8 +206,8 @@ internal static class RuntimeValidation
             rewardContainer.m_ScriptedItemPrefabs = new Il2CppReferenceArray<GameObject>(new[] { gear });
             rewardContainer.m_ScriptedItemFilter = new Il2CppStructArray<Game.GameModeFilter>(new[] { Game.GameModeFilter.All });
             rewardContainer.PopulateWithScriptedGear();
-            Check(rewardContainer.m_GearToInstantiate.Count == 1, "native scripted capsule reward accepts restricted gear");
-            Check(!RewardScope.Active && gearDisabler.ShouldDisableForCurrentMode(), "reward scope ends and ordinary gear remains restricted");
+            Check(rewardContainer.m_GearToInstantiate.Count == 1, "native scripted capsule reward accepts restored gear");
+            Check(!RewardScope.Active && WorldObjects.IsInterloper, "reward scope ends without changing world difficulty");
             var table = ScriptableObject.CreateInstance<Game.LootTableData>();
             rewardContainer.m_LootTableData = table;
             RewardContainerContents.Prefix(rewardContainer, out var rewardState);
@@ -201,7 +216,7 @@ internal static class RuntimeValidation
                 Check(rewardContainer.m_LootTableData.Pointer != table.Pointer, "reward uses private table clone");
                 Check(rewardContainer.m_LootTableData.GetCurrentExperienceMode().Pointer == stalker.m_XPMode.Pointer,
                     "reward table uses normal experience through Harmony");
-                Check(!gearDisabler.ShouldDisableForCurrentMode(), "gear restriction lifted only during reward generation");
+                Check(!gearDisabler.ShouldDisableForCurrentMode(), "restored gear remains available during reward generation");
                 Check(Game.ExperienceModeManager.GetCurrentGameModeConfig().Pointer == stalker.Pointer,
                     "native reward generation reads normal mode in synchronous scope");
             }
@@ -231,9 +246,21 @@ internal static class RuntimeValidation
             group.m_NumObjectsToEnableByLevel = new Il2CppStructArray<int>(new[] { 0, 1, 1, 1 });
             Check(group.GetNumObjectsToEnableCurrentXPMode() == 1, "container count restored through Harmony");
             group.m_ObjectList = new Il2CppReferenceArray<GameObject>(new[] { gear });
-            Check(group.GetNumObjectsToEnableCurrentXPMode() == 0, "ordinary gear count preserved");
+            Check(group.GetNumObjectsToEnableCurrentXPMode() == 1, "wholly disabled ordinary gear group restored");
             group.m_ObjectList = new Il2CppReferenceArray<GameObject>(new[] { container, gear });
-            Check(group.GetNumObjectsToEnableCurrentXPMode() == 0, "mixed loot group preserved");
+            Check(group.GetNumObjectsToEnableCurrentXPMode() == 1, "wholly disabled mixed object group restored");
+            group.m_NumObjectsToEnableByLevel = new Il2CppStructArray<int>(new[] { 1, 4, 4, 4 });
+            Check(group.GetNumObjectsToEnableCurrentXPMode() == 1, "positive Interloper gear count not increased");
+            var wildlife = Child("WildlifeSpawns");
+            var wildChild = new GameObject("WolfGroup");
+            wildChild.transform.SetParent(wildlife.transform, false);
+            Check(!WorldObjects.IsRestorable(wildChild), "wildlife hierarchy excluded from object restoration");
+            var playerSpawn = Child("SurvivorPoint");
+            playerSpawn.AddComponent<Game.PlayerSpawn>();
+            Check(!WorldObjects.IsRestorable(playerSpawn), "survivor spawn component excluded");
+            group.m_NumObjectsToEnableByLevel = new Il2CppStructArray<int>(new[] { 0, 4, 4, 4 });
+            group.m_ObjectList = new Il2CppReferenceArray<GameObject>(new[] { playerSpawn });
+            Check(group.GetNumObjectsToEnableCurrentXPMode() == 0, "survivor spawn group counts preserved");
 
             // A synthetic Coastal scene checks the real native random-spawn save loader.
             var coastalScene = SceneManager.CreateScene("CoastalRegion");
@@ -325,6 +352,10 @@ internal static class RuntimeValidation
                 "Misery feat and region restrictions preserved");
             Game.ExperienceModeManager.s_CurrentGameMode = misery;
             Check(!WorldObjects.IsInterloper && noteEnabler.ShouldDisableForCurrentMode(), "Misery memento restriction preserved");
+            var miseryTable = ScriptableObject.CreateInstance<Game.LootTableData>();
+            try { Check(miseryTable.ShouldFilterOutPrefab(Game.GearItem.LoadGearItemPrefab("GEAR_Rifle").gameObject),
+                "Misery still excludes the real rifle prefab"); }
+            finally { UnityEngine.Object.Destroy(miseryTable); }
             success = true;
             MelonLogger.Msg($"[Validation] SUCCESS: {checks} runtime checks.");
         }

@@ -1,7 +1,6 @@
 extern alias GameAssembly;
 
 using Game = GameAssembly::Il2Cpp;
-using Gameplay = GameAssembly::Il2CppTLD.Gameplay;
 using UnityEngine;
 
 namespace InterloperOverhaul;
@@ -23,26 +22,14 @@ internal static class WorldObjects
     {
         if (go == null) return false;
         string path = PathOf(go);
-        if (WorldPolicy.IsReducedCargo(go.scene.name, path)) return false;
-        if (WorldPolicy.IsNormalCargo(go.scene.name, path) ||
-            WorldPolicy.IsSignalFireSatchel(go.scene.name, path) || WorldPolicy.IsSpentCasing(go.name)) return true;
-        if (WorldPolicy.IsReducedRadioCache(path)) return false;
-        if (RewardScope.Active || WorldPolicy.IsTaleReward(go.name) || WorldPolicy.IsTaleBunker(go.scene.name)) return true;
-        if (WorldPolicy.IsMemento(path)) return true;
-        if (WorldPolicy.IsCoastalStandaloneHouse(go.scene.name, path)) return true;
-        // Do not re-enable weapons, loose loot, plants, wildlife or player spawns.
-        // A memento can itself be a GearItem, hence the earlier explicit exception.
-        var gear = go.GetComponent<Game.GearItem>();
-        if (gear != null)
-            // Generated rewards must survive leaving their container and reloading.
-            // These flags are false on untouched world spawns and source prefabs.
-            return gear.m_BeenInContainer || gear.m_BeenInPlayerInventory;
-        if (go.GetComponent<Game.Container>() != null) return true;
-        if (go.GetComponent<Game.TrackableItem>() != null) return true;
-        if (go.GetComponent<Game.NarrativeCollectibleItem>() != null) return true;
-        if (go.GetComponent<Game.MapDetail>() != null &&
-            go.GetComponent<Game.BodyHarvest>() == null && go.GetComponent<Game.Harvestable>() == null) return true;
-        return false;
+        // Keep authored alternatives mutually exclusive and leave wildlife and
+        // survivor spawn rules under the original difficulty's control.
+        if (WorldPolicy.IsReducedCargo(go.scene.name, path) || WorldPolicy.IsReducedRadioCache(path) ||
+            WorldPolicy.IsNonItemSpawnPath(path)) return false;
+        if (go.GetComponentInChildren<Game.BaseAi>(true) != null || go.GetComponentInChildren<Game.SpawnRegion>(true) != null ||
+            go.GetComponentInChildren<Game.SpawnWildlife_Trigger>(true) != null || go.GetComponentInChildren<Game.PlayerSpawn>(true) != null ||
+            go.GetComponentInChildren<Game.PlayerSpawnPoints>(true) != null) return false;
+        return true;
     }
 
     internal static bool IsHouseSpawner(Game.RandomSpawnObject spawner) =>

@@ -20,6 +20,15 @@ internal static class NewGameOptions
         config.m_StartRegionSelectionBlocked = false;
         config.m_AvailableStartRegions = normal.m_AvailableStartRegions;
         config.m_NumFeats = 3;
+        // Remove the gear bans themselves as well as the scene-level XP filters.
+        // This covers native loot tables, prefab validation, and trader stock.
+        // Keep every unrelated tag (DLC, Tales, safehouses, and mission gates).
+        for (int i = config.m_ActiveTags.Count - 1; i >= 0; i--)
+        {
+            var tag = config.m_ActiveTags[i];
+            if (tag.MatchesTagExact("Gameplay.Gear.NoFirearms") || tag.MatchesTagExact("Gameplay.Gear.NoRifle") ||
+                tag.MatchesTagExact("Gameplay.Gear.NoRevolver")) config.m_ActiveTags.RemoveAt(i);
+        }
     }
 }
 
