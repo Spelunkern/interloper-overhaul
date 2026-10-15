@@ -8,5 +8,5 @@ if pgrep -x tld.x86_64 >/dev/null || pgrep -x tld.exe >/dev/null; then
 fi
 "$repo_dir/scripts/build.sh" "-p:GameDir=$game_dir"
 mkdir -p "$game_dir/Mods"
-install -m 644 "$repo_dir/src/TheLongDarkMod/bin/Release/net6.0/TheLongDarkMod.dll" "$game_dir/Mods/"
-echo "Deployed to $game_dir/Mods/TheLongDarkMod.dll"
+install -m 644 "$repo_dir/src/InterloperOverhaul/bin/Release/net6.0/InterloperOverhaul.dll" "$game_dir/Mods/"
+echo "Deployed to $game_dir/Mods/InterloperOverhaul.dll"

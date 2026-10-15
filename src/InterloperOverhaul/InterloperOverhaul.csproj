@@ -1,0 +1,48 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <!-- Generated IL2CPP attributes conflict with nullable metadata emission. -->
+    <Nullable>disable</Nullable>
+    <Version>0.2.0</Version>
+    <DebugType>portable</DebugType>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="MelonLoader">
+      <HintPath>$(MelonLoaderDir)/net6/MelonLoader.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="0Harmony">
+      <HintPath>$(MelonLoaderDir)/net6/0Harmony.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>$(MelonLoaderDir)/Il2CppAssemblies/Assembly-CSharp.dll</HintPath>
+      <Aliases>GameAssembly</Aliases>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule;Il2Cppmscorlib;Il2CppTLD.GameplayTag">
+      <HintPath>$(MelonLoaderDir)/Il2CppAssemblies/%(Identity).dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Il2CppInterop.Runtime" Condition="Exists('$(MelonLoaderDir)/net6/Il2CppInterop.Runtime.dll')">
+      <HintPath>$(MelonLoaderDir)/net6/Il2CppInterop.Runtime.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="../../shared/WorldPolicy.cs" Link="WorldPolicy.cs" />
+  </ItemGroup>
+  <PropertyGroup Condition="'$(RuntimeValidation)' == 'true'">
+    <DefineConstants>$(DefineConstants);IO_VALIDATION</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(RuntimeValidation)' == 'true'">
+    <Compile Include="../../tests/RuntimeValidation.cs" Link="RuntimeValidation.cs" />
+  </ItemGroup>
+  <Target Name="CheckLoader" BeforeTargets="ResolveAssemblyReferences">
+    <Error Condition="!Exists('$(MelonLoaderDir)/net6/MelonLoader.dll')" Text="Install MelonLoader 0.7.3 or set TLD_GAME_DIR / -p:GameDir to the game folder." />
+    <Error Condition="!Exists('$(MelonLoaderDir)/Il2CppAssemblies/Assembly-CSharp.dll')" Text="Launch the game with MelonLoader once to generate game references." />
+  </Target>
+</Project>

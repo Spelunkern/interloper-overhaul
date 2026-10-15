@@ -1,76 +1,103 @@
-# The Long Dark Mod
+# Interloper Overhaul
 
-Base de desarrollo de un mod para **The Long Dark**, por Spelunkern.
-Nombre provisional: definiremos el nombre y las funciones con el diseño del mod.
-La versión 0.1.0 solo registra su carga y las escenas inicializadas.
+Mod para **The Long Dark** centrado en cambios de la dificultad **Interloper**,
+con espacio para modificaciones generales en futuras versiones. Autor: Spelunkern.
 
-## Entorno
+## Versión 0.2.0 — Restauración del mundo
 
-- The Long Dark, versión nativa de Linux x64, instalado desde Steam.
-- MelonLoader **0.7.3**, con correcciones para Linux nativo y Unity 6.
-- Runtime .NET **6.0.36** privado para el cargador; SDK **10.0.x** para compilar a `net6.0`.
-- C# y Harmony, con referencias locales a los ensamblados de MelonLoader y del juego.
+Los cambios actuales se aplican únicamente a Interloper estándar:
 
-Los binarios del juego, partidas y ensamblados generados permanecen fuera del repositorio.
-El SDK existente del sistema se conserva; el runtime se instala en
-`~/.local/share/tld-modding/dotnet`.
+- **Coastal Highway:** todas las variantes de casas de los cinco grupos de edificios
+  usan las estructuras originales intactas, con sus accesos al interior. Se desactiva
+  el grupo especial de edificios quemados de Interloper y se recuperan las dos casas
+  independientes que la dificultad oculta.
+- **Contenedores y coleccionables del mundo:** se eliminan los filtros de Interloper
+  sobre contenedores, mementos, notas de visera, grupos de escondites y objetos de mapa
+  elegibles. En grupos aleatorios compuestos íntegramente por este contenido se usa
+  como mínimo la cantidad del nivel medio de recursos.
+- **Búnkeres de preparacionistas:** se usa la distribución normal de Stalker:
+  **tres interiores amueblados y seis abandonados**, con ubicaciones elegidas por
+  el distribuidor original del juego. No se convierten los nueve en búnkeres llenos.
 
-## Preparar y compilar
+No se ajustan las tablas de loot, sus probabilidades, la condición ni las cantidades
+por contenedor. Restaurar una casa, un contenedor o un interior de búnker también
+habilita el contenido original asociado a ese lugar, sujeto a los filtros normales
+de Interloper. No se habilitan globalmente armas, herramientas, plantas ni fauna.
+Pilgrim, Voyageur, Stalker, Misery, desafíos, historia y Custom mantienen sus reglas.
 
-Requisitos de herramientas: `git`, SDK .NET 10, `bash`, `curl`, `unzip`, `sha256sum` y `pgrep`.
-Antes de instalar mods, respaldar `~/.local/share/Hinterland/TheLongDark`.
+### Partidas existentes
+
+Se recomienda **una partida nueva** para obtener la generación completa del mundo.
+Las selecciones de casas quemadas se redirigen a sus variantes intactas al cargar
+Coastal Highway. No se regenera loot de escenas visitadas ni se limpian datos guardados.
+Los búnkeres ya asignados en partidas existentes se conservan, incluidos los interiores
+exclusivos de Interloper; la distribución normal se aplica al generar un mundo nuevo.
+Las variantes nuevas de búnker también se reconocen al guardar y recargar.
+
+## Preparación y uso
+
+Entorno verificado: The Long Dark **2.55**, Unity **6000.0.60f1**, Linux x64,
+MelonLoader **0.7.3**, runtime .NET **6.0.36**, SDK .NET **10.0.x**.
+
+Herramientas: `git`, SDK .NET 10, `bash`, `curl`, `unzip`, `sha256sum`, `pgrep`.
+Respaldar `~/.local/share/Hinterland/TheLongDark` antes de jugar con mods.
 
 ```bash
 ./scripts/setup.sh
+./scripts/launch.sh  # Primera ejecución: esperar la generación de ensamblados y cerrar.
 ./scripts/deploy.sh
 ./scripts/launch.sh
 ```
 
-`deploy.sh` compila en Release y copia únicamente nuestra DLL a `Mods/`.
-Exige cerrar el juego antes de desplegar. Para compilar sin instalar:
+El runtime privado se instala en `~/.local/share/tld-modding/dotnet`.
+`deploy.sh` exige cerrar el juego, compila Release e instala `Mods/InterloperOverhaul.dll`.
+Si se conserva el scaffold inicial, retirar `Mods/TheLongDarkMod.dll` para cargar solo
+el mod nuevo. Para compilar sin instalar: `./scripts/build.sh`.
 
-```bash
-./scripts/build.sh
-```
+Variables opcionales: `TLD_GAME_DIR` para otra ubicación del juego,
+`TLD_DOTNET_ROOT` para otro runtime. `build.sh` también acepta `-p:GameDir=/ruta/al/juego`.
+Los archivos del juego, las partidas y las referencias generadas quedan fuera del repo.
 
-La primera ejecución de MelonLoader descarga dependencias y genera
-`MelonLoader/Il2CppAssemblies`. Esperar a que termine antes de cerrar el juego.
-Estos ensamblados quedan disponibles para implementar parches sobre clases del juego.
+### Steam
 
-Para otra ubicación, exportar `TLD_GAME_DIR` o pasar `-p:GameDir=/ruta/al/juego`
-a `build.sh`. El runtime privado puede indicarse con `TLD_DOTNET_ROOT`.
-
-## Arrancar desde Steam
-
-En Propiedades → General → Opciones de lanzamiento, poner la ruta absoluta de
-`scripts/launch.sh` entre comillas, seguida de `%command%`. En esta máquina:
+En Propiedades → General → Opciones de lanzamiento, usar la ruta absoluta del script
+entre comillas, seguida de `%command%`. Con el checkout local actual:
 
 ```text
 "/home/franco/Projects/the-long-dark-mod/scripts/launch.sh" %command%
 ```
 
-El script configura la precarga de MelonLoader y el runtime .NET antes de ejecutar
-el comando de Steam. También permite iniciar el ejecutable directamente.
+Quitar esa opción permite iniciar sin MelonLoader. Para retirar solo este mod,
+borrar `Mods/InterloperOverhaul.dll` con el juego cerrado.
 
-## Desarrollo y diagnóstico
+## Desarrollo y validación
 
-Entrada del mod: `src/TheLongDarkMod/Mod.cs`.
-Proyecto: `src/TheLongDarkMod/TheLongDarkMod.csproj`.
-Logs del cargador: `<juego>/MelonLoader/Latest.log` y `<juego>/MelonLoader/Logs/`.
-Buscar `Development scaffold loaded successfully` para confirmar la carga.
+- Código: `src/InterloperOverhaul/`.
+- Política de selección del mundo: `shared/WorldPolicy.cs`.
+- Referencias: `<juego>/MelonLoader/Il2CppAssemblies/`.
+- Log: `<juego>/MelonLoader/Latest.log`.
 
-GitHub Actions compila la base y publica la DLL como artefacto. No dispone de las
-DLL del juego: al añadir funciones que las utilicen habrá que adaptar la estrategia
-de CI sin publicar archivos propietarios.
+```bash
+./scripts/build.sh -p:RestoreLockedMode=true
+dotnet run --project tests/PolicyChecks/PolicyChecks.csproj -c Release
+./scripts/validate-runtime.sh
+```
 
-Para iniciar sin mods desde Steam, quitar la opción de lanzamiento. Para retirar
-solo este mod, borrar `Mods/TheLongDarkMod.dll` con el juego cerrado.
+La validación de runtime requiere el juego cerrado y una DLL Release ya desplegada.
+Compila temporalmente una versión de prueba, abre el menú, prueba los parches reales
+sobre objetos de prueba y clones de la distribución de búnkeres, y cierra el juego.
+No abre partidas. Restaura la DLL instalada al terminar y deja el informe en
+`.local/runtime-validation.log`. El código de validación no se incluye en Release normal.
 
-## Referencias
+GitHub Actions verifica las políticas y scripts sin distribuir DLL propietarias.
+La compilación completa y las pruebas con MelonLoader se ejecutan localmente, usando
+una instalación legítima del juego. La DLL del mod se genera en
+`src/InterloperOverhaul/bin/Release/net6.0/InterloperOverhaul.dll`.
+
+## Fuentes de compatibilidad
 
 - [MelonLoader 0.7.3](https://github.com/LavaGang/MelonLoader/releases/tag/v0.7.3)
-- [Instalación y arranque en Linux](https://github.com/LavaGang/MelonWiki/blob/master/docs/gettingstarted.md#linux-native-games)
-- [Desarrollo de mods](https://github.com/LavaGang/MelonWiki/blob/master/docs/modders/quickstart.md)
-- [Lista de mods de TLD](https://tldmods.net/)
+- [Arranque nativo en Linux](https://github.com/LavaGang/MelonWiki/blob/master/docs/gettingstarted.md#linux-native-games)
+- [RerollBurntBuildings, referencia de los grupos de Coastal Highway](https://github.com/GruffCassquatch/RerollBurntBuildings)
 
 Proyecto comunitario independiente, sin afiliación con Hinterland.
