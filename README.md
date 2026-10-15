@@ -3,7 +3,30 @@
 Mod para **The Long Dark** centrado en cambios de la dificultad **Interloper**,
 con espacio para modificaciones generales en futuras versiones. Autor: Spelunkern.
 
-## Versión 0.3.0 — Arranque directo
+## Versión 0.4.0 — Recompensas de Tales
+
+En Interloper estándar se recuperan las recompensas únicas excluidas por dificultad,
+incluidas la **chaqueta táctica** y la **funda del jefe de seguridad**. Los guantes
+tácticos y el cinturón del capataz mantienen sus ubicaciones y requisitos originales.
+
+- **Cápsulas de radio y cajas de accidentes:** se habilitan las variantes normales
+  creadas por Hinterland y se deshabilitan las variantes reducidas de Interloper.
+  Se conserva la selección original por investigación, transmisores y señal.
+- **Búnkeres Alpha, Beta, Gamma y Omega:** se recupera el contenido excluido por
+  dificultad, incluida la recompensa de Signal Void. Las misiones, puertas,
+  documentos y la sala final conservan sus requisitos.
+- **Contenido de estos contenedores:** usa los filtros y reducciones de Stalker
+  durante su generación. Las tablas se clonan para que sus filtros almacenados
+  no alteren contenedores del resto del mundo. No se inventan tablas ni cantidades.
+- **Sutherland:** los cinco encargos y sus intercambios desbloqueados admiten sus
+  recompensas normales, incluidas las flechas, el cuchillo y el rifle de búnker.
+  Se mantienen la confianza, costes, entregas y desbloqueos originales. El catálogo
+  común del comerciante sigue con las restricciones de Interloper.
+
+Estos cambios no regeneran recompensas ya recogidas ni rellenan contenedores
+inspeccionados. Para comprobar toda la generación se recomienda una partida nueva.
+
+## Arranque directo
 
 Al iniciar el juego se omiten logos, avisos iniciales, la espera de una tecla y el
 video de introducción del menú. El menú principal aparece automáticamente cuando
@@ -30,10 +53,11 @@ Los cambios de restauración se aplican únicamente a Interloper estándar:
   **tres interiores amueblados y seis abandonados**, con ubicaciones elegidas por
   el distribuidor original del juego. No se convierten los nueve en búnkeres llenos.
 
-No se ajustan las tablas de loot, sus probabilidades, la condición ni las cantidades
-por contenedor. Restaurar una casa, un contenedor o un interior de búnker también
-habilita el contenido original asociado a ese lugar, sujeto a los filtros normales
-de Interloper. No se habilitan globalmente armas, herramientas, plantas ni fauna.
+Fuera de las recompensas de Tales y sus cápsulas, no se ajustan las tablas de loot,
+sus probabilidades, la condición ni las cantidades por contenedor. Restaurar una
+casa o un interior de preparacionista habilita el contenido original asociado a ese
+lugar, sujeto a los filtros normales de Interloper. No se habilitan globalmente armas,
+herramientas, plantas ni fauna.
 Pilgrim, Voyageur, Stalker, Misery, desafíos, historia y Custom mantienen sus reglas.
 
 ### Partidas existentes
@@ -106,6 +130,10 @@ una instalación legítima del juego. La DLL del mod se genera en
 `src/InterloperOverhaul/bin/Release/net6.0/InterloperOverhaul.dll`.
 
 ## Fuentes de compatibilidad
+
+- [Interloper: restricciones y recompensas](https://thelongdark.fandom.com/wiki/Interloper)
+- La implementación se contrasta con los componentes y escenas de la instalación local 2.55.
+
 
 - [MelonLoader 0.7.3](https://github.com/LavaGang/MelonLoader/releases/tag/v0.7.3)
 - [Arranque nativo en Linux](https://github.com/LavaGang/MelonWiki/blob/master/docs/gettingstarted.md#linux-native-games)

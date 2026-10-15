@@ -97,6 +97,55 @@ internal static class RuntimeValidation
             var gearDisabler = gear.AddComponent<Game.DisableObjectForXPMode>();
             gearDisabler.m_XPModesToDisable = cacheDisabler.m_XPModesToDisable;
             Check(!WorldObjects.IsRestorable(gear), "ordinary gear excluded from restoration");
+            var acquired = gear.GetComponent<Game.GearItem>();
+            acquired.m_BeenInContainer = true;
+            Check(!gearDisabler.ShouldDisableForCurrentMode(), "generated container reward survives outside generation scope");
+            acquired.m_BeenInContainer = false;
+            var reduced = Child("TrackableHiddenCaches_Interloper");
+            var reducedEnabler = reduced.AddComponent<Game.EnableObjectForXPMode>();
+            reducedEnabler.m_XPModesToEnable = new Il2CppSystem.Collections.Generic.List<Game.ExperienceModeType>();
+            reducedEnabler.m_XPModesToEnable.Add(Game.ExperienceModeType.Interloper);
+            Check(reducedEnabler.ShouldDisableForCurrentMode(), "reduced radio branch disabled to avoid duplicate caches");
+            Check(!WorldObjects.IsRestorable(reduced), "reduced radio branch excluded from restoration");
+            var jacket = Child("GEAR_TacticalJacket");
+            jacket.AddComponent<Game.GearItem>();
+            var jacketDisabler = jacket.AddComponent<Game.DisableObjectForXPMode>();
+            jacketDisabler.m_XPModesToDisable = cacheDisabler.m_XPModesToDisable;
+            Check(!jacketDisabler.ShouldDisableForCurrentMode(), "unique jacket reward restored");
+            var exchange = ScriptableObject.CreateInstance<GameAssembly::Il2CppTLD.Trader.TradeExchange>();
+            exchange.name = "SpecialRequestGroup4";
+            SutherlandRewards.Prefix(exchange, out bool exchangeScope);
+            try { Check(RewardScope.Active && !gearDisabler.ShouldDisableForCurrentMode(), "Sutherland story unlock allows restricted reward"); }
+            finally { SutherlandRewards.Finalizer(exchangeScope); }
+            exchange.name = "RifleAmmoBox";
+            SutherlandRewards.Prefix(exchange, out bool ordinaryExchangeScope);
+            try { Check(!RewardScope.Active && gearDisabler.ShouldDisableForCurrentMode(), "ordinary trader catalog remains restricted"); }
+            finally { SutherlandRewards.Finalizer(ordinaryExchangeScope); }
+            UnityEngine.Object.Destroy(exchange);
+            var rewardGo = new GameObject("CONTAINER_Supply_CacheA");
+            rewardGo.transform.SetParent(caches.transform, false);
+            var rewardContainer = rewardGo.AddComponent<Game.Container>();
+            rewardContainer.m_ScriptedItemPrefabs = new Il2CppReferenceArray<GameObject>(new[] { gear });
+            rewardContainer.m_ScriptedItemFilter = new Il2CppStructArray<Game.GameModeFilter>(new[] { Game.GameModeFilter.All });
+            rewardContainer.PopulateWithScriptedGear();
+            Check(rewardContainer.m_GearToInstantiate.Count == 1, "native scripted capsule reward accepts restricted gear");
+            Check(!RewardScope.Active && gearDisabler.ShouldDisableForCurrentMode(), "reward scope ends and ordinary gear remains restricted");
+            var table = ScriptableObject.CreateInstance<Game.LootTableData>();
+            rewardContainer.m_LootTableData = table;
+            RewardContainerContents.Prefix(rewardContainer, out var rewardState);
+            try
+            {
+                Check(rewardContainer.m_LootTableData.Pointer != table.Pointer, "reward uses private table clone");
+                Check(rewardContainer.m_LootTableData.GetCurrentExperienceMode().Pointer == stalker.m_XPMode.Pointer,
+                    "reward table uses normal experience through Harmony");
+                Check(!gearDisabler.ShouldDisableForCurrentMode(), "gear restriction lifted only during reward generation");
+                Check(Game.ExperienceModeManager.GetCurrentGameModeConfig().Pointer == interloper.Pointer,
+                    "active game mode remains Interloper during reward generation");
+            }
+            finally { RewardContainerContents.Finalizer(rewardContainer, rewardState); }
+            Check(rewardContainer.m_LootTableData.Pointer == table.Pointer && !RewardScope.Active,
+                "shared table and scope restored after generation");
+            UnityEngine.Object.Destroy(table);
             var container = Child("CONTAINER_Lockbox");
             container.AddComponent<Game.Container>();
             Check(WorldObjects.IsRestorable(container), "container eligibility");

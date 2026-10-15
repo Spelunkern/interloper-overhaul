@@ -3,6 +3,21 @@ namespace InterloperOverhaul;
 // Independent of Unity so policy boundaries can be checked without game binaries.
 public static class WorldPolicy
 {
+    public static bool IsTaleBunker(string scene) => scene is "BunkerA" or "BunkerB" or "BunkerC" or "BunkerXL";
+
+    public static bool IsRadioCache(string path) =>
+        path.Split('/').Any(segment => segment.Equals("TrackableHiddenCaches", System.StringComparison.OrdinalIgnoreCase));
+
+    public static bool IsReducedRadioCache(string path) =>
+        path.Split('/').Any(segment => segment.Equals("TrackableHiddenCaches_Interloper", System.StringComparison.OrdinalIgnoreCase));
+
+    public static bool IsTaleReward(string name) => name.Replace("(Clone)", "").Trim() is
+        "GEAR_TacticalJacket" or "GEAR_RifleScabbardA" or "GEAR_TacticalGloves" or "GEAR_ToolBelt";
+
+    public static bool IsStoryExchange(string name) => name is
+        "SpecialRequest1" or "SpecialRequest2" or "SpecialRequest3" or "SpecialRequest4" or "SpecialRequest5" or
+        "SpecialRequestGroup1" or "SpecialRequestGroup2" or "SpecialRequestGroup3" or "SpecialRequestGroup4" or "SpecialRequestGroup5";
+
     public const string CoastalScene = "CoastalRegion";
     public const string BurnedHousesRoot = "Design/RandomSpawnStructures/RandomBurnedHouses/";
     public const string NightmareSpawner = "RandomSpawnObjectBase_burnt_nightmare";

@@ -1,5 +1,14 @@
 # Cambios
 
+## 0.4.0
+
+- Recupera las recompensas únicas de Tales excluidas en Interloper, incluida la chaqueta táctica y la funda del jefe de seguridad.
+- Restaura las versiones normales de cápsulas de radio y cajas de accidentes; desactiva sus alternativas reducidas para evitar duplicados.
+- Recupera el contenido excluido por dificultad en los cuatro búnkeres de Signal Void.
+- Genera las recompensas de estos contenedores con los filtros y reducciones de Stalker, usando clones privados de las tablas para conservar el loot global.
+- Restaura los intercambios que desbloquean los encargos de Sutherland; conserva los requisitos de confianza, entrega y progreso.
+- Mantiene los filtros ajenos al equipo, la selección de investigación, cerraduras y progreso de misiones. No regenera contenedores ya saqueados.
+
 ## 0.3.0
 
 - Arranque general directo al menú principal: omitir logos, avisos iniciales y video de introducción.

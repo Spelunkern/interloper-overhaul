@@ -11,6 +11,7 @@ internal static class RestoreDisabledWorldObjects
 {
     private static void Postfix(Game.DisableObjectForXPMode __instance, ref bool __result)
     {
+        if (RewardScope.Active && __instance.m_XPModesToDisable.Contains(Game.ExperienceModeType.Stalker)) return;
         if (__result && WorldObjects.IsInterloper &&
             __instance.m_XPModesToDisable.Contains(Game.ExperienceModeType.Interloper) &&
             WorldObjects.IsRestorable(__instance.gameObject))
@@ -23,6 +24,15 @@ internal static class RestoreEnabledWorldObjects
 {
     private static void Postfix(Game.EnableObjectForXPMode __instance, ref bool __result)
     {
+        if (WorldObjects.IsInterloper &&
+            (WorldPolicy.IsReducedRadioCache(WorldObjects.PathOf(__instance.gameObject)) ||
+             WorldPolicy.IsTaleBunker(__instance.gameObject.scene.name)) &&
+            __instance.m_XPModesToEnable.Contains(Game.ExperienceModeType.Interloper) &&
+            !__instance.m_XPModesToEnable.Contains(Game.ExperienceModeType.Stalker))
+        {
+            __result = true;
+            return;
+        }
         if (__result && WorldObjects.IsInterloper &&
             __instance.m_XPModesToEnable.Contains(Game.ExperienceModeType.Stalker) &&
             WorldObjects.IsRestorable(__instance.m_ObjectToEnable != null ?
