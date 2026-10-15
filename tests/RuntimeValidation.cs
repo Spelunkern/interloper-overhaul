@@ -149,6 +149,7 @@ internal static class RuntimeValidation
             }
             finally { UnityEngine.Object.Destroy(casingTable); }
             BeachcombingValidation.Run(Check);
+            LootBalanceValidation.Run(Check);
             root = new GameObject("IO_Validation");
             root.SetActive(false);
             GameObject Child(string name)
@@ -204,10 +205,10 @@ internal static class RuntimeValidation
             var rewardGo = new GameObject("CONTAINER_Supply_CacheA");
             rewardGo.transform.SetParent(caches.transform, false);
             var rewardContainer = rewardGo.AddComponent<Game.Container>();
-            rewardContainer.m_ScriptedItemPrefabs = new Il2CppReferenceArray<GameObject>(new[] { gear });
+            rewardContainer.m_ScriptedItemPrefabs = new Il2CppReferenceArray<GameObject>(new[] { jacket });
             rewardContainer.m_ScriptedItemFilter = new Il2CppStructArray<Game.GameModeFilter>(new[] { Game.GameModeFilter.All });
             rewardContainer.PopulateWithScriptedGear();
-            Check(rewardContainer.m_GearToInstantiate.Count == 1, "native scripted capsule reward accepts restored gear");
+            Check(rewardContainer.m_GearToInstantiate.Count == 1, "native scripted capsule reward preserves unique quest reward");
             Check(!RewardScope.Active && WorldObjects.IsInterloper, "reward scope ends without changing world difficulty");
             var table = ScriptableObject.CreateInstance<Game.LootTableData>();
             rewardContainer.m_LootTableData = table;

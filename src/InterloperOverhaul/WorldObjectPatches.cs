@@ -30,7 +30,10 @@ internal static class RestoreDisabledWorldObjects
              !__instance.m_XPModesToDisable.Contains(Game.ExperienceModeType.Stalker));
         if ((!__instance.m_XPModesToDisable.Contains(Game.ExperienceModeType.Stalker) || beachLoot) &&
             WorldObjects.IsRestorable(__instance.gameObject))
+        {
             __result = false;
+            LootBalance.MarkRestored(__instance.gameObject);
+        }
     }
 }
 
@@ -55,7 +58,10 @@ internal static class RestoreEnabledWorldObjects
             __instance.m_XPModesToEnable.Contains(Game.ExperienceModeType.Stalker) &&
             WorldObjects.IsRestorable(__instance.m_ObjectToEnable != null ?
                 __instance.m_ObjectToEnable : __instance.gameObject))
+        {
             __result = false;
+            LootBalance.MarkRestored(__instance.m_ObjectToEnable != null ? __instance.m_ObjectToEnable : __instance.gameObject);
+        }
     }
 }
 
@@ -64,6 +70,8 @@ internal static class RestoreTaggedWorldObjects
 {
     private static void Postfix(Gameplay.DisableObjectForGameMode __instance, ref bool __result)
     {
+        if (WorldObjects.IsInterloper && LootBalance.HasRestoredRestriction(__instance.gameObject))
+            LootBalance.MarkRestored(__instance.gameObject);
         if (!__result || !WorldObjects.IsInterloper || !WorldObjects.IsRestorable(__instance.gameObject)) return;
         var mode = Game.ExperienceModeManager.GetCurrentGameModeConfig();
         bool restrictedByGear = false;
@@ -100,6 +108,10 @@ internal static class WorldObjectCounts
             if (!WorldObjects.IsRestorable(go)) return;
         var counts = __instance.m_NumObjectsToEnableByLevel;
         if (counts != null && counts.Length > 1)
+        {
             __result = System.Math.Max(__result, counts[1]); // Authored Medium base resources (Stalker).
+            if (__result > 0)
+                foreach (var go in objects) LootBalance.MarkRestored(go);
+        }
     }
 }

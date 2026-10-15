@@ -75,4 +75,23 @@ Check(WorldPolicy.IsBeachcombingObject("Root/CustomSpawnedItem_suitcase1/Contain
 Check(!WorldPolicy.IsBeachcombingObject("Design/Gear/GEAR_Arrow"), "Ordinary world arrows excluded from beach-only override");
 Check(!WorldPolicy.IsBeachcombingObject("CustomSpawnedItem_droppeddecorationstorage/Container"), "Player decoration storage excluded");
 Check(!WorldPolicy.IsBeachcombingObject("CustomSpawnedItem_canoe_fake/GEAR_Arrow"), "Unrelated prefix excluded");
+Check(LootBalancePolicy.Retention("GEAR_PeanutButter", true) == 0.05, "Restored ordinary loot retains five percent");
+foreach (string name in new[] { "GEAR_Rifle", "GEAR_HeavyParka", "GEAR_Knife", "GEAR_CowichanSweater", "GEAR_PremiumWinterCoat" })
+    Check(LootBalancePolicy.Retention(name, true) == 0.01, "Premium restored loot retains one percent: " + name);
+foreach (string name in new[] { "GEAR_Rifle_Curators", "GEAR_Bow_Woodwrights", "GEAR_SurvivalKnife" })
+    Check(LootBalancePolicy.Retention(name, true) == 0.0025, "Special variants retain a quarter percent: " + name);
+Check(LootBalancePolicy.Retention("GEAR_HeavyParka(Clone)", true) == 0.01, "Cloned gear uses the same rarity tier");
+Check(LootBalancePolicy.Retention("GEAR_Knife (12)", true) == 0.01, "Authored numbered instances use the same tier");
+foreach (string name in new[] { "GEAR_Rifle", "GEAR_Hammer", "GEAR_Stick" })
+    Check(LootBalancePolicy.Retention(name, false) == 1, "Original Interloper sources retain availability: " + name);
+foreach (string name in new[] { "GEAR_TacticalJacket", "GEAR_RifleScabbardA", "GEAR_ToolBelt", "GEAR_TacticalGloves", "GEAR_RifleAmmoCasing" })
+    Check(LootBalancePolicy.Retention(name, true) == 1, "Progression rewards and empty casings remain available: " + name);
+foreach (double retention in new[] { 0.05, 0.01, 0.0025 })
+{
+    int accepted = Enumerable.Range(0, 100000).Count(slot => LootBalancePolicy.Sample(12345, "CoastalRegion/container", slot) < retention);
+    Check(Math.Abs(accepted - retention * 100000) < 100, "Retention distribution matches tier across independent slots: " + retention);
+}
+Check(LootBalancePolicy.Sample(123, "scene/item", 7) == LootBalancePolicy.Sample(123, "scene/item", 7), "Rarity sampling is repeatable");
+Check(LootBalancePolicy.Sample(123, "scene/item", 7) != LootBalancePolicy.Sample(124, "scene/item", 7), "Different world seeds change rarity");
+Check(LootBalancePolicy.Sample(123, "scene/item", 7) != LootBalancePolicy.Sample(123, "scene/other", 7), "Different locations change rarity");
 Console.WriteLine($"PASS: {checks} policy boundary checks.");

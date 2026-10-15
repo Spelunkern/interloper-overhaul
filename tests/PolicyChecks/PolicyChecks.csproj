@@ -7,5 +7,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="../../shared/WorldPolicy.cs" Link="WorldPolicy.cs" />
+    <Compile Include="../../shared/LootBalancePolicy.cs" Link="LootBalancePolicy.cs" />
   </ItemGroup>
 </Project>

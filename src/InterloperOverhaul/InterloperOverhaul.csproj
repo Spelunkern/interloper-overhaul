@@ -4,7 +4,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <!-- Generated IL2CPP attributes conflict with nullable metadata emission. -->
     <Nullable>disable</Nullable>
-    <Version>0.7.0</Version>
+    <Version>0.8.0</Version>
     <DebugType>portable</DebugType>
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
@@ -34,6 +34,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="../../shared/WorldPolicy.cs" Link="WorldPolicy.cs" />
+    <Compile Include="../../shared/LootBalancePolicy.cs" Link="LootBalancePolicy.cs" />
   </ItemGroup>
   <PropertyGroup Condition="'$(RuntimeValidation)' == 'true'">
     <DefineConstants>$(DefineConstants);IO_VALIDATION</DefineConstants>
@@ -41,6 +42,7 @@
   <ItemGroup Condition="'$(RuntimeValidation)' == 'true'">
     <Compile Include="../../tests/RuntimeValidation.cs" Link="RuntimeValidation.cs" />
     <Compile Include="../../tests/BeachcombingValidation.cs" Link="BeachcombingValidation.cs" />
+    <Compile Include="../../tests/LootBalanceValidation.cs" Link="LootBalanceValidation.cs" />
     <Reference Include="Unity.Addressables;Unity.ResourceManager">
       <HintPath>$(MelonLoaderDir)/Il2CppAssemblies/%(Identity).dll</HintPath>
       <Private>false</Private>

@@ -3,7 +3,47 @@
 A community mod for **The Long Dark**, focused on restoring content excluded from
 standard **Interloper**, with a few general quality-of-life changes. By Spelunkern.
 
-## Version 0.7.0: beachcombing exclusions
+## Version 0.8.0: restored loot rarity
+
+Newly generated restored loot now receives an additional retention roll:
+
+| Restored item tier | Retention relative to the restoration baseline |
+| --- | --- |
+| Ordinary restored items, including live ammunition and food | 5% (1 in 20) |
+| Standard firearms, knives, hatchets, restored utility tools, and premium clothing | 1% (1 in 100) |
+| Special rifle/revolver variants, special bows, and the Survival Knife | 0.25% (1 in 400) |
+
+These are **additional retention rates**, not chances per container or guarantees
+per region. Native table selection and spawn chances still apply. A rejected item
+leaves its opportunity empty; it is not rerolled or replaced. This also makes
+containers containing only premium gear genuinely sparse. The exact item tiers
+are defined in `shared/LootBalancePolicy.cs`.
+
+The filter covers newly selected random/scripted container loot, fresh world gear
+(including formerly guaranteed placements), and fresh radial finds such as loose
+beachcombing loot. Rejected radial finds consume their native opportunity and keep
+the native respawn timer, preventing repeated attempts from defeating rarity.
+Difficulty-excluded gear inside large washed-up finds uses the world gear filter.
+Restored radio-cache and Tales bunker container loot follows these tiers even
+during its temporary Stalker generation scope.
+
+Existing Interloper loot sources are preserved: a native placed hammer, for
+example, does not become rare just because hammers were excluded from container
+tables. Unique Tales rewards, the HRV Signal Fire satchel, empty ammunition casings,
+notes, keys, structures, and containers themselves do not receive this rarity roll.
+Fixed Trader exchanges and their prices/progression are unchanged.
+
+Rarity is deterministic from the world seed, source location, item, and opportunity
+index. It does not consume the shared random stream. Already rolled world items,
+saved radial finds, searched containers, and player-owned/stored gear are not
+rebalanced. Start a new survival game for the full distribution.
+
+Validation checks actual gear prefab tiers, a 100,000-opportunity distribution per
+tier, native world and scripted-container hooks, synthetic radial generation state,
+saved-item boundaries, and reward-scope/difficulty isolation. Complete beachcombing
+respawn cycles and long survival playthroughs still require in-game testing.
+
+## Beachcombing restoration (0.7.0)
 
 Beachcombing now also restores difficulty-excluded contents authored inside washed-up
 boats and other large finds. This includes the canoe's arrows and broken arrow,
@@ -33,8 +73,7 @@ available in normal survival gameplay. This applies to scene objects, parent gro
 gear prefabs, native loot-table filtering, and the Trader's item eligibility.
 
 - Original loot tables, weights, locations, random selections, and spawn probabilities
-  remain in use. Items are eligible to spawn; every location is not forced to contain
-  every possible item.
+  remain in use before the additional restored-item rarity filter introduced in 0.8.0.
 - Entirely disabled random object groups recover their authored Medium-resource
   (Stalker) count. Existing positive Interloper counts are not increased.
 - The NoFirearms, NoRifle, and NoRevolver gear bans are removed from Interloper's
@@ -47,7 +86,7 @@ gear prefabs, native loot-table filtering, and the Trader's item eligibility.
 - Reduced radio-cache and mountain-cargo alternatives remain disabled alongside
   their restored normal versions to prevent overlapping duplicate containers.
 
-This is a content-restoration baseline. Item-specific balance changes are deferred.
+The restored content baseline is now subject to the item rarity tiers above.
 All tracked documentation, code comments, test messages, and scripts are in English.
 
 ## Other included changes
@@ -153,7 +192,7 @@ Validation code is excluded from the production build. Loader, Harmony, and nati
 the validation even if individual checks report success. The injected probe may
 require forced termination during Unity/.NET shutdown after reporting its results;
 this does not validate a normal playthrough or normal shutdown behavior.
-The 0.7.0 probe was run with `DOTNET_TieredCompilation=0` as well as the launcher's
+The 0.8.0 probe was run with `DOTNET_TieredCompilation=0` as well as the launcher's
 `DOTNET_ReadyToRun=0`. This records the validation environment; it is not a claim
 that intermittent loader startup or probe shutdown failures have been resolved.
 

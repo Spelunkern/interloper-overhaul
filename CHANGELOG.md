@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.8.0
+
+- Add an independent rarity roll for newly generated restored loot: 5% ordinary items, 1% premium gear, and 0.25% special weapon variants.
+- Filter newly selected random and scripted container loot without replacement, including restored reward containers and all-premium tables.
+- Apply rarity to fresh world placements, including guaranteed spawns, and newly generated radial/beachcombing finds while preserving consumed counts and respawn timers.
+- Track restored scene sources before their difficulty disablers are removed; preserve native Interloper placements even when the canonical prefab was excluded from container tables.
+- Preserve unique Tales rewards, the HRV Signal Fire satchel, empty casings, collectibles, structures, and existing player/saved inventory. Keep fixed Trader exchanges unchanged.
+- Use stable world-seed/location/item/opportunity sampling without consuming the shared random stream; leave authored table weights and spawn settings intact.
+- Add distribution, real-prefab tier, native generation-hook, and synthetic radial/saved-item checks.
+
 ## 0.7.0
 
 - Restore remaining difficulty-excluded beachcombing contents, including canoe arrows and the broken arrow that are also excluded on Stalker.
