@@ -1,5 +1,15 @@
 # Cambios
 
+## 0.5.0
+
+- Restaura los conjuntos de carga normales de Timberwolf Mountain y oculta las alternativas exclusivas de Interloper.
+- Recupera la mochila de piel de alce en ambas ubicaciones posibles de Mysterious Signal Fire, conservando la selección original.
+- Permite casquillos vacíos de rifle y revólver en las tablas y ubicaciones originales, sin habilitar munición utilizable ni armas globalmente.
+- Habilita la elección de región inicial con la elegibilidad normal de Stalker, manteniendo los inicios en exteriores.
+- Permite tres feats ya desbloqueadas para partidas nuevas de Interloper.
+- Corrige la generación de recompensas de Tales evitando parches sobre getters privados cuyos argumentos optimiza el compilador nativo; el contexto de generación se restaura al salir.
+- Prueba los filtros con prefabs reales de casquillos y munición, y verifica la selección nativa de región.
+
 ## 0.4.0
 
 - Recupera las recompensas únicas de Tales excluidas en Interloper, incluida la chaqueta táctica y la funda del jefe de seguridad.

@@ -3,6 +3,24 @@ namespace InterloperOverhaul;
 // Independent of Unity so policy boundaries can be checked without game binaries.
 public static class WorldPolicy
 {
+    public static bool IsSpentCasing(string name) => name.Replace("(Clone)", "").Trim() is
+        "GEAR_RevolverAmmoCasing" or "GEAR_RifleAmmoCasing";
+
+    public static bool IsSignalFireSatchel(string scene, string path) =>
+        (scene is "RiverValleyRegion" or "RiverValleyRegion_SANDBOX") &&
+        (path is "Design/SignalFires/SignalFireGroup1/GEAR_MooseHideBag" or
+            "Design/SignalFires/SignalFireGroup2/GEAR_MooseHideBag");
+
+    public static bool IsReducedCargo(string scene, string path) => scene == "CrashMountainRegion" &&
+        (path.StartsWith("Design/Loot/CargoCaches/Interloper_set/", System.StringComparison.Ordinal) ||
+         path.StartsWith("Design/Loot/PlaneTailStuff/InterloperOnly_Cargo/", System.StringComparison.Ordinal));
+
+    public static bool IsNormalCargo(string scene, string path) => scene == "CrashMountainRegion" &&
+        !IsReducedCargo(scene, path) &&
+        (path.StartsWith("Design/Loot/CargoCaches/", System.StringComparison.Ordinal) ||
+         path.StartsWith("Design/Loot/PlaneTailStuff/", System.StringComparison.Ordinal)) &&
+        path.Split('/').Any(segment => segment.StartsWith("CONTAINER_CargoCrate_", System.StringComparison.Ordinal));
+
     public static bool IsTaleBunker(string scene) => scene is "BunkerA" or "BunkerB" or "BunkerC" or "BunkerXL";
 
     public static bool IsRadioCache(string path) =>

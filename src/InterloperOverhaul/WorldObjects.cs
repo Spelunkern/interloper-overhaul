@@ -23,6 +23,9 @@ internal static class WorldObjects
     {
         if (go == null) return false;
         string path = PathOf(go);
+        if (WorldPolicy.IsReducedCargo(go.scene.name, path)) return false;
+        if (WorldPolicy.IsNormalCargo(go.scene.name, path) ||
+            WorldPolicy.IsSignalFireSatchel(go.scene.name, path) || WorldPolicy.IsSpentCasing(go.name)) return true;
         if (WorldPolicy.IsReducedRadioCache(path)) return false;
         if (RewardScope.Active || WorldPolicy.IsTaleReward(go.name) || WorldPolicy.IsTaleBunker(go.scene.name)) return true;
         if (WorldPolicy.IsMemento(path)) return true;

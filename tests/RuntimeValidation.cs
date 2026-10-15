@@ -46,9 +46,12 @@ internal static class RuntimeValidation
         if (ran) return;
         ran = true;
         var previous = Game.ExperienceModeManager.s_CurrentGameMode;
+        var previousManager = Game.GameManager.m_ExperienceModeManager;
         bool mainMenu = Game.GameManager.s_ActiveIsMainMenu;
         GameObject root = null;
         GameObject houseRoot = null;
+        GameObject cargoRoot = null;
+        GameObject signalRoot = null;
         Gameplay.BunkerDistributor distributor = null;
         bool success = false;
         try
@@ -68,12 +71,72 @@ internal static class RuntimeValidation
             var interloper = Game.ExperienceModeManager.GetGameModeFromName("Interloper").Cast<Gameplay.SandboxConfig>();
             var stalker = Game.ExperienceModeManager.GetGameModeFromName("Stalker").Cast<Gameplay.SandboxConfig>();
             Check(interloper != null && stalker != null, "game mode assets available");
+            Check(interloper.m_NumFeats == 3, "three feat slots configured for Interloper");
+            Check(!interloper.m_StartRegionSelectionBlocked, "Interloper region selection enabled");
+            Check(interloper.m_AvailableStartRegions.Length == stalker.m_AvailableStartRegions.Length,
+                "normal starting region eligibility configured");
+            var requestedRegion = ScriptableObject.CreateInstance<GameAssembly::Il2CppTLD.Scenes.RegionSpecification>();
+            Check(interloper.IsValidStartingRegion(requestedRegion) &&
+                interloper.ValidateStartingRegion(requestedRegion).Pointer == requestedRegion.Pointer,
+                "native starting region validator preserves player selection");
+            UnityEngine.Object.Destroy(requestedRegion);
+            Check(interloper.m_IndoorStartChance == 0, "Interloper outdoor start rule preserved");
             float lootScale = interloper.m_XPMode.m_GearSpawnChanceScale;
             int emptyChance = interloper.m_XPMode.m_ChanceForEmptyContainer;
             var originalVariants = interloper.m_BunkerSetup.m_BunkerInteriors;
             Game.ExperienceModeManager.s_CurrentGameMode = interloper;
             Check(WorldObjects.IsInterloper, "Interloper scope");
             Game.GameManager.s_ActiveIsMainMenu = false;
+            // World loot tables use GameManager's scene cache. The menu normally
+            // leaves it empty; use the already loaded manager for this isolated probe.
+            Game.GameManager.m_ExperienceModeManager = Game.ExperienceModeManager.Instance;
+            cargoRoot = new GameObject("Design");
+            cargoRoot.SetActive(false);
+            SceneManager.MoveGameObjectToScene(cargoRoot, SceneManager.CreateScene("CrashMountainRegion"));
+            GameObject PathChild(GameObject parent, string path)
+            {
+                foreach (string segment in path.Split('/'))
+                {
+                    var next = new GameObject(segment);
+                    next.transform.SetParent(parent.transform, false);
+                    parent = next;
+                }
+                return parent;
+            }
+            Game.DisableObjectForXPMode Disabler(GameObject go, Game.ExperienceModeType mode)
+            {
+                var disabler = go.AddComponent<Game.DisableObjectForXPMode>();
+                disabler.m_XPModesToDisable = new Il2CppSystem.Collections.Generic.List<Game.ExperienceModeType>();
+                disabler.m_XPModesToDisable.Add(mode);
+                return disabler;
+            }
+            var cargo = PathChild(cargoRoot, "Loot/CargoCaches/cargo_creek/CONTAINER_CargoCrate_clothesC_foodC");
+            Check(!Disabler(cargo, Game.ExperienceModeType.Interloper).ShouldDisableForCurrentMode(),
+                "native cargo assembly without Container component restored");
+            var reducedCargo = PathChild(cargoRoot, "Loot/PlaneTailStuff/InterloperOnly_Cargo/CONTAINER_CargoCrate_foodC_drinkB");
+            Check(Disabler(reducedCargo, Game.ExperienceModeType.Stalker).ShouldDisableForCurrentMode(),
+                "alternative Interloper cargo disabled to prevent overlap");
+            signalRoot = new GameObject("Design");
+            signalRoot.SetActive(false);
+            SceneManager.MoveGameObjectToScene(signalRoot, SceneManager.CreateScene("RiverValleyRegion_SANDBOX"));
+            var satchel = PathChild(signalRoot, "SignalFires/SignalFireGroup1/GEAR_MooseHideBag");
+            satchel.AddComponent<Game.GearItem>();
+            Check(!Disabler(satchel, Game.ExperienceModeType.Interloper).ShouldDisableForCurrentMode(),
+                "Signal Fire satchel restored through native difficulty filter");
+            var casingTable = ScriptableObject.CreateInstance<Game.LootTableData>();
+            try
+            {
+                foreach (string item in new[] { "GEAR_RevolverAmmoCasing", "GEAR_RifleAmmoCasing" })
+                {
+                    var prefab = Game.GearItem.LoadGearItemPrefab(item);
+                    Check(prefab != null && !casingTable.ShouldFilterOutPrefab(prefab.gameObject),
+                        "real loot table accepts authored casing prefab: " + item);
+                }
+                var liveAmmo = Game.GearItem.LoadGearItemPrefab("GEAR_RifleAmmoSingle");
+                Check(liveAmmo != null && casingTable.ShouldFilterOutPrefab(liveAmmo.gameObject),
+                    "real loot table still excludes live rifle ammunition");
+            }
+            finally { UnityEngine.Object.Destroy(casingTable); }
             root = new GameObject("IO_Validation");
             root.SetActive(false);
             GameObject Child(string name)
@@ -139,11 +202,12 @@ internal static class RuntimeValidation
                 Check(rewardContainer.m_LootTableData.GetCurrentExperienceMode().Pointer == stalker.m_XPMode.Pointer,
                     "reward table uses normal experience through Harmony");
                 Check(!gearDisabler.ShouldDisableForCurrentMode(), "gear restriction lifted only during reward generation");
-                Check(Game.ExperienceModeManager.GetCurrentGameModeConfig().Pointer == interloper.Pointer,
-                    "active game mode remains Interloper during reward generation");
+                Check(Game.ExperienceModeManager.GetCurrentGameModeConfig().Pointer == stalker.Pointer,
+                    "native reward generation reads normal mode in synchronous scope");
             }
             finally { RewardContainerContents.Finalizer(rewardContainer, rewardState); }
-            Check(rewardContainer.m_LootTableData.Pointer == table.Pointer && !RewardScope.Active,
+            Check(rewardContainer.m_LootTableData.Pointer == table.Pointer && !RewardScope.Active &&
+                Game.ExperienceModeManager.s_CurrentGameMode.Pointer == interloper.Pointer,
                 "shared table and scope restored after generation");
             UnityEngine.Object.Destroy(table);
             var container = Child("CONTAINER_Lockbox");
@@ -257,6 +321,8 @@ internal static class RuntimeValidation
             stalkerDisabler.m_XPModesToDisable.Add(Game.ExperienceModeType.Stalker);
             Check(stalkerDisabler.ShouldDisableForCurrentMode(), "Stalker restriction preserved through Harmony");
             var misery = Game.ExperienceModeManager.GetGameModeFromName("Misery");
+            Check(misery.Cast<Gameplay.SandboxConfig>().m_NumFeats == 0 && misery.m_StartRegionSelectionBlocked,
+                "Misery feat and region restrictions preserved");
             Game.ExperienceModeManager.s_CurrentGameMode = misery;
             Check(!WorldObjects.IsInterloper && noteEnabler.ShouldDisableForCurrentMode(), "Misery memento restriction preserved");
             success = true;
@@ -268,7 +334,10 @@ internal static class RuntimeValidation
             if (distributor != null) { distributor.ClearReplacementData(); UnityEngine.Object.Destroy(distributor); }
             if (root != null) UnityEngine.Object.Destroy(root);
             if (houseRoot != null) UnityEngine.Object.Destroy(houseRoot);
+            if (cargoRoot != null) UnityEngine.Object.Destroy(cargoRoot);
+            if (signalRoot != null) UnityEngine.Object.Destroy(signalRoot);
             Game.GameManager.s_ActiveIsMainMenu = mainMenu;
+            Game.GameManager.m_ExperienceModeManager = previousManager;
             Game.ExperienceModeManager.s_CurrentGameMode = previous;
             // This is an isolated test process at the menu. Exit after restoring state;
             // Unity's shutdown from an injected validation coroutine can otherwise stall.

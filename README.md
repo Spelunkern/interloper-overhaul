@@ -3,7 +3,28 @@
 Mod para **The Long Dark** centrado en cambios de la dificultad **Interloper**,
 con espacio para modificaciones generales en futuras versiones. Autor: Spelunkern.
 
-## Versión 0.4.0 — Recompensas de Tales
+## Versión 0.5.0 — Exploración y creación de partidas
+
+- **Timberwolf Mountain:** se recuperan los conjuntos normales de contenedores de
+  carga, incluidos los de la cima. Se desactivan sus conjuntos alternativos de
+  Interloper para evitar duplicados. Conservan sus cerraduras, requisitos de sierra,
+  probabilidades y filtros de contenido de Interloper.
+- **Hushed River Valley:** vuelve la mochila de piel de alce de Mysterious Signal
+  Fire. Se mantiene la selección original entre las dos ubicaciones de la hoguera.
+- **Casquillos vacíos:** los de rifle y revólver pueden aparecer mediante las tablas
+  y ubicaciones originales, incluidos contenedores y beachcombing. No se añaden
+  cantidades ni ubicaciones artificiales. Las armas y la munición utilizable siguen
+  restringidas fuera de las excepciones de recompensas de versiones anteriores.
+- **Región inicial:** Interloper permite elegir entre las regiones que el juego
+  ofrece normalmente en Stalker, respetando el contenido instalado. Se conserva
+  la opción aleatoria y el inicio en exteriores de Interloper.
+- **Feats:** se pueden seleccionar hasta **tres feats ya desbloqueadas** al crear
+  una partida. No se desbloquean feats ni se cambia la selección de partidas existentes.
+
+Estos cambios se aplican solamente a Interloper estándar. Las opciones iniciales
+requieren una partida nueva; no se regenera loot de lugares ya visitados.
+
+## Recompensas de Tales
 
 En Interloper estándar se recuperan las recompensas únicas excluidas por dificultad,
 incluidas la **chaqueta táctica** y la **funda del jefe de seguridad**. Los guantes
@@ -56,8 +77,8 @@ Los cambios de restauración se aplican únicamente a Interloper estándar:
 Fuera de las recompensas de Tales y sus cápsulas, no se ajustan las tablas de loot,
 sus probabilidades, la condición ni las cantidades por contenedor. Restaurar una
 casa o un interior de preparacionista habilita el contenido original asociado a ese
-lugar, sujeto a los filtros normales de Interloper. No se habilitan globalmente armas,
-herramientas, plantas ni fauna.
+lugar, sujeto a los filtros normales de Interloper. Solo se exceptúan los casquillos vacíos de las restricciones generales de equipo.
+No se habilitan globalmente armas, herramientas, plantas ni fauna.
 Pilgrim, Voyageur, Stalker, Misery, desafíos, historia y Custom mantienen sus reglas.
 
 ### Partidas existentes

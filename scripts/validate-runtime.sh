@@ -22,7 +22,8 @@ mkdir -p "$repo_dir/.local"
 launch_status=0
 timeout --signal=TERM --kill-after=10s 120s "$repo_dir/scripts/launch.sh" > "$repo_dir/.local/runtime-console.log" 2>&1 || launch_status=$?
 cp "$game_dir/MelonLoader/Latest.log" "$repo_dir/.local/runtime-validation.log"
-if ! grep -q '\[Validation\] SUCCESS:' "$repo_dir/.local/runtime-validation.log"; then
+if ! grep -q '\[Validation\] SUCCESS:' "$repo_dir/.local/runtime-validation.log" ||
+    grep -q '\[ERROR\].*\[Il2CppInterop\]' "$repo_dir/.local/runtime-validation.log"; then
     tail -n 35 "$repo_dir/.local/runtime-validation.log"
     echo "Runtime validation failed (process exit $launch_status)." >&2
     exit 1

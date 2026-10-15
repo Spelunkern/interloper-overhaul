@@ -9,13 +9,30 @@ using UnityEngine;
 
 namespace InterloperOverhaul;
 
-// Synchronous reward generation only. Never changes the active game mode or its assets.
+// Synchronous reward generation only; restores the original mode before returning.
+// Native private getters omit unused instance arguments, so Harmony instance hooks
+// on those helpers are unsafe. Use a nested scope around the public generation work.
 internal static class RewardScope
 {
     [ThreadStatic] private static int depth;
     internal static bool Active => depth > 0;
-    internal static void Enter() => depth++;
-    internal static void Leave() => depth--;
+    [ThreadStatic] private static Gameplay.GameModeConfig previousMode;
+    internal static void Enter()
+    {
+        if (depth == 0)
+        {
+            var normal = Game.ExperienceModeManager.GetGameModeFromName("Stalker");
+            previousMode = Game.ExperienceModeManager.s_CurrentGameMode;
+            Game.ExperienceModeManager.s_CurrentGameMode = normal;
+        }
+        depth++;
+    }
+    internal static void Leave()
+    {
+        if (--depth != 0) return;
+        Game.ExperienceModeManager.s_CurrentGameMode = previousMode;
+        previousMode = null;
+    }
     internal static Gameplay.ExperienceMode NormalExperience =>
         Game.ExperienceModeManager.GetGameModeFromName("Stalker").Cast<Gameplay.SandboxConfig>().m_XPMode;
 
@@ -49,7 +66,7 @@ internal static class RewardContainerContents
     internal static void Prefix(Game.Container __instance, out State __state)
     {
         __state = null;
-        if (!WorldObjects.IsInterloper || !RewardScope.IsRewardContainer(__instance)) return;
+        if ((!WorldObjects.IsInterloper && !RewardScope.Active) || !RewardScope.IsRewardContainer(__instance)) return;
         __state = new State { Normal = __instance.m_LootTableData,
             Locked = __instance.m_LockedLootTableData, Selected = __instance.m_LootTable };
         RewardScope.Enter();
@@ -75,42 +92,6 @@ internal static class RewardContainerContents
             }
         }
         finally { RewardScope.Leave(); }
-    }
-}
-
-[HarmonyPatch(typeof(Game.LootTableData), nameof(Game.LootTableData.GetCurrentExperienceMode))]
-internal static class RewardTableExperience
-{
-    private static void Postfix(ref Gameplay.ExperienceMode __result)
-    {
-        if (RewardScope.Active) __result = RewardScope.NormalExperience;
-    }
-}
-
-[HarmonyPatch(typeof(Game.ExperienceModeManager), nameof(Game.ExperienceModeManager.GetCurrentExperienceMode))]
-internal static class RewardExperience
-{
-    private static void Postfix(ref Gameplay.ExperienceMode __result)
-    {
-        if (RewardScope.Active) __result = RewardScope.NormalExperience;
-    }
-}
-
-[HarmonyPatch(typeof(Game.ExperienceModeManager), nameof(Game.ExperienceModeManager.GetReduceMaxItemsInContainer))]
-internal static class RewardQuantity
-{
-    private static void Postfix(ref int __result)
-    {
-        if (RewardScope.Active) __result = RewardScope.NormalExperience.m_ReduceMaxItemsInContainer;
-    }
-}
-
-[HarmonyPatch(typeof(Game.ExperienceModeManager), nameof(Game.ExperienceModeManager.GetChanceForEmptyContainer))]
-internal static class RewardEmptyChance
-{
-    private static void Postfix(ref int __result)
-    {
-        if (RewardScope.Active) __result = RewardScope.NormalExperience.m_ChanceForEmptyContainer;
     }
 }
 

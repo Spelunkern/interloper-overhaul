@@ -11,6 +11,12 @@ internal static class RestoreDisabledWorldObjects
 {
     private static void Postfix(Game.DisableObjectForXPMode __instance, ref bool __result)
     {
+        if (WorldObjects.IsInterloper && WorldPolicy.IsReducedCargo(__instance.gameObject.scene.name,
+                WorldObjects.PathOf(__instance.gameObject)))
+        {
+            __result = true;
+            return;
+        }
         if (RewardScope.Active && __instance.m_XPModesToDisable.Contains(Game.ExperienceModeType.Stalker)) return;
         if (__result && WorldObjects.IsInterloper &&
             __instance.m_XPModesToDisable.Contains(Game.ExperienceModeType.Interloper) &&
@@ -54,7 +60,8 @@ internal static class RestoreTaggedWorldObjects
             if (!mode.HasActiveTag(tag)) continue;
             // Ignore only gear restrictions on world containers / collectibles.
             // Preserve any unrelated active tag, including mission and DLC conditions.
-            if (!tag.MatchesTagExact("Gameplay.Gear.NoFirearms") && !tag.MatchesTagExact("Gameplay.Gear.NoRifle")) return;
+            if (!tag.MatchesTagExact("Gameplay.Gear.NoFirearms") && !tag.MatchesTagExact("Gameplay.Gear.NoRifle") &&
+                !(WorldPolicy.IsSpentCasing(__instance.gameObject.name) && tag.MatchesTagExact("Gameplay.Gear.NoRevolver"))) return;
             restrictedByGear = true;
         }
         if (restrictedByGear) __result = false;
