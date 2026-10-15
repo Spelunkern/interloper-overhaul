@@ -1,0 +1,11 @@
+**/bin/
+**/obj/
+.local/
+artifacts/
+*.user
+*.dll
+*.pdb
+*.so
+*.log
+.vs/
+.idea/

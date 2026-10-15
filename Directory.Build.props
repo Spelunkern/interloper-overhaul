@@ -1,0 +1,8 @@
+<Project>
+  <PropertyGroup>
+    <GameDir Condition="'$(GameDir)' == ''">$(TLD_GAME_DIR)</GameDir>
+    <GameDir Condition="'$(GameDir)' == ''">$(HOME)/.local/share/Steam/steamapps/common/TheLongDark</GameDir>
+    <MelonLoaderDir>$(GameDir)/MelonLoader</MelonLoaderDir>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+</Project>
