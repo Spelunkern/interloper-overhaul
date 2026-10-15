@@ -1,5 +1,13 @@
 # Cambios
 
+## 0.3.0
+
+- Arranque general directo al menú principal: omitir logos, avisos iniciales y video de introducción.
+- Continuación automática al terminar la carga, sin esperar una tecla.
+- Mantener el flujo de carga de perfiles, archivos y errores del juego.
+- Validación automática del menú visible sin enviar entradas de teclado o ratón.
+- Lanzador Linux con ReadyToRun desactivado para evitar el fallo de arranque del CLR 6 observado en las pruebas.
+
 ## 0.2.0
 
 - Nombre definitivo: Interloper Overhaul.

@@ -21,7 +21,27 @@ internal static class RuntimeValidation
         MelonLogger.Msg("[Validation] PASS: " + name);
     }
 
-    internal static void Run()
+    internal static System.Collections.IEnumerator WaitForMenu()
+    {
+        // Wait for the actual visible menu, without synthesizing keyboard/mouse input.
+        for (int frame = 0; frame < 1800; frame++)
+        {
+            foreach (var menu in Resources.FindObjectsOfTypeAll<Game.Panel_MainMenu>())
+            {
+                if (menu.gameObject.scene.isLoaded && menu.m_MainWindow != null &&
+                    menu.m_MainWindow.activeInHierarchy && menu.HasFadedIn() && menu.GetAlpha() >= 0.99f)
+                {
+                    Run(menu);
+                    yield break;
+                }
+            }
+            yield return null;
+        }
+        MelonLogger.Error("[Validation] FAILURE: the visible main menu was not reached automatically.");
+        System.Environment.Exit(1);
+    }
+
+    internal static void Run(Game.Panel_MainMenu menu)
     {
         if (ran) return;
         ran = true;
@@ -30,8 +50,21 @@ internal static class RuntimeValidation
         GameObject root = null;
         GameObject houseRoot = null;
         Gameplay.BunkerDistributor distributor = null;
+        bool success = false;
         try
         {
+            Check(menu.m_MainWindow.activeInHierarchy && menu.HasFadedIn() && menu.GetAlpha() >= 0.99f,
+                "visible main menu reached automatically without user input");
+            Check(!Game.MoviePlayer.IsPlaying(), "no startup movie playing at the visible main menu");
+            foreach (var boot in Resources.FindObjectsOfTypeAll<Game.Panel_Boot>())
+            {
+                if (!boot.gameObject.scene.isLoaded) continue;
+                Check(boot.m_BootFlow == null || !boot.m_BootFlow.activeInHierarchy,
+                    "boot logos hidden at the main menu");
+                Check(boot.m_MainDisclaimer == null || !boot.m_MainDisclaimer.activeInHierarchy,
+                    "main disclaimer hidden without user input");
+                Check(!boot.m_HoldLoadingUntilInputGiven, "startup is not waiting for a key press");
+            }
             var interloper = Game.ExperienceModeManager.GetGameModeFromName("Interloper").Cast<Gameplay.SandboxConfig>();
             var stalker = Game.ExperienceModeManager.GetGameModeFromName("Stalker").Cast<Gameplay.SandboxConfig>();
             Check(interloper != null && stalker != null, "game mode assets available");
@@ -177,6 +210,7 @@ internal static class RuntimeValidation
             var misery = Game.ExperienceModeManager.GetGameModeFromName("Misery");
             Game.ExperienceModeManager.s_CurrentGameMode = misery;
             Check(!WorldObjects.IsInterloper && noteEnabler.ShouldDisableForCurrentMode(), "Misery memento restriction preserved");
+            success = true;
             MelonLogger.Msg($"[Validation] SUCCESS: {checks} runtime checks.");
         }
         catch (System.Exception ex) { MelonLogger.Error("[Validation] FAILURE: " + ex); }
@@ -187,7 +221,9 @@ internal static class RuntimeValidation
             if (houseRoot != null) UnityEngine.Object.Destroy(houseRoot);
             Game.GameManager.s_ActiveIsMainMenu = mainMenu;
             Game.ExperienceModeManager.s_CurrentGameMode = previous;
-            Application.Quit();
+            // This is an isolated test process at the menu. Exit after restoring state;
+            // Unity's shutdown from an injected validation coroutine can otherwise stall.
+            System.Environment.Exit(success ? 0 : 1);
         }
     }
 }

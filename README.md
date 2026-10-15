@@ -3,9 +3,20 @@
 Mod para **The Long Dark** centrado en cambios de la dificultad **Interloper**,
 con espacio para modificaciones generales en futuras versiones. Autor: Spelunkern.
 
-## Versión 0.2.0 — Restauración del mundo
+## Versión 0.3.0 — Arranque directo
 
-Los cambios actuales se aplican únicamente a Interloper estándar:
+Al iniciar el juego se omiten logos, avisos iniciales, la espera de una tecla y el
+video de introducción del menú. El menú principal aparece automáticamente cuando
+termina la carga de perfiles y archivos. Este cambio es general, antes de elegir
+una dificultad. Las cinemáticas durante la partida conservan su reproducción normal.
+El script de lanzamiento también omite la pantalla inicial propia de MelonLoader.
+En Linux desactiva ReadyToRun para el runtime .NET 6, configuración usada durante
+la validación tras observar fallos intermitentes del cargador antes de cargar mods.
+Se puede probar la configuración original con `DOTNET_ReadyToRun=1`.
+
+## Restauración del mundo
+
+Los cambios de restauración se aplican únicamente a Interloper estándar:
 
 - **Coastal Highway:** todas las variantes de casas de los cinco grupos de edificios
   usan las estructuras originales intactas, con sus accesos al interior. Se desactiva
@@ -84,7 +95,7 @@ dotnet run --project tests/PolicyChecks/PolicyChecks.csproj -c Release
 ```
 
 La validación de runtime requiere el juego cerrado y una DLL Release ya desplegada.
-Compila temporalmente una versión de prueba, abre el menú, prueba los parches reales
+Compila temporalmente una versión de prueba, abre el menú, comprueba el arranque automático del menú y los parches reales
 sobre objetos de prueba y clones de la distribución de búnkeres, y cierra el juego.
 No abre partidas. Restaura la DLL instalada al terminar y deja el informe en
 `.local/runtime-validation.log`. El código de validación no se incluye en Release normal.
