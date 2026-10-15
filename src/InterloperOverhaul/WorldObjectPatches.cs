@@ -1,14 +1,18 @@
 extern alias GameAssembly;
 
 using HarmonyLib;
+using System.Reflection;
 using Game = GameAssembly::Il2Cpp;
 using Gameplay = GameAssembly::Il2CppTLD.Gameplay;
 
 namespace InterloperOverhaul;
 
-[HarmonyPatch(typeof(Game.DisableObjectForXPMode), nameof(Game.DisableObjectForXPMode.ShouldDisableForCurrentMode))]
+[HarmonyPatch]
 internal static class RestoreDisabledWorldObjects
 {
+    private static MethodBase TargetMethod() =>
+        AccessTools.Method(typeof(Game.DisableObjectForXPMode), nameof(Game.DisableObjectForXPMode.ShouldDisableForCurrentMode));
+
     private static void Postfix(Game.DisableObjectForXPMode __instance, ref bool __result)
     {
         if (WorldObjects.IsInterloper && WorldPolicy.IsReducedCargo(__instance.gameObject.scene.name,
@@ -18,17 +22,24 @@ internal static class RestoreDisabledWorldObjects
             return;
         }
         if (RewardScope.Active && __instance.m_XPModesToDisable.Contains(Game.ExperienceModeType.Stalker)) return;
-        if (__result && WorldObjects.IsInterloper &&
-            __instance.m_XPModesToDisable.Contains(Game.ExperienceModeType.Interloper) &&
-            !__instance.m_XPModesToDisable.Contains(Game.ExperienceModeType.Stalker) &&
+        if (!__result || !WorldObjects.IsInterloper ||
+            !__instance.m_XPModesToDisable.Contains(Game.ExperienceModeType.Interloper)) return;
+        bool beachLoot = WorldPolicy.IsBeachcombingObject(WorldObjects.PathOf(__instance.gameObject)) &&
+            (!__instance.m_XPModesToDisable.Contains(Game.ExperienceModeType.Pilgrim) ||
+             !__instance.m_XPModesToDisable.Contains(Game.ExperienceModeType.Voyageur) ||
+             !__instance.m_XPModesToDisable.Contains(Game.ExperienceModeType.Stalker));
+        if ((!__instance.m_XPModesToDisable.Contains(Game.ExperienceModeType.Stalker) || beachLoot) &&
             WorldObjects.IsRestorable(__instance.gameObject))
             __result = false;
     }
 }
 
-[HarmonyPatch(typeof(Game.EnableObjectForXPMode), nameof(Game.EnableObjectForXPMode.ShouldDisableForCurrentMode))]
+[HarmonyPatch]
 internal static class RestoreEnabledWorldObjects
 {
+    private static MethodBase TargetMethod() =>
+        AccessTools.Method(typeof(Game.EnableObjectForXPMode), nameof(Game.EnableObjectForXPMode.ShouldDisableForCurrentMode));
+
     private static void Postfix(Game.EnableObjectForXPMode __instance, ref bool __result)
     {
         if (WorldObjects.IsInterloper &&

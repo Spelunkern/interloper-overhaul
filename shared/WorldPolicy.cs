@@ -3,6 +3,15 @@ namespace InterloperOverhaul;
 // Independent of Unity so policy boundaries can be checked without game binaries.
 public static class WorldPolicy
 {
+    public static bool IsBeachcombingObject(string path) => path.Split('/').Any(segment =>
+        segment.Replace("(Clone)", "").Trim() is
+            "CustomSpawnedItem_canoe" or "CustomSpawnedItem_rowboat" or "CustomSpawnedItem_fishingboat" or
+            "CustomSpawnedItem_backpack" or "CustomSpawnedItem_trunk" or "CustomSpawnedItem_pallet" or
+            "CustomSpawnedItem_planks" or "CustomSpawnedItem_suitcase1" or "CustomSpawnedItem_suitcase2" or
+            "CustomSpawnedItem_locker1" or "CustomSpawnedItem_locker2" or
+            "CustomSpawnedItem_corpse1" or "CustomSpawnedItem_corpse2" or "CustomSpawnedItem_corpse3" or
+            "CustomSpawnedItem_carcass1" or "CustomSpawnedItem_carcass2");
+
     public static bool IsNonItemSpawnPath(string path) => path.Split('/').Any(segment =>
         segment is "WildlifeSpawns" or "Wildlife" or "PlayerSpawns" or "PlayerSpawnPoints");
 

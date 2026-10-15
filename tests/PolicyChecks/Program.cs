@@ -69,4 +69,10 @@ Check(!WorldPolicy.IsNonItemSpawnPath("Design/Gear/GEAR_Rifle"), "Ordinary world
 foreach (string tag in new[] { "Gameplay.Gear.NoFirearms", "Gameplay.Gear.NoRifle", "Gameplay.Gear.NoRevolver" })
     Check(WorldPolicy.IsGearRestrictionTag(tag), "Gear ban identified");
 Check(!WorldPolicy.IsGearRestrictionTag("Gameplay.SafehouseSupported"), "Unrelated gameplay tag preserved");
+Check(WorldPolicy.IsBeachcombingObject("CustomSpawnedItem_canoe/GEAR_Arrow"), "Canoe loot recognized");
+Check(WorldPolicy.IsBeachcombingObject("CustomSpawnedItem_fishingboat(Clone)/RandomLoot/GEAR_FlareGunAmmoSingle"), "Instantiated fishing-boat loot recognized");
+Check(WorldPolicy.IsBeachcombingObject("Root/CustomSpawnedItem_suitcase1/Container"), "Beach suitcase recognized");
+Check(!WorldPolicy.IsBeachcombingObject("Design/Gear/GEAR_Arrow"), "Ordinary world arrows excluded from beach-only override");
+Check(!WorldPolicy.IsBeachcombingObject("CustomSpawnedItem_droppeddecorationstorage/Container"), "Player decoration storage excluded");
+Check(!WorldPolicy.IsBeachcombingObject("CustomSpawnedItem_canoe_fake/GEAR_Arrow"), "Unrelated prefix excluded");
 Console.WriteLine($"PASS: {checks} policy boundary checks.");

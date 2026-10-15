@@ -148,6 +148,7 @@ internal static class RuntimeValidation
                 }
             }
             finally { UnityEngine.Object.Destroy(casingTable); }
+            BeachcombingValidation.Run(Check);
             root = new GameObject("IO_Validation");
             root.SetActive(false);
             GameObject Child(string name)

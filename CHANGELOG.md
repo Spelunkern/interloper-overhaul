@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.7.0
+
+- Restore remaining difficulty-excluded beachcombing contents, including canoe arrows and the broken arrow that are also excluded on Stalker.
+- Limit this additional override to known large beachcombing prefab hierarchies on Interloper; preserve exclusions shared by all three ordinary Survival modes.
+- Preserve original loose-item and large-find tables, weights, location compatibility, timing, quantities, expiry, and locks.
+- Validate actual normal/post-blizzard loot-table entries and original large-find prefabs from the local game installation.
+- Keep Addressables references and the beachcombing validation probe out of production build dependencies.
+
 ## 0.6.0
 
 - Restore normal Survival object eligibility throughout Interloper, including weapons, ammunition, tools, clothing, unique variants, plants, and world-object parent groups.

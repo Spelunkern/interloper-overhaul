@@ -3,7 +3,29 @@
 A community mod for **The Long Dark**, focused on restoring content excluded from
 standard **Interloper**, with a few general quality-of-life changes. By Spelunkern.
 
-## Version 0.6.0: full object availability
+## Version 0.7.0: beachcombing exclusions
+
+Beachcombing now also restores difficulty-excluded contents authored inside washed-up
+boats and other large finds. This includes the canoe's arrows and broken arrow,
+which the general restoration previously left disabled because Stalker excludes
+those specific scene objects too. The override applies only to Interloper and only
+to known beachcombing prefab hierarchies. Objects excluded from all three ordinary
+Survival difficulties remain excluded.
+
+Normal and post-blizzard loose-item tables retain their original entries and weights,
+with the gear eligibility restored in 0.6.0. Large finds retain their original table,
+compatible-location restrictions, container locks, random selection, and expiry rules.
+Beachcombing spawn frequency, quantity settings, blizzard timing, and weak-ice hazards
+are not rebalanced. This does not add unrelated items to the beachcombing tables or
+force every possible find to appear. New finds use the restored eligibility;
+existing saved finds and already searched containers are not reset.
+
+Validation loads the actual standard, post-blizzard, and large-find tables from the
+installed game. It checks their original entries, filtered lookups, weights, authored
+boat contents, and location restrictions. These tests do not simulate a full coastal
+respawn cycle or modify a survival save.
+
+## Full object availability (0.6.0)
 
 Interloper's object exclusions are removed for weapons, ammunition, tools, clothing,
 unique variants, containers, collectibles, plants, and other world objects that are
@@ -16,7 +38,8 @@ gear prefabs, native loot-table filtering, and the Trader's item eligibility.
 - Entirely disabled random object groups recover their authored Medium-resource
   (Stalker) count. Existing positive Interloper counts are not increased.
 - The NoFirearms, NoRifle, and NoRevolver gear bans are removed from Interloper's
-  configuration. Unrelated gameplay tags and exclusions shared with Stalker remain.
+  configuration. Unrelated gameplay tags and exclusions shared with Stalker remain, except
+  for the beachcombing contents described above.
 - Wildlife and survivor spawn groups retain their original rules. Weather, health,
   decay, general container quantities, and empty-container settings are not rebalanced.
 - Mission progress, locks, keys, research-set selection, and DLC ownership still apply.
@@ -126,10 +149,13 @@ builds a validation DLL, opens the main menu without input, and exercises the ac
 Harmony patches against synthetic world objects, real gear prefabs and loot filters,
 and cloned bunker configurations. It never opens a survival save. The installed DLL
 is restored afterward; the report is written to `.local/runtime-validation.log`.
-Validation code is excluded from the production build. Native interop errors fail
+Validation code is excluded from the production build. Loader, Harmony, and native interop errors fail
 the validation even if individual checks report success. The injected probe may
 require forced termination during Unity/.NET shutdown after reporting its results;
 this does not validate a normal playthrough or normal shutdown behavior.
+The 0.7.0 probe was run with `DOTNET_TieredCompilation=0` as well as the launcher's
+`DOTNET_ReadyToRun=0`. This records the validation environment; it is not a claim
+that intermittent loader startup or probe shutdown failures have been resolved.
 
 GitHub Actions checks policies and scripts without distributing proprietary DLLs.
 Full compilation and MelonLoader validation run locally against a licensed game

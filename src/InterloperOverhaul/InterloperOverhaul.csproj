@@ -4,7 +4,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <!-- Generated IL2CPP attributes conflict with nullable metadata emission. -->
     <Nullable>disable</Nullable>
-    <Version>0.6.0</Version>
+    <Version>0.7.0</Version>
     <DebugType>portable</DebugType>
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
@@ -40,6 +40,11 @@
   </PropertyGroup>
   <ItemGroup Condition="'$(RuntimeValidation)' == 'true'">
     <Compile Include="../../tests/RuntimeValidation.cs" Link="RuntimeValidation.cs" />
+    <Compile Include="../../tests/BeachcombingValidation.cs" Link="BeachcombingValidation.cs" />
+    <Reference Include="Unity.Addressables;Unity.ResourceManager">
+      <HintPath>$(MelonLoaderDir)/Il2CppAssemblies/%(Identity).dll</HintPath>
+      <Private>false</Private>
+    </Reference>
   </ItemGroup>
   <Target Name="CheckLoader" BeforeTargets="ResolveAssemblyReferences">
     <Error Condition="!Exists('$(MelonLoaderDir)/net6/MelonLoader.dll')" Text="Install MelonLoader 0.7.3 or set TLD_GAME_DIR / -p:GameDir to the game folder." />
