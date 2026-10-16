@@ -160,6 +160,8 @@ internal static class RuntimeValidation
             PermanentAccessoryValidation.Run(Check);
             ClothingNutritionValidation.Run(Check);
             FireFeatMendingValidation.Run(Check);
+            CookingPreparationValidation.Run(Check);
+            SurvivalBalanceValidation.Run(Check);
             root = new GameObject("IO_Validation");
             root.SetActive(false);
             GameObject Child(string name)

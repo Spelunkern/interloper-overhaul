@@ -59,6 +59,7 @@ public static class LootBalancePolicy
         if (IsWeaponVariant(name)) return 0; // Physical variants are excluded from generic random loot; authored sites yield schematics.
         if (IsLiveFirearmAmmo(name)) return 0.0025;
         if (WorldPolicy.IsSpentCasing(name)) return 0.005;
+        if (name is "GEAR_StumpRemover" or "GEAR_DustingSulfur") return 1;
         if (!restored || WorldPolicy.IsTaleReward(name)) return 1;
         return name switch
         {

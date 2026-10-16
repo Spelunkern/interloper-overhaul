@@ -19,6 +19,8 @@ public static class ItemBalancePolicy
             "GEAR_MooseHideBag" or "GEAR_EarMuffs" or "GEAR_CanOpener" or "GEAR_RecycledCan" or "GEAR_Stone" or "GEAR_Arrow" or "GEAR_Fuse" => 0.10,
             "GEAR_Newsprint" or "GEAR_NewsprintRoll" or "GEAR_PaperStack" => 0.05,
             "GEAR_CashBundle" => 0.01,
+            "GEAR_WaterPurificationTablets" or "GEAR_NoiseMaker" => 0.10,
+            "GEAR_StumpRemover" => 0.20,
             "GEAR_Firelog" => 1.00,
             "GEAR_Coal" or "GEAR_ReclaimedWoodB" => 0.20,
             "GEAR_Stick" => 0.10,

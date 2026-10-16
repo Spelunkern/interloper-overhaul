@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.18.0
+
+- Lower Cooking 5 to 250 points; restore food-specific poisoning and parasite
+  risks only when the consumed food is ruined.
+- Add a one-minute, anywhere recipe for a Cattail Bundle: ten whole stalks,
+  1,500 calories, 0.50 kg, native icon and nutrients, with partial-food save support.
+- Set actual pemmican decay to 0.1% per day indoors and outdoors.
+- Track mixed jar/bag salt mass in curing boxes and save it without changing yield.
+- Reduce water purification tablets, noisemaker, and stump remover weights.
+- Increase snow shelter warmth to 30°C and bed warmth to 5°C; halve all shelter decay.
+- Allow ordinary-workbench noisemaker crafting, raise wildlife and fixed player
+  explosion damage to 250, and strongly reduce timberwolf morale on native events.
+- Increase stump remover and sulfur availability while retaining rare finished ammo.
+- Replace newly generated fixed memento-cache rewards with deterministic random
+  ordinary supplies, preserving searched caches and unique Tales rewards.
+
 ## 0.17.0
 
 - Make all seven tinder types grant an actual fire-start success bonus at every

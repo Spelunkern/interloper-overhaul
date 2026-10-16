@@ -4,7 +4,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <!-- Generated IL2CPP attributes conflict with nullable metadata emission. -->
     <Nullable>disable</Nullable>
-    <Version>0.17.0</Version>
+    <Version>0.18.0</Version>
     <DebugType>portable</DebugType>
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
@@ -33,6 +33,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="../../shared/SaltMassRecord.cs" Link="SaltMassRecord.cs" />
+    <Compile Include="../../shared/MementoRewardPolicy.cs" Link="MementoRewardPolicy.cs" />
+    <Compile Include="../../shared/FoodPreparationPolicy.cs" Link="FoodPreparationPolicy.cs" />
     <Compile Include="../../shared/FireBalancePolicy.cs" Link="FireBalancePolicy.cs" />
     <Compile Include="../../shared/ClothingNutritionPolicy.cs" Link="ClothingNutritionPolicy.cs" />
     <Compile Include="../../shared/PermanentAccessoryPolicy.cs" Link="PermanentAccessoryPolicy.cs" />
@@ -50,6 +53,8 @@
     <DefineConstants>$(DefineConstants);IO_VALIDATION</DefineConstants>
   </PropertyGroup>
   <ItemGroup Condition="'$(RuntimeValidation)' == 'true'">
+    <Compile Include="../../tests/SurvivalBalanceValidation.cs" Link="SurvivalBalanceValidation.cs" />
+    <Compile Include="../../tests/CookingPreparationValidation.cs" Link="CookingPreparationValidation.cs" />
     <Compile Include="../../tests/FireFeatMendingValidation.cs" Link="FireFeatMendingValidation.cs" />
     <Compile Include="../../tests/ClothingNutritionValidation.cs" Link="ClothingNutritionValidation.cs" />
     <Compile Include="../../tests/PermanentAccessoryValidation.cs" Link="PermanentAccessoryValidation.cs" />

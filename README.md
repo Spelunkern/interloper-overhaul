@@ -3,6 +3,47 @@
 A personal mod for **The Long Dark**, focused on restoring content excluded from
 standard **Interloper**, with a few general quality-of-life changes. By Spelunkern.
 
+## Version 0.18.0: cooking, shelters, explosives, and memento rewards
+
+These changes apply to standard Interloper.
+
+- **Cooking 5:** 250 points instead of 350. Its food-poisoning and parasite
+  immunities remain active for food above zero condition. Ruined food uses its
+  own native risks again; foods without parasite risk do not acquire it.
+- **Cattail Bundle:** manually craft ten whole, uneaten stalks into one bundle
+  in one minute, anywhere, without tools, light, or fire. It has the stalk icon,
+  1,500 base calories, 0.50 kg, and ten stalks' nutrients and eating time.
+  Partially consumed bundles preserve their remaining calories and proportional
+  weight through inventory, container, and world saves. Bundles are crafted only.
+- **Pemmican:** loses 0.1% condition per game day indoors and outdoors, including
+  compensation for Interloper's ordinary deterioration multiplier.
+- **Curing boxes:** salt displays use its actual reduced carried mass, accounting
+  separately for jars (0.10 kg) and bags (3 kg). Mixed deposits and subsequent
+  consumption persist per box in the save. Native curing yield, resource amounts,
+  and capacity are preserved; capacity is shown as a percentage. Salt already
+  stored before this update uses the jar conversion because its source is unknown.
+- **Water purification tablets:** 0.10 kg per native unit instead of 0.25 kg.
+- **Snow shelters:** +30°C inside, with a +5°C native bed bonus while sleeping
+  or passing time. Ordinary daily and blizzard deterioration are both halved.
+- **Noisemakers:** 0.10 kg and craftable at ordinary workbenches, with the native
+  materials and time; the survival recipe is available without learning it at the
+  cannery. Wildlife blast damage is 250
+  instead of 50. Player blast and in-hand detonation damage are fixed at 250;
+  original blast radii and native injuries remain. Their native thrown/hit morale
+  events impose at least a 100-percentage-point timberwolf morale penalty.
+- **Ammunition ingredients:** stump remover weighs 0.20 kg. Stump remover and
+  dusting sulfur retain all restored opportunities, bypassing the mod's 5% restored
+  loot filter. Authored world placements have at least 75% base spawn chance;
+  ordinary difficulty scaling and location selection still apply. Memento supplies
+  can also include either ingredient. Finished ammunition and casings retain their
+  existing rarity rules.
+- **Mementos:** newly generated contents under authored memento cache branches
+  use random ordinary food, repair supplies, medical supplies, or ammunition-making
+  ingredients instead of fixed premium equipment. Each authored reward slot gets
+  one selection, stable for the run and cache. The pool contains no firearms,
+  variants, premium clothing, or finished ammunition. Existing searched contents,
+  player storage, and unique Tales rewards are preserved.
+
 ## Version 0.17.0: fire materials, feats, Mending, and cougars
 
 These changes apply to standard Interloper, including existing gear and saves.
@@ -551,10 +592,13 @@ Validation code is excluded from the production build. Loader, Harmony, and nati
 the validation even if individual checks report success. The injected probe may
 require forced termination during Unity/.NET shutdown after reporting its results;
 this does not validate a normal playthrough or normal shutdown behavior.
-The 0.17.0 probe passed 876 native runtime checks and 2,259 policy boundary checks.
+The 0.18.0 probe passed 943 native runtime checks and 3,267 policy boundary checks.
 These include clothing and food migration, ingredient inventory mass, tinder UI and
 success calculations, enabled feat effects, Mending thresholds, native cougar save
-round trips, and isolation from Stalker and Misery. Ruined-repair and cougar-swipe
+round trips, Cooking thresholds and immunity scopes, partial-bundle reloads and
+native crafting factories, mixed curing-salt saves, shelter settings, noisemaker
+recipes and damage fields, deterministic memento replacements, and isolation from
+Stalker and Misery. Ruined-repair, noisemaker morale, and cougar-swipe
 checks observe native entry points with controlled callbacks; they do not run combat
 or consume a player's repair resources.
 It was run with `DOTNET_TieredCompilation=0` and

@@ -56,5 +56,5 @@ public static class ManufacturingPolicy
         new("PowderFromBlueFlares", "GEAR_GunpowderCan", 1, 90,
             new[] { new ManufacturingIngredient("GEAR_BlueFlare", 3) }, new[] { "GEAR_Knife", "GEAR_KnifeImprovised" }, PowderResultKg: 0.1)
     };
-    public static ManufacturingRecipe Find(string blueprintName) => Recipes.FirstOrDefault(recipe => recipe.BlueprintName == blueprintName) ?? VariantPolicy.Recipe(blueprintName);
+    public static ManufacturingRecipe Find(string blueprintName) => Recipes.FirstOrDefault(recipe => recipe.BlueprintName == blueprintName) ?? VariantPolicy.Recipe(blueprintName) ?? (blueprintName==FoodPreparationPolicy.BundleRecipe.BlueprintName ? FoodPreparationPolicy.BundleRecipe : null);
 }

@@ -236,4 +236,24 @@ Check(FireBalancePolicy.FuelSuccessBonus("GEAR_ReclaimedWoodB")==0 && FireBalanc
     FireBalancePolicy.FuelSuccessBonus("GEAR_CedarFirewood")==null,"only requested fuel success modifiers change");
 Check(FireBalancePolicy.BurnHours("GEAR_BookCooking")==0.5f && FireBalancePolicy.BurnHours("GEAR_Firelog")==3 &&
     FireBalancePolicy.BurnHours("GEAR_FirewoodHardwood")<0,"book and firelog burn changes leave other fuels alone");
+Check(ManufacturingPolicy.Find(FoodPreparationPolicy.BundleRecipe.BlueprintName)==FoodPreparationPolicy.BundleRecipe,"bundle recipe resolves through the manufacturing catalog");
+Check(FoodPreparationPolicy.BundleRecipe.Ingredients[0].Count==10 && FoodPreparationPolicy.BundleRecipe.Minutes==1,"bundle consumes ten stalks in one minute");
+var saltMass=new SaltMassRecord();
+saltMass.Deposit(0.25,0.1);saltMass.Deposit(10,3);
+Check(Math.Abs(saltMass.MassKg-3.1)<1e-9,"salt ledger preserves distinct jar and bag conversions");
+saltMass.Reconcile(5.125);
+Check(Math.Abs(saltMass.MassKg-1.55)<1e-9,"mixed salt consumption scales remaining physical mass proportionally");
+saltMass.Reconcile(0);
+Check(saltMass.MassKg==0 && saltMass.QuantityKg==0,"empty curing box clears its salt mass ledger");
+Check(MementoRewardPolicy.IsCache("Design/Mementos/CH2/Box") && !MementoRewardPolicy.IsCache("Design/TrackableHiddenCaches/Box"),"memento rewards exclude Tales radio caches");
+var outcomes=new HashSet<string>();
+for (int seed=0;seed<500;seed++)
+{
+    string reward=MementoRewardPolicy.Choose(seed,"CoastalRegion/CH2",0);
+    outcomes.Add(reward);
+    Check(reward==MementoRewardPolicy.Choose(seed,"CoastalRegion/CH2",0),"memento reload cannot reroll the reward");
+    Check(!FirearmSpawnPolicy.IsFiniteItem(reward) && !LootBalancePolicy.IsWeaponVariant(reward) && !LootBalancePolicy.IsLiveFirearmAmmo(reward),"memento supplies respect finite equipment and ammunition balance");
+}
+Check(outcomes.Count==MementoRewardPolicy.Supplies.Length,"memento supply pool is reachable across runs");
+Check(LootBalancePolicy.Retention("GEAR_StumpRemover",true)==1 && LootBalancePolicy.Retention("GEAR_DustingSulfur",true)==1,"ammunition chemicals bypass restored-loot rarity");
 Console.WriteLine($"PASS: {checks} policy boundary checks.");

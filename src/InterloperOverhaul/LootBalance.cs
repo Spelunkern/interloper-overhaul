@@ -95,6 +95,12 @@ internal static class LootBalance
                 pending.RemoveAt(i);
                 continue;
             }
+            if (pending[i]!=null && MementoRewardPolicy.IsCache(WorldObjects.PathOf(container.gameObject)) &&
+                !WorldPolicy.IsTaleReward(LootBalancePolicy.ItemName(pending[i].name)))
+            {
+                var replacement=Game.GearItem.LoadGearItemPrefab(MementoRewardPolicy.Choose(Game.GameManager.GetRandomSeed(0),key,i));
+                if (replacement!=null) { pending[i]=replacement.gameObject; continue; }
+            }
             if (pending[i] != null && !Keep(pending[i], key, i)) pending.RemoveAt(i);
         }
     }

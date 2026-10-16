@@ -16,6 +16,7 @@ internal static class ItemBalanceValidation
         {
             var cases = new Dictionary<string,float>
             {
+                ["GEAR_WaterPurificationTablets"]=0.10f,["GEAR_NoiseMaker"]=0.10f,["GEAR_StumpRemover"]=0.20f,
                 ["GEAR_CanOpener"]=0.10f,["GEAR_RecycledCan"]=0.10f,["GEAR_HatchetImprovised"]=1.50f,
                 ["GEAR_KnifeImprovised"]=0.50f,["GEAR_Stone"]=0.10f,["GEAR_Arrow"]=0.10f,
                 ["GEAR_FlareA"]=0.20f,["GEAR_BlueFlare"]=0.20f,["GEAR_CarBattery"]=5f,

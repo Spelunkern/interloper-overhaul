@@ -5,7 +5,7 @@ using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Game = GameAssembly::Il2Cpp;
 
 namespace InterloperOverhaul;
-internal static class MendingBalance
+internal static class SkillTierBalance
 {
     private sealed class Tiers
     {
@@ -14,7 +14,7 @@ internal static class MendingBalance
     private static readonly Dictionary<int,Tiers> tiers=new();
     internal static void Configure(Game.Skill skill)
     {
-        if (skill==null || skill.TryCast<Game.Skill_ClothingRepair>()==null || skill.m_TierPoints==null || skill.m_TierPoints.Length<5) return;
+        if (skill==null || (skill.TryCast<Game.Skill_ClothingRepair>()==null && skill.TryCast<Game.Skill_Cooking>()==null) || skill.m_TierPoints==null || skill.m_TierPoints.Length<5) return;
         int id=skill.GetInstanceID();
         if (!tiers.TryGetValue(id,out var state))
         {
@@ -24,6 +24,10 @@ internal static class MendingBalance
         }
         skill.m_TierPoints=ItemBalance.Active ? state.Balanced : state.Original;
     }
+}
+internal static class MendingBalance
+{
+    internal static void Configure(Game.Skill skill) => SkillTierBalance.Configure(skill);
     internal static bool CanRestore(Game.GearItem gear)
     {
         if (!ItemBalance.Active || gear==null || gear.m_Repairable==null || !gear.m_WornOut || gear.CurrentHP>0) return false;
@@ -43,8 +47,9 @@ internal static class ConfigureMendingTiers
         yield return AccessTools.Method(typeof(Game.Skill),nameof(Game.Skill.IncrementPoints));
         yield return AccessTools.Method(typeof(Game.Skill),nameof(Game.Skill.GetCurrentTierNumber));
         yield return AccessTools.Method(typeof(Game.Skill_ClothingRepair),nameof(Game.Skill_ClothingRepair.Deserialize));
+        yield return AccessTools.Method(typeof(Game.Skill_Cooking),nameof(Game.Skill_Cooking.Deserialize));
     }
-    private static void Prefix(Game.Skill __instance) => MendingBalance.Configure(__instance);
+    private static void Prefix(Game.Skill __instance) => SkillTierBalance.Configure(__instance);
 }
 [HarmonyPatch]
 internal static class RepairRuinedItems

@@ -26,7 +26,7 @@ internal static class Manufacturing
         installing = true;
         try
         {
-            foreach (var recipe in ManufacturingPolicy.Recipes.Concat(VariantPolicy.Recipes))
+            foreach (var recipe in ManufacturingPolicy.Recipes.Concat(VariantPolicy.Recipes).Concat(new[] { FoodPreparationPolicy.BundleRecipe }))
             {
                 bool exists = false;
                 foreach (var bp in manager.m_AllBlueprints)
@@ -40,8 +40,8 @@ internal static class Manufacturing
                 blueprint.m_CraftingIcon = null;
                 blueprint.m_CraftedResultCount = recipe.Count;
                 blueprint.m_DurationMinutes = recipe.Minutes;
-                blueprint.m_RequiredCraftingLocation = Game.CraftingLocation.AmmoWorkbench;
-                blueprint.m_RequiresLight = true;
+                blueprint.m_RequiredCraftingLocation = recipe==FoodPreparationPolicy.BundleRecipe ? Game.CraftingLocation.Anywhere : Game.CraftingLocation.AmmoWorkbench;
+                blueprint.m_RequiresLight = recipe!=FoodPreparationPolicy.BundleRecipe;
                 blueprint.m_RequiresLitFire = false;
                 blueprint.m_AppliedSkill = Game.SkillType.None;
                 blueprint.m_ImprovedSkill = Game.SkillType.None;
