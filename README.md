@@ -3,6 +3,48 @@
 A personal mod for **The Long Dark**, focused on restoring content excluded from
 standard **Interloper**, with a few general quality-of-life changes. By Spelunkern.
 
+## Version 0.21.0: integrated debug tools
+
+Press **F8** to open/close the debug panel. Load a game and check **Enable test tools
+for this session** to use actions. Nothing is enabled automatically, and opening the
+panel alone does not change the survival balance. The panel is draggable and scales
+to smaller displays. Keyboard/mouse movement, firing, and interactions are blocked
+while using it; closing restores the previous cursor and input-block flags.
+
+- **Player:** native god mode, condition/needs restoration, continuously replenished
+  hunger/thirst/rest/warmth, and a carried-weight override. The latter changes native
+  inventory/encumbrance calculations without changing any item's physical mass.
+- **Flight:** F9 or the panel starts the native detached flight camera. Use WASD and
+  mouse, E to ascend, Ctrl/Q to descend, and the native speed modifier keys.
+  F9 returns to the starting point. **Land at flight camera** uses the game's native
+  teleport-and-exit operation. Flight temporarily protects the survivor; previous
+  native god state is restored afterward. Finish vehicles, climbing, struggles, or
+  other interactions before starting flight.
+- **Treatment:** clear frostbite meters/instances and intestinal parasites explicitly.
+  Healing condition/needs alone does not erase afflictions.
+- **Items:** searchable curated prefab IDs plus manual native item IDs, quantities
+  from 1–20, and condition from 0–100% (including ruined gear for Mending tests). Spawned firearms are empty. Explicitly spawned
+  variants remain usable physical objects; a separate button learns the selected
+  variant's workshop schematic. Debug spawns do not consume or reroll finite world
+  allocations, and their ownership prevents normal rarity filtering from deleting them.
+- **World:** freeze/change time of day, remember/return to a position in the current
+  scene, and inspect player coordinates, world seed, and finite-equipment creation
+  flags. Bookmarks cannot teleport across scenes.
+
+Options reset when changing the active scene, loading/starting a game, or disabling
+the tools. Additive scenery streaming does not interrupt flight. God/time-lock
+serialization restores each pre-debug native flag in its save payload, so temporary
+options cannot accidentally become permanent. Existing native/external flags are
+preserved. Item grants, learned schematics, treatment, time changes, and teleports
+are real game changes and can be saved by the game's normal save system. Use test
+saves for experiments. No external console, settings mod, or asset bundle is required.
+
+Automated checks exercise actual OnGUI rendering, native damage interception,
+inventory spawning and weight getters, input blocking, native save-proxy masks, and
+session cleanup without opening an existing save. Flight movement/landing and full
+survival interactions still need an in-world playthrough; the menu probe cannot
+validate terrain placement.
+
 ## Version 0.20.0: exploration-driven loot
 
 These rules supersede the earlier restoration distributions in standard Interloper.
@@ -701,7 +743,7 @@ Validation code is excluded from the production build. Loader, Harmony, and nati
 the validation even if individual checks report success. The injected probe may
 require forced termination during Unity/.NET shutdown after reporting its results;
 this does not validate a normal playthrough or normal shutdown behavior.
-The 0.20.0 probe passed 1,024 native runtime checks and 3,296 policy boundary checks.
+The 0.21.0 probe passed 1,038 native runtime checks and 3,296 policy boundary checks.
 These include clothing and food migration, ingredient inventory mass, tinder UI and
 success calculations, enabled feat effects, Mending thresholds, native cougar save
 round trips, Cooking thresholds and immunity scopes, partial-bundle reloads and

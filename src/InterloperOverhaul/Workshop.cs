@@ -147,7 +147,7 @@ internal static class LearnWorkshopCard
     private static void Prefix(Game.GearItem gi, out VariantSpec __state)
     {
         if (WorldObjects.IsInterloper && gi != null) Workshop.InitializeCard(gi);
-        __state = LootBalance.Active && Manufacturing.Current == null && !Workshop.Failed && gi != null &&
+        __state = LootBalance.Active && Manufacturing.Current == null && !DebugTools.Spawning && !Workshop.Failed && gi != null &&
             !Game.SaveGameSystem.IsRestoreInProgress() && !gi.m_BeenInPlayerInventory && gi.m_InProgressCraftItem == null
             ? VariantPolicy.Find(gi.name) : null;
     }

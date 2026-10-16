@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.21.0
+
+- Add an opt-in F8 debug panel with native god mode, needs restoration/maintenance,
+  carried-weight override, and explicit frostbite/parasite treatment.
+- Integrate native flight with F9 start/return, panel landing, vertical shortcuts,
+  temporary survivor protection, and cleanup across world transitions.
+- Add item search/manual IDs, quantity/condition controls, physical variant spawns,
+  explicit schematic learning, and preserved finite world allocation snapshots.
+- Add clock controls, same-scene position bookmarks, and allocation diagnostics.
+- Mask temporary native god/time-lock fields during serialization, preserve existing
+  external states, restore cursor/input flags, and block gameplay input in the panel.
+- Validate real OnGUI rendering, native damage/input/weight hooks, save-proxy masks,
+  item spawning, and session reset without touching an existing survival save.
+
 ## 0.20.0
 
 - Start Steam before exporting the mod loader environment and set the native app IDs

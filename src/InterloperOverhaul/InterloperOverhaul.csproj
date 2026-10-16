@@ -4,7 +4,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <!-- Generated IL2CPP attributes conflict with nullable metadata emission. -->
     <Nullable>disable</Nullable>
-    <Version>0.20.0</Version>
+    <Version>0.21.0</Version>
     <DebugType>portable</DebugType>
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
@@ -23,7 +23,7 @@
       <Aliases>GameAssembly</Aliases>
       <Private>false</Private>
     </Reference>
-    <Reference Include="UnityEngine.CoreModule;UnityEngine.PhysicsModule;Il2Cppmscorlib;Il2CppAK.Wwise.Unity.API.WwiseTypes;Il2CppTLD.IntBackedUnit;Il2CppTLD.GameplayTag;Il2CppTLD.SaveState;Il2CppTLD.PDID;Unity.Addressables">
+    <Reference Include="UnityEngine.CoreModule;UnityEngine.PhysicsModule;UnityEngine.IMGUIModule;UnityEngine.InputLegacyModule;Il2Cppmscorlib;Il2CppAK.Wwise.Unity.API.WwiseTypes;Il2CppTLD.IntBackedUnit;Il2CppTLD.GameplayTag;Il2CppTLD.SaveState;Il2CppTLD.PDID;Unity.Addressables">
       <HintPath>$(MelonLoaderDir)/Il2CppAssemblies/%(Identity).dll</HintPath>
       <Private>false</Private>
     </Reference>
@@ -55,6 +55,7 @@
     <DefineConstants>$(DefineConstants);IO_VALIDATION</DefineConstants>
   </PropertyGroup>
   <ItemGroup Condition="'$(RuntimeValidation)' == 'true'">
+    <Compile Include="../../tests/DebugToolsValidation.cs" Link="DebugToolsValidation.cs" />
     <Compile Include="../../tests/VehicleStreetValidation.cs" Link="VehicleStreetValidation.cs" />
     <Compile Include="../../tests/AfflictionValidation.cs" Link="AfflictionValidation.cs" />
     <Compile Include="../../tests/SurvivalBalanceValidation.cs" Link="SurvivalBalanceValidation.cs" />

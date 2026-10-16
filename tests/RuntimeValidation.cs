@@ -34,6 +34,9 @@ internal static class RuntimeValidation
                 if (menu.gameObject.scene.isLoaded && menu.m_MainWindow != null &&
                     menu.m_MainWindow.activeInHierarchy && menu.HasFadedIn() && menu.GetAlpha() >= 0.99f)
                 {
+                    DebugTools.Rendered=false;DebugTools.SetOpen(true);
+                    for(int guiFrame=0;guiFrame<5;guiFrame++) yield return null;
+                    DebugTools.SetOpen(false);
                     Run(menu);
                     yield break;
                 }
@@ -164,6 +167,7 @@ internal static class RuntimeValidation
             SurvivalBalanceValidation.Run(Check);
             AfflictionValidation.Run(Check);
             VehicleStreetValidation.Run(Check);
+            DebugToolsValidation.Run(Check);
             root = new GameObject("IO_Validation");
             root.SetActive(false);
             GameObject Child(string name)
