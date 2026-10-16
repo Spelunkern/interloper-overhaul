@@ -20,7 +20,7 @@ trap restore_mod EXIT
 install -m 644 "$repo_dir/src/InterloperOverhaul/bin/Release/net6.0/InterloperOverhaul.dll" "$mod_file"
 mkdir -p "$repo_dir/.local"
 launch_status=0
-timeout --signal=TERM --kill-after=10s 120s "$repo_dir/scripts/launch.sh" > "$repo_dir/.local/runtime-console.log" 2>&1 || launch_status=$?
+timeout --signal=TERM --kill-after=10s 180s "$repo_dir/scripts/launch.sh" > "$repo_dir/.local/runtime-console.log" 2>&1 || launch_status=$?
 cp "$game_dir/MelonLoader/Latest.log" "$repo_dir/.local/runtime-validation.log"
 if ! grep -q '\[Validation\] SUCCESS:' "$repo_dir/.local/runtime-validation.log" ||
     grep -q '\[ERROR\]' "$repo_dir/.local/runtime-validation.log"; then

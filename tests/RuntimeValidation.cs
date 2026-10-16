@@ -23,11 +23,14 @@ internal static class RuntimeValidation
 
     internal static System.Collections.IEnumerator WaitForMenu()
     {
+        MelonLogger.Msg("[Validation] Waiting for the visible main menu.");
         // Wait for the actual visible menu, without synthesizing keyboard/mouse input.
         for (int frame = 0; frame < 1800; frame++)
         {
             foreach (var menu in Resources.FindObjectsOfTypeAll<Game.Panel_MainMenu>())
             {
+                if (frame % 300 == 0 && menu.gameObject.scene.isLoaded)
+                    MelonLogger.Msg($"[Validation] Menu wait frame {frame}: window={menu.m_MainWindow?.activeInHierarchy}, faded={menu.HasFadedIn()}, alpha={menu.GetAlpha()}.");
                 if (menu.gameObject.scene.isLoaded && menu.m_MainWindow != null &&
                     menu.m_MainWindow.activeInHierarchy && menu.HasFadedIn() && menu.GetAlpha() >= 0.99f)
                 {
@@ -150,6 +153,7 @@ internal static class RuntimeValidation
             finally { UnityEngine.Object.Destroy(casingTable); }
             BeachcombingValidation.Run(Check);
             LootBalanceValidation.Run(Check);
+            FiniteFirearmValidation.Run(Check);
             root = new GameObject("IO_Validation");
             root.SetActive(false);
             GameObject Child(string name)

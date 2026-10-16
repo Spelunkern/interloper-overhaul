@@ -53,7 +53,9 @@ internal static class LootBalance
         var gear = go.GetComponent<Game.GearItem>();
         if (gear == null || gear.m_BeenInPlayerInventory || gear.m_HasBeenOwnedByPlayer || gear.m_BeenInContainer) return 1;
         string name = LootBalancePolicy.ItemName(go.name);
-        if (WorldPolicy.IsTaleReward(name) || WorldPolicy.IsSpentCasing(name) ||
+        if (RecoveredCasings.Active && WorldPolicy.IsSpentCasing(name)) return 1;
+        if (FirearmSpawnPolicy.IsStandardFirearm(name)) return FiniteFirearms.IsManaged(gear) ? 1 : 0;
+        if (WorldPolicy.IsTaleReward(name) ||
             WorldPolicy.IsSignalFireSatchel(go.scene.name, WorldObjects.PathOf(go))) return 1;
         // Do not substitute canonical prefab restrictions for a scene instance.
         // Native Interloper, for example, allows placed hammers while excluding
@@ -95,6 +97,8 @@ internal static class RememberRestoredGear
         if (LootBalance.Active && LootBalance.HasRestoredRestriction(__instance.gameObject))
             LootBalance.MarkRestored(__instance.gameObject);
     }
+
+    private static void Postfix(Game.GearItem __instance) => RecoveredCasings.Preserve(__instance);
 }
 
 [HarmonyPatch]

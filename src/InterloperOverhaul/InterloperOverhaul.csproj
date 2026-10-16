@@ -4,7 +4,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <!-- Generated IL2CPP attributes conflict with nullable metadata emission. -->
     <Nullable>disable</Nullable>
-    <Version>0.8.0</Version>
+    <Version>0.9.0</Version>
     <DebugType>portable</DebugType>
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
@@ -23,7 +23,7 @@
       <Aliases>GameAssembly</Aliases>
       <Private>false</Private>
     </Reference>
-    <Reference Include="UnityEngine.CoreModule;Il2Cppmscorlib;Il2CppTLD.GameplayTag">
+    <Reference Include="UnityEngine.CoreModule;Il2Cppmscorlib;Il2CppTLD.GameplayTag;Il2CppTLD.SaveState;Il2CppTLD.PDID;Unity.Addressables">
       <HintPath>$(MelonLoaderDir)/Il2CppAssemblies/%(Identity).dll</HintPath>
       <Private>false</Private>
     </Reference>
@@ -35,6 +35,8 @@
   <ItemGroup>
     <Compile Include="../../shared/WorldPolicy.cs" Link="WorldPolicy.cs" />
     <Compile Include="../../shared/LootBalancePolicy.cs" Link="LootBalancePolicy.cs" />
+    <Compile Include="../../shared/FirearmSpawnPolicy.cs" Link="FirearmSpawnPolicy.cs" />
+    <Compile Include="../../shared/FirearmRunState.cs" Link="FirearmRunState.cs" />
   </ItemGroup>
   <PropertyGroup Condition="'$(RuntimeValidation)' == 'true'">
     <DefineConstants>$(DefineConstants);IO_VALIDATION</DefineConstants>
@@ -43,7 +45,8 @@
     <Compile Include="../../tests/RuntimeValidation.cs" Link="RuntimeValidation.cs" />
     <Compile Include="../../tests/BeachcombingValidation.cs" Link="BeachcombingValidation.cs" />
     <Compile Include="../../tests/LootBalanceValidation.cs" Link="LootBalanceValidation.cs" />
-    <Reference Include="Unity.Addressables;Unity.ResourceManager">
+    <Compile Include="../../tests/FiniteFirearmValidation.cs" Link="FiniteFirearmValidation.cs" />
+    <Reference Include="Unity.ResourceManager">
       <HintPath>$(MelonLoaderDir)/Il2CppAssemblies/%(Identity).dll</HintPath>
       <Private>false</Private>
     </Reference>

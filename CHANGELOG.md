@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.9.0
+
+- Allocate exactly one standard rifle and one standard revolver for each new Interloper run, independently selected from 28 audited base-game outdoor placements.
+- Start allocated firearms at a deterministic random condition from 1% to 100%, with no loaded ammunition, starting rounds, or spent casings.
+- Persist allocation and independent creation flags inside the native save slot; use stable native object GUIDs and normal gear serialization to preserve later condition and loaded rounds.
+- Suppress additional standard firearms in generated world/container/radial loot and Trader stock, while retaining special variants and existing acquired/saved weapons.
+- Reduce found rifle/revolver ammunition retention to 0.25% and found casings to 0.5%; preserve crafting and recovered player-fired casings.
+- Apply stable ammunition/casing availability per Trader aurora without mutating the cached stock or special-request rewards.
+- Preserve pre-allocation saves without injecting extra guns; require a new run for the exact two-weapon allocation.
+- Extend policy and native-runtime validation for allocation, save payloads, weapon initialization/serialization, and Trader supplies. Allow more time for slow native startup in the isolated probe.
+
 ## 0.8.0
 
 - Add an independent rarity roll for newly generated restored loot: 5% ordinary items, 1% premium gear, and 0.25% special weapon variants.
