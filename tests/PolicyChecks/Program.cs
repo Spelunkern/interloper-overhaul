@@ -158,4 +158,18 @@ Check(migratedPlan.ToolsLegacy && migratedPlan.IsLegacy("GEAR_Knife") && !migrat
     "Version-one saves retain firearm locations without receiving extra tools");
 Check(!FirearmSpawnPolicy.IsFiniteItem("GEAR_KnifeImprovised") && !FirearmSpawnPolicy.IsFiniteItem("GEAR_HatchetImprovised"),
     "Improvised tools are outside the finite standard-tool allocation");
+Check(ManufacturingPolicy.Recipes.Select(recipe => recipe.BlueprintName).Distinct().Count() == 8, "Manufacturing recipes have stable unique identities");
+foreach (var recipe in ManufacturingPolicy.Recipes)
+{
+    Check(recipe.Count > 0 && recipe.Minutes > 0 && recipe.Ingredients.All(input => input.Count > 0),
+        "Manufacturing requires positive quantities and crafting time: " + recipe.Id);
+    Check(!ManufacturingPolicy.IsFlare(recipe.Result) && !LootBalancePolicy.IsWeaponVariant(recipe.Result) && !FirearmSpawnPolicy.IsStandardFirearm(recipe.Result),
+        "Manufacturing never produces variants, common firearms, or renewable input flares: " + recipe.Id);
+}
+Check(ManufacturingPolicy.Recipes.Where(recipe => FirearmSpawnPolicy.IsLimitedTool(recipe.Result)).All(recipe =>
+    recipe.Ingredients.Any(input => input.Item.EndsWith("Improvised") && input.Count == 1)), "Manufactured tools consume an improvised predecessor");
+Check(ManufacturingPolicy.Recipes.Where(recipe => recipe.PowderResultKg > 0).All(recipe => recipe.PowderResultKg == 0.1 &&
+    recipe.Ingredients.Single(input => ManufacturingPolicy.IsFlare(input.Item)).Count == 3), "Recycled powder is measured and costs three flares");
+Check(ManufacturingPolicy.Recipes.Single(recipe => recipe.Id == "ShellFromPowder").PowderRequiredKg == 0.05,
+    "Powder-based flare shells consume measured gunpowder");
 Console.WriteLine($"PASS: {checks} policy boundary checks.");

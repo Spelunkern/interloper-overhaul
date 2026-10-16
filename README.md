@@ -3,7 +3,56 @@
 A personal mod for **The Long Dark**, focused on restoring content excluded from
 standard **Interloper**, with a few general quality-of-life changes. By Spelunkern.
 
-## Version 0.11.0: finite hunting knife and hatchet
+## Version 0.12.0: integrated cannery manufacturing
+
+Standard Interloper gains eight native crafting recipes at **ammunition workbenches**.
+They use the existing crafting UI, light/tool requirements, material consumption,
+work in progress, and native gear saves. No ModComponent, settings menu, external
+blueprint files, or custom item bundles are required.
+
+| Recipe | Consumed materials | Output | Base time |
+| --- | --- | --- | --- |
+| Refine a hunting knife | 1 improvised knife + 2 scrap metal | 1 hunting knife | 120 min |
+| Refine a hatchet | 1 improvised hatchet + 3 scrap metal | 1 standard hatchet | 180 min |
+| Efficient arrow shafts | 1 cured birch sapling | 4 arrow shafts | 60 min |
+| Red-flare shell | 1 unused red flare + 1 scrap metal + 1 cloth | 1 flare shell | 60 min |
+| Blue-flare shell | 1 unused marine flare + 1 scrap metal + 1 cloth | 1 flare shell | 60 min |
+| Gunpowder shell | 50 g gunpowder + 1 scrap metal + 1 cloth | 1 flare shell | 30 min |
+| Recycle red flares | 3 unused red flares | 100 g gunpowder | 90 min |
+| Recycle marine flares | 3 unused marine flares | 100 g gunpowder | 90 min |
+
+Arrow-shaft production requires a knife or hatchet (standard or improvised).
+Flare conversions require a standard or improvised knife. Burning, exhausted, wet,
+and previously extinguished flares do not count as unused inputs. Recycling creates
+a partially filled native gunpowder can, rather than a free full can. Shell recipes
+consume casing/wadding materials; they do not add rifle/revolver ammunition or casings.
+
+**The one-knife/one-hatchet rule now limits world allocation.** Paid manufacturing
+upgrades are repeatable and do not consume or reroll those world allocations.
+Manufactured gear is treated as player-owned, so the rarity and spawn-cap filters
+cannot delete it. Additional tools still cannot spawn through beachcombing or Trader
+stock. Weapon variants remain disabled.
+
+Native **milling machines** can repair and restore the distress pistol and standard
+crampons. Repairs require 1 scrap metal and 30 base minutes; full restoration from
+ruined requires 3 scrap/180 minutes for the pistol or 4 scrap/210 minutes for crampons.
+Aurora/power, access, native repair skill behavior, and machine availability remain
+under the game's control. Interrupted restoration progress uses the native gear save.
+
+This is a new implementation inspired by
+[Cannery Manufacturing](https://github.com/ds5678/CanneryManufacturing) and its
+[DLC update](https://github.com/DigitalzombieTLD/CanneryManufacturingDLC), with revised
+recipes and explicit integration with this mod's loot rules. It does not import their
+settings, firearm condition overrides, extra reloading crates, or cannery-code bypass.
+See [third-party notices](THIRD_PARTY_NOTICES.md).
+
+The recipes also work in existing Interloper saves. Automated checks cover the real
+native catalog and ingredients, location/difficulty isolation, crafted output,
+measured powder serialization, fresh-flare selection/consumption, and milling saves.
+A full workshop playthrough with time acceleration and interruptions still requires
+in-game testing.
+
+## World hunting knife and hatchet allocation (0.11.0)
 
 Each **new Interloper run** also allocates exactly **one hunting knife and one
 standard hatchet**, independently selected from 33 verified native outdoor tool
@@ -278,7 +327,7 @@ Validation code is excluded from the production build. Loader, Harmony, and nati
 the validation even if individual checks report success. The injected probe may
 require forced termination during Unity/.NET shutdown after reporting its results;
 this does not validate a normal playthrough or normal shutdown behavior.
-The 0.11.0 probe was run with `DOTNET_TieredCompilation=0` and
+The 0.12.0 probe was run with `DOTNET_TieredCompilation=0` and
 `DOTNET_EnableWriteXorExecute=0`, as well as the launcher's `DOTNET_ReadyToRun=0`.
 This records the validation environment; it is not a claim
 that intermittent loader startup or probe shutdown failures have been resolved.

@@ -98,7 +98,11 @@ internal static class RememberRestoredGear
             LootBalance.MarkRestored(__instance.gameObject);
     }
 
-    private static void Postfix(Game.GearItem __instance) => RecoveredCasings.Preserve(__instance);
+    private static void Postfix(Game.GearItem __instance)
+    {
+        RecoveredCasings.Preserve(__instance);
+        Manufacturing.PreserveOutput(__instance);
+    }
 }
 
 [HarmonyPatch]

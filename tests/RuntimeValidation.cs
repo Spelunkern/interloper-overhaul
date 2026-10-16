@@ -154,6 +154,7 @@ internal static class RuntimeValidation
             BeachcombingValidation.Run(Check);
             LootBalanceValidation.Run(Check);
             FiniteFirearmValidation.Run(Check);
+            ManufacturingValidation.Run(Check);
             root = new GameObject("IO_Validation");
             root.SetActive(false);
             GameObject Child(string name)

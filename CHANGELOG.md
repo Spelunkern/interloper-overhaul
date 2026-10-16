@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.12.0
+
+- Integrate eight ammunition-workbench recipes: refine improvised knives/hatchets, produce four arrow shafts per cured birch sapling, make flare shells from unused red/marine flares or measured gunpowder, and recycle three unused flares into 100 g powder.
+- Use the current native blueprint system and existing crafting UI without ModComponent, settings, custom item bundles, or additional mod dependencies.
+- Restrict recipes to standard Interloper, reuse authored Wwise events to avoid the 2.55 JSON audio factory's obsolete reflection fields, and register recipes idempotently.
+- Preserve manufactured output through the loot filters. The finite knife/hatchet quota applies to world allocation; paid upgrades are repeatable. Firearms, variants, beachcombing exclusions, and found-ammunition scarcity retain their rules.
+- Exclude used/lit/wet flares and consume eligible inputs explicitly during manufacturing. Keep gunpowder output at its measured amount through native saves.
+- Enable native milling repair/restoration for the distress pistol and standard crampons, attaching their component before gear deserialization to preserve restoration progress.
+- Retain native machine access and power requirements; omit reloading crates, forced firearm conditions, cannery-code bypasses, and settings from the reference mods.
+
 ## 0.11.0
 
 - Allocate exactly one hunting knife and one standard hatchet per new Interloper run, with seed-selected native world positions and 1–100% initial condition.
