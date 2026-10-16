@@ -16,7 +16,8 @@ public static class ItemBalancePolicy
         if (IsBook(name)) return 0.20;
         return name switch
         {
-            "GEAR_CanOpener" or "GEAR_RecycledCan" or "GEAR_Stone" or "GEAR_Arrow" or "GEAR_Fuse" => 0.10,
+            "GEAR_MooseHideBag" or "GEAR_EarMuffs" or "GEAR_CanOpener" or "GEAR_RecycledCan" or "GEAR_Stone" or "GEAR_Arrow" or "GEAR_Fuse" => 0.10,
+            "GEAR_BallisticVest" => 2.00,
             "GEAR_HatchetImprovised" => 1.50,
             "GEAR_KnifeImprovised" => 0.50,
             "GEAR_FlareA" or "GEAR_BlueFlare" or "GEAR_Snare" or "GEAR_SprayPaintCan" or "GEAR_SprayPaintCanGlyphA" => 0.20,

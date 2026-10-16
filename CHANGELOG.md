@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.15.0
+
+- Set the Ballistic Vest to 2 kg, 20% maximum protection, and a 10% sprint-bar penalty in Interloper.
+- Add portable vest repairs: one cured leather, 30 base minutes, and ten condition percentage points, capped at full condition, without tools, a workshop, or repair failure.
+- Reduce the moose-hide satchel and wool ear wrap to 0.10 kg each.
+- Turn the Foreman's Tool Belt and Rifle Holster into permanent per-run collectible upgrades, with no carried item, equipment slot, condition requirement, or clothing penalty.
+- Give the belt a 50% reduction for one heaviest carried item per tool type, without a type limit. Exclude weapons and ammunition, and group functional tool variants together.
+- Give the holster a 50% reduction for the heaviest carried rifle, including all rifle variants. Prevent native wearable bonuses and duplicate pickups from stacking.
+- Persist unlocks in the native save slot, reset them on new runs, migrate existing carried/equipped accessories, and retain original behavior outside Interloper.
+- Add policy and runtime probes for armor repair, accessory weights, selection, carried totals, collectible pickup, saves, equipment blocking, migration, and difficulty isolation.
+
 ## 0.14.0
 
 - Apply the requested lighter weights to can openers, all insulated flasks, recycled cans, improvised tools, stones, standard arrows, both hand flares, car batteries, replacement fuses, all ordinary/research books, snares, ropes, woodworking tools, and both spray-paint can models.

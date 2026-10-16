@@ -207,4 +207,14 @@ Check(ItemBalancePolicy.IsBook("GEAR_BookGunsmithing(Clone)") && ItemBalancePoli
 Check(!ItemBalancePolicy.IsBook("GEAR_Logbook_A01") && ItemBalancePolicy.WeightKg("GEAR_Logbook_A01") < 0, "weightless narrative logs are outside book rebalance");
 Check(ItemBalancePolicy.IsFlask("GEAR_InsulatedFlask_G(Clone)") && !ItemBalancePolicy.IsFlask("GEAR_CookingPot"), "all insulated flask styles are covered without changing other containers");
 Check(ItemBalancePolicy.WeightKg("GEAR_ArrowManufactured") < 0 && ItemBalancePolicy.WeightKg("GEAR_ArrowHardened") < 0 && ItemBalancePolicy.WeightKg("GEAR_FlareGunAmmoSingle") < 0, "special arrows and flare shells retain their own weights");
+foreach (string weapon in new[] { "GEAR_Rifle", "GEAR_Rifle_Trader", "GEAR_RevolverGreen", "GEAR_Bow_Manufactured", "GEAR_FlareGun", "GEAR_BearSpear", "GEAR_NoiseMaker" })
+    Check(PermanentAccessoryPolicy.IsWeapon(weapon) && PermanentAccessoryPolicy.ToolFamily(weapon)=="", "belt excludes weapons: " + weapon);
+Check(PermanentAccessoryPolicy.ToolFamily("GEAR_Knife")==PermanentAccessoryPolicy.ToolFamily("GEAR_SurvivalKnife") &&
+    PermanentAccessoryPolicy.ToolFamily("GEAR_Hatchet")==PermanentAccessoryPolicy.ToolFamily("GEAR_HatchetImprovised"), "tool variants share one functional type");
+Check(PermanentAccessoryPolicy.IsCollectible("GEAR_ToolBelt(Clone)") && PermanentAccessoryPolicy.IsCollectible("GEAR_RifleScabbardA") &&
+    !PermanentAccessoryPolicy.IsCollectible("GEAR_MooseHideBag"), "only the belt and holster become permanent collectibles");
+var accessories = new PermanentAccessoryState { ToolBelt=true,RifleHolster=true };
+Check(PermanentAccessoryState.Deserialize(accessories.Serialize()).ToolBelt && PermanentAccessoryState.Deserialize(accessories.Serialize()).RifleHolster,
+    "permanent accessory unlocks survive a save round trip");
+Check(!new PermanentAccessoryState().ToolBelt && !new PermanentAccessoryState().RifleHolster,"new runs begin without collectible bonuses");
 Console.WriteLine($"PASS: {checks} policy boundary checks.");

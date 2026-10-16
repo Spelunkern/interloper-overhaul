@@ -157,6 +157,7 @@ internal static class RuntimeValidation
             ManufacturingValidation.Run(Check);
             WorkshopValidation.Run(Check);
             ItemBalanceValidation.Run(Check);
+            PermanentAccessoryValidation.Run(Check);
             root = new GameObject("IO_Validation");
             root.SetActive(false);
             GameObject Child(string name)

@@ -4,7 +4,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <!-- Generated IL2CPP attributes conflict with nullable metadata emission. -->
     <Nullable>disable</Nullable>
-    <Version>0.14.0</Version>
+    <Version>0.15.0</Version>
     <DebugType>portable</DebugType>
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
@@ -33,6 +33,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="../../shared/PermanentAccessoryPolicy.cs" Link="PermanentAccessoryPolicy.cs" />
     <Compile Include="../../shared/ItemBalancePolicy.cs" Link="ItemBalancePolicy.cs" />
     <Compile Include="../../shared/LightSpawnPolicy.cs" Link="LightSpawnPolicy.cs" />
     <Compile Include="../../shared/VariantPolicy.cs" Link="VariantPolicy.cs" />
@@ -47,6 +48,7 @@
     <DefineConstants>$(DefineConstants);IO_VALIDATION</DefineConstants>
   </PropertyGroup>
   <ItemGroup Condition="'$(RuntimeValidation)' == 'true'">
+    <Compile Include="../../tests/PermanentAccessoryValidation.cs" Link="PermanentAccessoryValidation.cs" />
     <Compile Include="../../tests/ItemBalanceValidation.cs" Link="ItemBalanceValidation.cs" />
     <Compile Include="../../tests/WorkshopValidation.cs" Link="WorkshopValidation.cs" />
     <Compile Include="../../tests/ManufacturingValidation.cs" Link="ManufacturingValidation.cs" />

@@ -3,7 +3,45 @@
 A personal mod for **The Long Dark**, focused on restoring content excluded from
 standard **Interloper**, with a few general quality-of-life changes. By Spelunkern.
 
-## Version 0.14.0: item weight and lantern warmth balance
+## Version 0.15.0: armor balance and permanent accessory upgrades
+
+In standard Interloper, the **Ballistic Vest** weighs **2 kg**, provides **20% maximum
+protection**, and reduces the sprint bar by **10%**. Its portable native repair action
+requires **one cured leather**, takes **30 base minutes**, and restores **10 percentage
+points** of condition, capped at 100%. No tool or workshop is required, and this repair
+has a guaranteed success chance. Existing wear is preserved; repairs do not turn the
+vest into a new item. The moose-hide satchel and wool ear wrap each weigh **0.10 kg**.
+The satchel retains its normal equipment slot and carrying-capacity behavior.
+
+The **Foreman's Tool Belt** and **Rifle Holster** become permanent, run-specific
+collectible upgrades. Picking either up unlocks its bonus and removes the physical
+item. Neither occupies an accessory slot, adds carried weight, needs to be worn,
+or imposes a clothing penalty. Duplicate pickups do not stack. The world models,
+reward locations, costs, and progression still apply. English pickup notifications,
+item descriptions, and journal notes explain the permanent unlocks.
+
+- **Tool Belt:** reduces the weight of the heaviest carried item of each tool type by
+  **50%**, with no three-type limit. Weapons and ammunition are excluded. Tools use the
+  game's Tool category; knife, hatchet, toolkit, lantern, flashlight, and spray-paint
+  variants share their functional type. A stack contributes only one item's weight.
+- **Rifle Holster:** reduces the weight of **one heaviest carried rifle by 50%**, across
+  common rifles and all rifle variants, including Ranger's Rifle. It does not reduce
+  revolver or bow weight. The belt provides no additional weapon discount.
+
+Selection follows the current inventory and actual item weight, so dropping or
+storing the heaviest eligible item immediately changes the selected item. The bonuses
+apply to carried weight without changing the physical weight of dropped or stored
+gear. Native wearable belt/holster reductions are suppressed to prevent double counting.
+
+Unlock flags are stored inside the native save slot and reset for a new run. Existing
+carried or equipped belts and holsters are converted into unlocks after loading; an
+already worn item is removed from its slot. No new run is required for these changes.
+Other difficulties retain the original items, weights, and vest repair restrictions.
+Automated probes cover native repair setup, condition gain/capping, save payloads,
+weapon exclusion, tool selection beyond three types, total inventory weight, pickup,
+duplicate prevention, equipment blocking, and existing-inventory migration.
+
+## Item weight and lantern warmth balance (0.14.0)
 
 Standard Interloper uses the following item weights, including gear already saved
 in the world or inventory. No new run is required for these item adjustments.
@@ -423,7 +461,7 @@ Validation code is excluded from the production build. Loader, Harmony, and nati
 the validation even if individual checks report success. The injected probe may
 require forced termination during Unity/.NET shutdown after reporting its results;
 this does not validate a normal playthrough or normal shutdown behavior.
-The 0.14.0 probe passed 664 native runtime checks and 2,220 policy boundary checks.
+The 0.15.0 probe passed 692 native runtime checks and 2,231 policy boundary checks.
 It was run with `DOTNET_TieredCompilation=0` and
 `DOTNET_EnableWriteXorExecute=0`, as well as the launcher's `DOTNET_ReadyToRun=0`.
 This records the validation environment; it is not a claim
