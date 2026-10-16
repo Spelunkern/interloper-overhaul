@@ -1,6 +1,7 @@
 extern alias GameAssembly;
 using System.Reflection;
 using HarmonyLib;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Game = GameAssembly::Il2Cpp;
 using Gear = GameAssembly::Il2CppTLD.Gear;
 
@@ -10,6 +11,8 @@ internal static class SurvivalBalance
     private static readonly Dictionary<int,(float Daily,float Blizzard)> shelters=new();
     private static readonly Dictionary<IntPtr,(Game.CraftingLocation Location,bool IgnoreLock)> locations=new();
     private static readonly Dictionary<int,float> temperatures=new();
+    private static readonly Dictionary<IntPtr,Il2CppReferenceArray<Gear.BlueprintData.RequiredPowder>> powders=new();
+    private static readonly Dictionary<IntPtr,Il2CppReferenceArray<Gear.BlueprintData.RequiredPowder>> balancedPowders=new();
     internal static void Manager(Game.SnowShelterManager manager)
     {
         int id=manager.GetInstanceID();
@@ -46,6 +49,13 @@ internal static class SurvivalBalance
                 if (!locations.ContainsKey(bp.Pointer)) locations[bp.Pointer]=(bp.m_RequiredCraftingLocation,bp.m_IgnoreLockInSurvival);
                 bp.m_RequiredCraftingLocation=ItemBalance.Active ? Game.CraftingLocation.Workbench : locations[bp.Pointer].Location;
                 bp.m_IgnoreLockInSurvival=locations[bp.Pointer].IgnoreLock;
+                if (!powders.ContainsKey(bp.Pointer))
+                {
+                    powders[bp.Pointer]=bp.m_RequiredPowder;
+                    balancedPowders[bp.Pointer]=bp.m_RequiredPowder==null ? null : new Il2CppReferenceArray<Gear.BlueprintData.RequiredPowder>(
+                        bp.m_RequiredPowder.Select(powder=>new Gear.BlueprintData.RequiredPowder { m_Powder=powder.m_Powder,m_Quantity=powder.m_Quantity*2f }).ToArray());
+                }
+                bp.m_RequiredPowder=ItemBalance.Active ? balancedPowders[bp.Pointer] : powders[bp.Pointer];
             }
         }
     }
@@ -130,6 +140,7 @@ internal static class MoreAmmunitionIngredients
     {
         if (!ItemBalance.Active || __instance.m_RolledSpawnChance || __instance.m_HasBeenOwnedByPlayer || __instance.m_BeenInContainer) return;
         if (LootBalancePolicy.ItemName(__instance.name) is "GEAR_StumpRemover" or "GEAR_DustingSulfur")
-            __instance.m_SpawnChance=Math.Max(75,__instance.m_SpawnChance);
+            __instance.m_SpawnChance=Math.Max(LootBalance.Access(__instance.gameObject) switch
+            { LootAccess.Deep=>75,LootAccess.Remote=>50,_=>25 },__instance.m_SpawnChance);
     }
 }

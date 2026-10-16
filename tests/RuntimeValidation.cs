@@ -222,7 +222,20 @@ internal static class RuntimeValidation
             rewardContainer.m_ScriptedItemPrefabs = new Il2CppReferenceArray<GameObject>(new[] { jacket });
             rewardContainer.m_ScriptedItemFilter = new Il2CppStructArray<Game.GameModeFilter>(new[] { Game.GameModeFilter.All });
             rewardContainer.PopulateWithScriptedGear();
-            Check(rewardContainer.m_GearToInstantiate.Count == 1, "native scripted capsule reward preserves unique quest reward");
+            Check(rewardContainer.m_GearToInstantiate.Count == 0, "generic radio capsules cannot generate a unique Tales reward by item name alone");
+            var authenticatedSource=new GameObject("Design");authenticatedSource.SetActive(false);
+            SceneManager.MoveGameObjectToScene(authenticatedSource,SceneManager.GetSceneByName("BunkerXL"));
+            rewardGo.transform.SetParent(authenticatedSource.transform,false);
+            try
+            {
+                rewardContainer.PopulateWithScriptedGear();
+                Check(rewardContainer.m_GearToInstantiate.Count==1,"native scripted Tales bunker generation preserves its unique progression reward");
+            }
+            finally
+            {
+                rewardGo.transform.SetParent(caches.transform,false);
+                UnityEngine.Object.DestroyImmediate(authenticatedSource);
+            }
             Check(!RewardScope.Active && WorldObjects.IsInterloper, "reward scope ends without changing world difficulty");
             var table = ScriptableObject.CreateInstance<Game.LootTableData>();
             rewardContainer.m_LootTableData = table;

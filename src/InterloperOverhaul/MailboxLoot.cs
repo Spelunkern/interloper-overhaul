@@ -11,7 +11,7 @@ internal static class MailboxLoot
     internal static void Configure(Game.PrefabSpawn spawner)
     {
         if (!ItemBalance.Active || spawner==null || spawner.m_SpawnComplete || !StreetLootPolicy.IsMailboxSpawner(spawner.name)) return;
-        string name=StreetLootPolicy.Mail(Game.GameManager.GetRandomSeed(0),LootBalance.Key(spawner.gameObject));
+        string name=StreetLootPolicy.Mail(Game.GameManager.GetRandomSeed(0),LootBalance.Key(spawner.gameObject),LootBalance.Access(spawner.gameObject));
         spawner.m_NumToSpawnMin=spawner.m_NumToSpawnMax=1;
         spawner.m_ChanceOfNoSpawn=string.IsNullOrEmpty(name) ? 100 : 0;
         if (string.IsNullOrEmpty(name)) return;

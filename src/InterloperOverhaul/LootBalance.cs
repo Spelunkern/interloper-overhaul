@@ -47,7 +47,14 @@ internal static class LootBalance
         return false;
     }
 
-    internal static double Retention(GameObject go)
+    internal static LootAccess Access(GameObject source)
+    {
+        var p=source.transform.position;
+        var radial=source.GetComponent<Game.GearItem>()?.m_RadialObjectSpawnerParent;
+        return ExplorationPolicy.Access(source.scene.name,WorldObjects.PathOf(source),p.x,p.y,p.z,radial!=null && radial.IsTidelineSpawner);
+    }
+
+    internal static double Retention(GameObject go,GameObject origin=null)
     {
         if (!Active || go == null || !WorldObjects.IsRestorable(go)) return 1;
         var gear = go.GetComponent<Game.GearItem>();
@@ -57,12 +64,15 @@ internal static class LootBalance
         if (RecoveredCasings.Active && WorldPolicy.IsSpentCasing(name)) return 1;
         if (MailboxLoot.Spawning && StreetLootPolicy.IsMailSupply(name)) return 1;
         if (FirearmSpawnPolicy.IsFiniteItem(name)) return FiniteFirearms.IsManaged(gear) ? 1 : 0;
-        if (WorldPolicy.IsTaleReward(name) ||
+        var source=origin ?? go;
+        string path=WorldObjects.PathOf(source);
+        if (ExplorationPolicy.IsProgressionReward(name,source.scene.name,path) ||
             WorldPolicy.IsSignalFireSatchel(go.scene.name, WorldObjects.PathOf(go))) return 1;
         // Do not substitute canonical prefab restrictions for a scene instance.
         // Native Interloper, for example, allows placed hammers while excluding
         // hammers from ordinary container loot. Only newly restored sources change.
-        return LootBalancePolicy.Retention(name, HasRestoredRestriction(go));
+        bool equipment=gear.m_ClothingItem!=null || gear.GetComponent<Game.ClothingItem>()!=null || (gear.m_GearItemData!=null && (gear.m_GearItemData.m_Type & GameAssembly::Il2CppTLD.Gear.GearType.Tool)!=0 && !ItemBalancePolicy.IsBook(name));
+        return LootBalancePolicy.Retention(name, HasRestoredRestriction(go),Access(source),equipment);
     }
 
     internal static string Key(GameObject source)
@@ -73,8 +83,8 @@ internal static class LootBalance
             p.y.ToString("R", CultureInfo.InvariantCulture) + "," + p.z.ToString("R", CultureInfo.InvariantCulture);
     }
 
-    internal static bool Keep(GameObject item, string key, int slot) =>
-        LootBalancePolicy.Sample(Game.GameManager.GetRandomSeed(0), key + "/" + LootBalancePolicy.ItemName(item.name), slot) < Retention(item);
+    internal static bool Keep(GameObject item, string key, int slot,GameObject origin=null) =>
+        LootBalancePolicy.Sample(Game.GameManager.GetRandomSeed(0), key + "/" + LootBalancePolicy.ItemName(item.name), slot) < Retention(item,origin);
 
     internal static string RadialKey(Game.RadialObjectSpawner spawner) => Key(spawner.gameObject) + "/" +
         spawner.m_GameHourTimeToRespawn.ToString("R", CultureInfo.InvariantCulture);
@@ -97,12 +107,12 @@ internal static class LootBalance
                 continue;
             }
             if (pending[i]!=null && MementoRewardPolicy.IsCache(WorldObjects.PathOf(container.gameObject)) &&
-                !WorldPolicy.IsTaleReward(LootBalancePolicy.ItemName(pending[i].name)))
+                !ExplorationPolicy.IsProgressionReward(LootBalancePolicy.ItemName(pending[i].name),container.gameObject.scene.name,WorldObjects.PathOf(container.gameObject)))
             {
-                var replacement=Game.GearItem.LoadGearItemPrefab(MementoRewardPolicy.Choose(Game.GameManager.GetRandomSeed(0),key,i));
+                var replacement=Game.GearItem.LoadGearItemPrefab(MementoRewardPolicy.Choose(Game.GameManager.GetRandomSeed(0),key,i,Access(container.gameObject)));
                 if (replacement!=null) { pending[i]=replacement.gameObject; continue; }
             }
-            if (pending[i] != null && !Keep(pending[i], key, i)) pending.RemoveAt(i);
+            if (pending[i] != null && !Keep(pending[i], key, i,container.gameObject)) pending.RemoveAt(i);
         }
     }
 }

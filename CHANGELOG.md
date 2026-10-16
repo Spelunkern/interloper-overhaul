@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.20.0
+
+- Start Steam before exporting the mod loader environment and set the native app IDs
+  in the desktop/Steam launcher, preventing the missing-client -998 startup failure.
+
+- Gate newly restored equipment by audited access difficulty: no added clothing or
+  tools in ordinary/renewable sources; premium clothing requires deep exploration.
+- Use real source-container geography when filtering shared gear prefabs, and give
+  beach sources precedence over surrounding deep locations.
+- Move new-run finite weapons/tools to four distinct expedition destinations while
+  retaining the complete legacy placement catalog and saved issuance snapshots.
+- Reduce ordinary mailbox research books from 4% to 0.25%, with explicit remote/deep
+  rates; preserve papers, common books, Book Smarts, and existing item weights.
+- Theme remote/deep mementos around expedition supplies, with one 1% rare-equipment
+  slot in deep mementos. Authenticate Tales exceptions by scene and source hierarchy.
+- Require the Cannery for integrated manufacturing, increase tool-refining materials
+  and time, and require quality tools. Increase flare-shell inputs and crafting time.
+- Double noisemaker powder costs while preserving discovery, ordinary-workbench
+  crafting, damage, weight, and morale changes; scale chemical spawn floors by access.
+
 ## 0.19.0
 
 - Rework frostbite into temporary, independently recoverable body-area afflictions

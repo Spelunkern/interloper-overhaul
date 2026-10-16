@@ -210,6 +210,8 @@ internal static class CanneryWorkshopLocation
     {
         var recipe = VariantPolicy.Recipe(__instance.name);
         if (recipe != null) __result &= WorldObjects.IsInterloper && Workshop.Unlocked(recipe) && Workshop.AtCannery(cli);
+        else if (ManufacturingPolicy.Recipes.Any(candidate=>candidate.BlueprintName==__instance.name))
+            __result &= WorldObjects.IsInterloper && Workshop.AtCannery(cli);
     }
 }
 [HarmonyPatch]

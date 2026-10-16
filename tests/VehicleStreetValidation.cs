@@ -33,7 +33,7 @@ internal static class VehicleStreetValidation
             spawner.Awake();
             int seed=Game.GameManager.GetRandomSeed(0);
             string expected="";
-            for(int position=0;position<1000;position++)
+            for(int position=0;position<10000;position++)
             {
                 spawnObject.transform.localPosition=new Vector3(position,0,0);
                 expected=StreetLootPolicy.Mail(seed,LootBalance.Key(spawnObject));

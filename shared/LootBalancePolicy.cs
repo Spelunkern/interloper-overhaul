@@ -52,7 +52,7 @@ public static class LootBalancePolicy
         !IsWeaponVariant(name) && Sample(seed, "trader-firearm-supplies/" + ItemName(name), aurora) <
         (IsLiveFirearmAmmo(name) ? 0.0025 : WorldPolicy.IsSpentCasing(name) ? 0.005 : 1);
 
-    public static double Retention(string name, bool restored)
+    public static double Retention(string name, bool restored, LootAccess access=LootAccess.Ordinary, bool equipment=false)
     {
         name = ItemName(name);
         if (FirearmSpawnPolicy.IsFiniteItem(name)) return 0; // Supplied only by the finite world allocation.
@@ -60,18 +60,9 @@ public static class LootBalancePolicy
         if (IsLiveFirearmAmmo(name)) return 0.0025;
         if (WorldPolicy.IsSpentCasing(name)) return 0.005;
         if (name is "GEAR_StumpRemover" or "GEAR_DustingSulfur") return 1;
-        if (!restored || WorldPolicy.IsTaleReward(name)) return 1;
-        return name switch
-        {
-            "GEAR_Hammer" or "GEAR_Hacksaw" or "GEAR_MagnifyingLens" or "GEAR_Firestriker" or
-            "GEAR_Balaclava" or "GEAR_HeavyParka" or "GEAR_MilitaryParka" or "GEAR_MuklukBoots" or
-            "GEAR_JacketLeatherFlightA" or "GEAR_InsulatedBoots" or "GEAR_SkiBoots" or
-            "GEAR_InsulatedPants" or "GEAR_CombatPants" or "GEAR_ClimbingSocks" or
-            "GEAR_LongUnderwearWool" or "GEAR_Gauntlets" or "GEAR_CowichanSweater" or
-            "GEAR_FishermanSweater" or "GEAR_WoolShirt" or "GEAR_HeavyWoolSweater" or
-            "GEAR_DownParka" or "GEAR_QualityWinterCoat" or "GEAR_PremiumWinterCoat" => 0.01,
-            _ => 0.05
-        };
+        if (WorldPolicy.IsTaleReward(name)) return 0; // Only an authenticated progression source may bypass this.
+        if (!restored) return 1;
+        return ExplorationPolicy.EquipmentRetention(name,access,equipment);
     }
 
     // Stable across processes/platforms. No string.GetHashCode or shared RNG changes.

@@ -48,6 +48,10 @@ internal static class SurvivalBalanceValidation
             SurvivalBalance.Recipes(manager);
             var noisemaker=manager.m_AllBlueprints.ToArray().First(bp=>bp.name=="BLUEPRINT_GEAR_NoiseMaker_B");
             check(noisemaker.CanCraftAtLocation(Game.CraftingLocation.Workbench) && !noisemaker.m_IgnoreLockInSurvival,"native survival noisemaker recipe retains discovery-based learning at an ordinary workbench");
+            check(noisemaker.m_RequiredPowder!=null && noisemaker.m_RequiredPowder.Length>0,"native noisemaker recipe exposes a measured gunpowder cost");
+            var powder=noisemaker.m_RequiredPowder[0].m_Quantity;
+            SurvivalBalance.Recipes(manager);
+            check(noisemaker.m_RequiredPowder[0].m_Quantity==powder,"repeated recipe refreshes do not multiply noisemaker powder costs");
             var mementos=new GameObject("Mementos");mementos.transform.SetParent(root.transform);
             var cache=new GameObject("Cache");cache.transform.SetParent(mementos.transform);
             var box=cache.AddComponent<Game.Container>();
@@ -64,6 +68,7 @@ internal static class SurvivalBalanceValidation
             check(shelterManager.GetTemperatureIncreaseCelsius()==15,"native shelter manager restores authored temperature outside Interloper");
             SurvivalBalance.Recipes(manager);
             check(noisemaker.m_RequiredCraftingLocation==Game.CraftingLocation.AmmoWorkbench && !noisemaker.m_IgnoreLockInSurvival,"native survival noisemaker recipe restores authored location and learning rules outside Interloper");
+            check(noisemaker.m_RequiredPowder[0].m_Quantity*2f==powder,"other difficulties retain the original powder cost while Interloper uses double");
             var ordinary=Game.GearItem.InstantiateGearItem("GEAR_NoiseMaker");items.Add(ordinary);
             check(ordinary.GetComponent<Game.NoiseMakerItem>().m_AIDamageInflictionInRadius==50 && ordinary.GetComponent<Game.NoiseMakerItem>().m_PlayerDamageInflictionInRadius==0,
                 "Stalker retains native noisemaker damage");

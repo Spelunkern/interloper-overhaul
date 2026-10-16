@@ -3,6 +3,66 @@
 A personal mod for **The Long Dark**, focused on restoring content excluded from
 standard **Interloper**, with a few general quality-of-life changes. By Spelunkern.
 
+## Version 0.20.0: exploration-driven loot
+
+These rules supersede the earlier restoration distributions in standard Interloper.
+Existing rolled, saved, owned, and stored items remain intact. Start a new run for
+new firearm/tool locations; existing allocation snapshots retain every old location
+and creation flag, including items in unloaded scenes.
+
+| Newly restored source | Premium clothing | Other clothing and tools | Ordinary supplies |
+| --- | --- | --- | --- |
+| Ordinary buildings, vehicles, and containers | Excluded | Excluded | 5% retention |
+| Renewable beachcombing, including large containers | Excluded | Excluded | 5% retention |
+| Remote destinations and ordinary memento/radio caches | Excluded | 1% retention | 5% retention |
+| Verified deep destinations and Tales bunkers | 1% retention | 5% retention | 5% retention |
+
+These are additional retention rolls after native selection, not chances per
+container. Original Interloper sources keep their availability; a native world
+hammer or native beach find is not reclassified just because its item can also
+occur in a restored source. Finite equipment, ammunition, casings, and authenticated
+progression rewards have their separate rules. Container decisions use the actual
+container's scene, hierarchy, and position rather than its canonical item prefab.
+
+Deep destinations are the Timberwolf Mountain summit tail and summit cave, the
+Ash Canyon gold-mine interior, the two HRV signal-fire destinations and Lake Cave
+site, the audited HRV1 lockbox and HRV2 rock cache, the Concentrator watchroom,
+and Tales bunker interiors. Outdoor HRV areas
+use small three-dimensional destination bounds; the rest of the region remains
+ordinary. Remote supply access includes normal radio/memento caches, the Coastal
+lookout destination, and the old Mystery Lake lookout. Beach sources take precedence
+regardless of which scene contains them. Classification does not promote an entire
+outdoor region just because that region is dangerous.
+
+- New runs allocate the single rifle, revolver, hunting knife, and hatchet across
+  four distinct destinations selected from the summit cave, Ash Canyon gold mine,
+  HRV Lake Cave, and the two HRV signal-fire destinations. Conditions, empty guns,
+  permanent issuance flags, and no beach/Trader replacements remain unchanged.
+- Mailboxes retain 75% paper and 4% common books. Research books fall to 0.25% in
+  ordinary locations, 0.5% at remote destinations, and 1% at deep destinations.
+  The remaining outcomes are empty; Book Smarts and book weights are unchanged.
+- Mementos remain deterministic and supply-based. Remote/deep caches favor repair,
+  medical, fire-starting, and ammunition ingredients. Only the first slot of a deep
+  memento can roll rare equipment (1%); ordinary/remote caches cannot. Existing
+  searched contents are preserved. Tales reward exemptions require a native Tales
+  bunker scene and its Design hierarchy, rather than just a reward item name.
+- All eight integrated manufacturing recipes require the Cannery ammunition bench,
+  enforced in both blueprint availability and the native start operation. Tool
+  refining requires quality tools, more scrap/leather, and four/six hours. Flare
+  shells cost two unused flares or 100 g powder and take ninety minutes.
+  Refining remains repeatable and does not consume the unique world allocation.
+- Noisemakers still require discovery and an ordinary workbench, retain their
+  requested weight/damage/morale effects, and now consume twice the native powder.
+  Ammunition ingredients keep their rarity exemption, with spawn-chance floors of
+  25% at ordinary/beach sites, 50% remote, and 75% deep; higher native chances remain.
+- Existing item weights, permanent accessories, feats, and variant schematics keep
+  their configured benefits. Variant crafting and time-only firearm reversal remain
+  subject to the learned schematic and Cannery access.
+
+Verified coordinates come from the locally installed 2.55 assets. Added finite
+placements use stable separate identities and audited gear positions; the former
+site catalog is retained exclusively to resolve saved allocations.
+
 ## Version 0.19.0: temporary afflictions, defensive tools, and roadside supplies
 
 These changes apply to standard Interloper, including loaded afflictions.
@@ -313,19 +373,19 @@ and does not open an existing survival save.
 
 ## Integrated cannery manufacturing (0.12.0)
 
-Standard Interloper gains eight native crafting recipes at **ammunition workbenches**.
+Standard Interloper gains eight native crafting recipes at the **Cannery ammunition workbench** (restricted in 0.20.0).
 They use the existing crafting UI, light/tool requirements, material consumption,
 work in progress, and native gear saves. No ModComponent, settings menu, external
 blueprint files, or custom item bundles are required.
 
 | Recipe | Consumed materials | Output | Base time |
 | --- | --- | --- | --- |
-| Refine a hunting knife | 1 improvised knife + 2 scrap metal | 1 hunting knife | 120 min |
-| Refine a hatchet | 1 improvised hatchet + 3 scrap metal | 1 standard hatchet | 180 min |
+| Refine a hunting knife | 1 improvised knife + 4 scrap metal + 1 cured leather; quality tools | 1 hunting knife | 240 min |
+| Refine a hatchet | 1 improvised hatchet + 6 scrap metal + 2 cured leather; quality tools | 1 standard hatchet | 360 min |
 | Efficient arrow shafts | 1 cured birch sapling | 4 arrow shafts | 60 min |
-| Red-flare shell | 1 unused red flare + 1 scrap metal + 1 cloth | 1 flare shell | 60 min |
-| Blue-flare shell | 1 unused marine flare + 1 scrap metal + 1 cloth | 1 flare shell | 60 min |
-| Gunpowder shell | 50 g gunpowder + 1 scrap metal + 1 cloth | 1 flare shell | 30 min |
+| Red-flare shell | 2 unused red flares + 1 scrap metal + 1 cloth | 1 flare shell | 90 min |
+| Blue-flare shell | 2 unused marine flares + 1 scrap metal + 1 cloth | 1 flare shell | 90 min |
+| Gunpowder shell | 100 g gunpowder + 1 scrap metal + 1 cloth | 1 flare shell | 90 min |
 | Recycle red flares | 3 unused red flares | 100 g gunpowder | 90 min |
 | Recycle marine flares | 3 unused marine flares | 100 g gunpowder | 90 min |
 
@@ -592,9 +652,15 @@ The private runtime is installed under `~/.local/share/tld-modding/dotnet`.
 present so only the current mod loads. To build without installing, run
 `./scripts/build.sh`.
 
+The launcher starts Steam in the background if it is absent, waits for its process,
+and sets the native game app IDs before loading the mod runtime. This prevents the
+-998 startup screen caused by an unavailable Steam client. Steam must be signed in;
+launcher diagnostics are saved under `~/.local/state/interloper-overhaul`.
 The launcher skips MelonLoader's own startup screen. On Linux, it disables ReadyToRun
 for the .NET 6 runtime following intermittent loader startup failures observed during
-validation. Set `DOTNET_ReadyToRun=1` to test the original runtime configuration.
+validation. Tiered compilation and write-xor-execute are also disabled by default,
+matching the runtime probe configuration. Each `DOTNET_` variable can be overridden
+explicitly; these settings do not claim to eliminate every loader startup failure.
 
 Optional variables: `TLD_GAME_DIR` for another game installation and `TLD_DOTNET_ROOT`
 for another runtime. `build.sh` also accepts `-p:GameDir=/path/to/game`.
@@ -635,7 +701,7 @@ Validation code is excluded from the production build. Loader, Harmony, and nati
 the validation even if individual checks report success. The injected probe may
 require forced termination during Unity/.NET shutdown after reporting its results;
 this does not validate a normal playthrough or normal shutdown behavior.
-The 0.19.0 probe passed 1,009 native runtime checks and 3,273 policy boundary checks.
+The 0.20.0 probe passed 1,024 native runtime checks and 3,296 policy boundary checks.
 These include clothing and food migration, ingredient inventory mass, tinder UI and
 success calculations, enabled feat effects, Mending thresholds, native cougar save
 round trips, Cooking thresholds and immunity scopes, partial-bundle reloads and
@@ -645,7 +711,15 @@ Stalker and Misery. New checks cover separate temporary frostbite gauges and
 legacy migration, parasite medication/rest saves, affliction clearing, native prybar
 flee calculations, vehicle warmth, actual mailbox research-book spawning, unique
 fuel-tank IDs, small fuel amounts and empty-container saves, and the native rock-cache
-requirement checks at twenty-four and twenty-five stones.
+requirement checks at twenty-four and twenty-five stones. Exploration checks cover
+source-container geography, deep clothing retention, renewable-source exclusions,
+authenticated native Tales generation, rejected manufacturing starts outside the
+Cannery, and reversible/idempotent noisemaker powder costs. Policy checks cover new
+finite destination diversity, legacy allocation compatibility, mailbox frequencies,
+and deep-memento slot limits. An isolated launcher check verifies missing-Steam
+startup, app IDs, and that the game preload is not inherited by Steam.
+New expedition coordinates still need a full survival traversal and visual pickup
+check; these menu probes do not measure a complete world's effective loot yield.
 Ruined-repair, noisemaker morale, and cougar-swipe
 checks observe native entry points with controlled callbacks; they do not run combat
 or consume a player's repair resources. The new affliction and roadside probes

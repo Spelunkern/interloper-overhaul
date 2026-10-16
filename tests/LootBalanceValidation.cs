@@ -22,10 +22,10 @@ internal static class LootBalanceValidation
         }
         try
         {
-            foreach (var fixture in new[] { ("GEAR_Rifle", 0.0), ("GEAR_Revolver", 0.0), ("GEAR_Hacksaw", 0.01),
-                ("GEAR_HeavyParka", 0.01), ("GEAR_PremiumWinterCoat", 0.01), ("GEAR_CowichanSweater", 0.01),
+            foreach (var fixture in new[] { ("GEAR_Rifle", 0.0), ("GEAR_Revolver", 0.0), ("GEAR_Hacksaw", 0.0),
+                ("GEAR_HeavyParka", 0.0), ("GEAR_PremiumWinterCoat", 0.0), ("GEAR_CowichanSweater", 0.0),
                 ("GEAR_Rifle_Curators", 0.0), ("GEAR_SurvivalKnife", 0.0), ("GEAR_PeanutButter", 0.05),
-                ("GEAR_RifleAmmoSingle", 0.0025), ("GEAR_RifleAmmoCasing", 0.005), ("GEAR_TacticalJacket", 1.0) })
+                ("GEAR_RifleAmmoSingle", 0.0025), ("GEAR_RifleAmmoCasing", 0.005), ("GEAR_TacticalJacket", 0.0) })
             {
                 var prefab = Game.GearItem.LoadGearItemPrefab(fixture.Item1);
                 check(prefab != null && LootBalance.Retention(prefab.gameObject) == fixture.Item2,
@@ -71,10 +71,10 @@ internal static class LootBalanceValidation
             var disabler = placed.AddComponent<Game.DisableObjectForXPMode>();
             disabler.m_XPModesToDisable = new Il2CppSystem.Collections.Generic.List<Game.ExperienceModeType>();
             disabler.m_XPModesToDisable.Add(Game.ExperienceModeType.Interloper);
-            check(!disabler.ShouldDisableForCurrentMode() && LootBalance.Retention(placed) == 0.01,
+            check(!disabler.ShouldDisableForCurrentMode() && LootBalance.Retention(placed) == 0,
                 "restored scene gear receives premium rarity through native eligibility hook");
             UnityEngine.Object.DestroyImmediate(disabler);
-            check(LootBalance.Retention(placed) == 0.01, "restored source remembered after native disabler removal");
+            check(LootBalance.Retention(placed) == 0, "restored source remembered after native disabler removal");
             gear.m_BeenInPlayerInventory = true;
             check(LootBalance.Retention(placed) == 1, "acquired player gear excluded from rarity filtering");
             gear.m_BeenInPlayerInventory = false;
@@ -129,7 +129,7 @@ internal static class LootBalanceValidation
                 if (LootBalance.Keep(rifle, key, slot)) expected++;
             }
             LootBalance.FilterPending(container, 1);
-            check(container.m_GearToInstantiate.Count == expected && expected > 1 && expected < 30,
+            check(container.m_GearToInstantiate.Count == expected && expected == 1,
                 "all-premium container loses rejected slots without replacement and preserves earlier stages");
             check(container.m_Items.Count == 0, "rarity filter never adds or removes stored inventory items");
             container.m_GearToInstantiate.Clear();
@@ -170,7 +170,7 @@ internal static class LootBalanceValidation
             RewardScope.Enter();
             try
             {
-                check(LootBalance.Retention(rifle) == 0.01, "restored cache reward scopes retain Interloper rarity");
+                check(LootBalance.Retention(rifle) == 0, "reward scope alone cannot authenticate a generic equipment source");
                 check(LootBalance.Retention(variantPrefab) == 0, "temporary reward generation scope cannot restore variants");
             }
             finally { RewardScope.Leave(); }
@@ -179,6 +179,32 @@ internal static class LootBalanceValidation
                 Game.ExperienceModeManager.s_CurrentGameMode = Game.ExperienceModeManager.GetGameModeFromName(difficulty);
                 check(LootBalance.Retention(rifle) == 1 && LootBalance.Retention(variantPrefab) == 1, difficulty + " is excluded from loot rarity and variant changes");
             }
+            Game.ExperienceModeManager.s_CurrentGameMode=previous;
+            root.name="Design";
+            UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(root,UnityEngine.SceneManagement.SceneManager.GetSceneByName("CrashMountainRegion"));
+            var loot=Child("Loot");
+            var summit=Child("SummitCave");summit.transform.SetParent(loot.transform,false);
+            var deepBox=Child("ExpeditionCache").AddComponent<Game.Container>();deepBox.transform.SetParent(summit.transform,false);
+            var premium=Game.GearItem.LoadGearItemPrefab("GEAR_HeavyParka").gameObject;
+            check(LootBalance.Retention(premium)==0 && LootBalance.Retention(premium,deepBox.gameObject)==0.01,
+                "container geography comes from the actual deep source rather than its shared gear prefab");
+            string deepKey=LootBalance.Key(deepBox.gameObject);int retained=0;
+            for(int index=0;index<1000;index++)
+            {
+                deepBox.m_GearToInstantiate.Add(premium);
+                if(LootBalance.Keep(premium,deepKey,index,deepBox.gameObject)) retained++;
+            }
+            LootBalance.FilterPending(deepBox,0);
+            check(deepBox.m_GearToInstantiate.Count==retained && retained>0 && retained<30,
+                "native pending deep-cache loot applies rare clothing retention once using source context");
+            var canoe=Child("CustomSpawnedItem_canoe");canoe.transform.SetParent(summit.transform,false);
+            deepBox.transform.SetParent(canoe.transform,false);
+            check(LootBalance.Retention(premium,deepBox.gameObject)==0,"washed-up containers cannot inherit deep access from their scene or surrounding location");
+            var reward=Game.GearItem.LoadGearItemPrefab("GEAR_TacticalJacket").gameObject;
+            check(LootBalance.Retention(reward,deepBox.gameObject)==0,"a reward item name cannot authenticate a generic or renewable source");
+            UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(root,UnityEngine.SceneManagement.SceneManager.CreateScene("BunkerXL"));
+            deepBox.transform.SetParent(root.transform,false);
+            check(LootBalance.Retention(reward,deepBox.gameObject)==1,"authentic Tales bunker contents preserve their progression rewards");
         }
         finally
         {

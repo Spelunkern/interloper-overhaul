@@ -53,7 +53,7 @@ internal static class ManufacturingValidation
                     check(bp.m_RequiredGear[i].m_Item != null && LootBalancePolicy.ItemName(bp.m_RequiredGear[i].m_Item.name) == recipe.Ingredients[i].Item &&
                         bp.m_RequiredGear[i].m_Count == recipe.Ingredients[i].Count, "native recipe consumes the authored ingredient quantity: " + recipe.Id + "/" + i);
                 if (recipe.PowderRequiredKg > 0)
-                    check(bp.m_RequiredPowder.Length == 1 && bp.m_RequiredPowder[0].m_Quantity == Units.ItemWeight.FromKilograms(0.05f),
+                    check(bp.m_RequiredPowder.Length == 1 && bp.m_RequiredPowder[0].m_Quantity == Units.ItemWeight.FromKilograms((float)recipe.PowderRequiredKg),
                         "flare-shell recipe consumes measured native gunpowder rather than a whole can");
             }
             foreach (string difficulty in new[] { "Stalker", "Misery" })
@@ -62,6 +62,11 @@ internal static class ManufacturingValidation
                 check(blueprints.Values.All(bp => bp.ShouldDisableForCurrentMode()), difficulty + " excludes every manufacturing recipe");
             }
             Game.ExperienceModeManager.s_CurrentGameMode = mode;
+
+            var bench=root.AddComponent<Game.AmmoWorkBench>();
+            var denied=new Gear.CraftingOperation();
+            denied.StartCrafting(bench,bench.Cast<Game.CraftingLocationInterface>(),blueprints[ManufacturingPolicy.Recipes[0].BlueprintName],null,1,1,null);
+            check(!denied.InProgress,"native manufacturing cannot start at an ammunition bench outside the Cannery");
 
             var state = FiniteFirearms.State;
             string allocation = state?.Serialize();
@@ -116,8 +121,8 @@ internal static class ManufacturingValidation
             var flareBlueprint = blueprints[recipeWithFlare.BlueprintName];
             bool allowed = true;
             RequireFreshManufacturingFlares.Postfix(flareBlueprint, inventory, null, ref allowed);
-            check(allowed && Manufacturing.FreshFlares(inventory, "GEAR_FlareA").Count == 1,
-                "unused flare accepted while an exhausted flare in the same inventory is excluded");
+            check(!allowed && Manufacturing.FreshFlares(inventory, "GEAR_FlareA").Count == 1,
+                "one fresh flare plus one exhausted flare cannot satisfy the two-flare recipe");
             Manufacturing.Current = recipeWithFlare;
             try { inventory.RemoveGearFromInventory("GEAR_FlareA", 1); }
             finally { Manufacturing.Current = current; }

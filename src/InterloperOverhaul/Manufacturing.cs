@@ -158,7 +158,12 @@ internal static class ManufacturingCraftScope
 internal static class BeginManufacturing
 {
     private static MethodBase TargetMethod() => AccessTools.Method(typeof(Gear.CraftingOperation), nameof(Gear.CraftingOperation.StartCrafting));
-    private static void Prefix(Gear.CraftingOperation __instance) => Manufacturing.Cancelled.Remove(__instance.Pointer);
+    private static bool Prefix(Gear.CraftingOperation __instance,Gear.BlueprintData blueprintData,Game.CraftingLocationInterface craftingLocation)
+    {
+        Manufacturing.Cancelled.Remove(__instance.Pointer);
+        return blueprintData==null || !ManufacturingPolicy.Recipes.Any(recipe=>recipe.BlueprintName==blueprintData.name) ||
+            (WorldObjects.IsInterloper && Workshop.AtCannery(craftingLocation));
+    }
 }
 
 [HarmonyPatch]

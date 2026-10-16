@@ -4,7 +4,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <!-- Generated IL2CPP attributes conflict with nullable metadata emission. -->
     <Nullable>disable</Nullable>
-    <Version>0.19.0</Version>
+    <Version>0.20.0</Version>
     <DebugType>portable</DebugType>
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
@@ -34,6 +34,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="../../shared/SaltMassRecord.cs" Link="SaltMassRecord.cs" />
+    <Compile Include="../../shared/ExplorationPolicy.cs" Link="ExplorationPolicy.cs" />
     <Compile Include="../../shared/StreetLootPolicy.cs" Link="StreetLootPolicy.cs" />
     <Compile Include="../../shared/MementoRewardPolicy.cs" Link="MementoRewardPolicy.cs" />
     <Compile Include="../../shared/FoodPreparationPolicy.cs" Link="FoodPreparationPolicy.cs" />

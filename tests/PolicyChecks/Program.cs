@@ -77,15 +77,15 @@ Check(!WorldPolicy.IsBeachcombingObject("CustomSpawnedItem_droppeddecorationstor
 Check(!WorldPolicy.IsBeachcombingObject("CustomSpawnedItem_canoe_fake/GEAR_Arrow"), "Unrelated prefix excluded");
 Check(LootBalancePolicy.Retention("GEAR_PeanutButter", true) == 0.05, "Restored ordinary loot retains five percent");
 foreach (string name in new[] { "GEAR_HeavyParka", "GEAR_Hacksaw", "GEAR_CowichanSweater", "GEAR_PremiumWinterCoat" })
-    Check(LootBalancePolicy.Retention(name, true) == 0.01, "Premium restored loot retains one percent: " + name);
+    Check(LootBalancePolicy.Retention(name, true)==0 && LootBalancePolicy.Retention(name,true,LootAccess.Deep)==(ExplorationPolicy.IsPremium(name) ? 0.01 : 0.05), "Restored equipment requires an expedition source: " + name);
 foreach (string name in new[] { "GEAR_Rifle_Curators", "GEAR_Bow_Woodwrights", "GEAR_SurvivalKnife" })
     Check(LootBalancePolicy.Retention(name, true) == 0, "Special variants are temporarily disabled: " + name);
-Check(LootBalancePolicy.Retention("GEAR_HeavyParka(Clone)", true) == 0.01, "Cloned gear uses the same rarity tier");
-Check(LootBalancePolicy.Retention("GEAR_Hacksaw (12)", true) == 0.01, "Authored numbered instances use the same tier");
+Check(LootBalancePolicy.Retention("GEAR_HeavyParka(Clone)", true,LootAccess.Deep) == 0.01, "Cloned gear uses the same rarity tier");
+Check(LootBalancePolicy.Retention("GEAR_Hacksaw (12)", true,LootAccess.Remote) == 0.01, "Authored numbered instances use the same tier");
 foreach (string name in new[] { "GEAR_Hammer", "GEAR_Stick" })
     Check(LootBalancePolicy.Retention(name, false) == 1, "Original Interloper sources retain availability: " + name);
 foreach (string name in new[] { "GEAR_TacticalJacket", "GEAR_RifleScabbardA", "GEAR_ToolBelt", "GEAR_TacticalGloves" })
-    Check(LootBalancePolicy.Retention(name, true) == 1, "Progression rewards remain available: " + name);
+    Check(LootBalancePolicy.Retention(name, true) == 0, "Progression rewards require an authenticated source: " + name);
 foreach (double retention in new[] { 0.05, 0.01, 0.0025, 0.005 })
 {
     int accepted = Enumerable.Range(0, 100000).Count(slot => LootBalancePolicy.Sample(12345, "CoastalRegion/container", slot) < retention);
@@ -105,7 +105,7 @@ foreach (string name in new[] { "GEAR_RifleAmmoSingle", "GEAR_RifleAmmoBox", "GE
     Check(LootBalancePolicy.Retention(name, true) == 0.0025 && LootBalancePolicy.Retention(name, false) == 0.0025, "Found ammunition uses quarter-percent retention");
 foreach (string name in new[] { "GEAR_RifleAmmoCasing", "GEAR_RevolverAmmoCasing" })
     Check(LootBalancePolicy.Retention(name, true) == 0.005, "Found casings use half-percent retention");
-Check(FirearmSpawnPolicy.Sites.Count(site => FirearmSpawnPolicy.IsStandardFirearm(site.Item)) == 28 && FirearmSpawnPolicy.Sites.Select(site => site.Id).Distinct().Count() == FirearmSpawnPolicy.Sites.Length, "Audited firearm site identities are unique");
+Check(FirearmSpawnPolicy.LegacySites.Count(site => FirearmSpawnPolicy.IsStandardFirearm(site.Item)) == 28 && FirearmSpawnPolicy.Sites.Select(site => site.Id).Distinct().Count() == FirearmSpawnPolicy.Sites.Length, "Audited firearm site identities are unique");
 Check(FirearmSpawnPolicy.Sites.All(site => !site.Path.Contains("Whiteout") && !site.Path.Contains("research")), "Challenge and quest-only positions excluded");
 var plans = Enumerable.Range(0, 1000).Select(seed => FirearmRunState.Create(seed, "Sandbox/123")).ToArray();
 Check(plans.All(plan => plan.Site("GEAR_Rifle").Item == "GEAR_Rifle" && plan.Site("GEAR_Revolver").Item == "GEAR_Revolver"), "Every seed allocates exactly one location for each standard firearm");
@@ -170,7 +170,7 @@ Check(ManufacturingPolicy.Recipes.Where(recipe => FirearmSpawnPolicy.IsLimitedTo
     recipe.Ingredients.Any(input => input.Item.EndsWith("Improvised") && input.Count == 1)), "Manufactured tools consume an improvised predecessor");
 Check(ManufacturingPolicy.Recipes.Where(recipe => recipe.PowderResultKg > 0).All(recipe => recipe.PowderResultKg == 0.1 &&
     recipe.Ingredients.Single(input => ManufacturingPolicy.IsFlare(input.Item)).Count == 3), "Recycled powder is measured and costs three flares");
-Check(ManufacturingPolicy.Recipes.Single(recipe => recipe.Id == "ShellFromPowder").PowderRequiredKg == 0.05,
+Check(ManufacturingPolicy.Recipes.Single(recipe => recipe.Id == "ShellFromPowder").PowderRequiredKg == 0.1,
     "Powder-based flare shells consume measured gunpowder");
 
 
@@ -270,8 +270,42 @@ for(int seed=0;seed<20000;seed++)
     double fuel=StreetLootPolicy.FuelLitres(seed,"CoastalRegion/car");
     if(fuel>0) { fuelFinds++;if(fuel<0.05 || fuel>=0.15) throw new Exception("Fuel quantity outside policy range."); }
 }
-Check(papers>14500 && papers<15500 && commonBooks>650 && commonBooks<950 && skillBooks>650 && skillBooks<950,"mailbox frequencies remain near seventy-five percent paper and eight percent books");
+Check(papers>14500 && papers<15500 && commonBooks>650 && commonBooks<950 && skillBooks>25 && skillBooks<80,"mailbox frequencies remain near seventy-five percent paper, four percent common books, and quarter-percent research books");
 Check(fuelFinds>1800 && fuelFinds<2200,"one in ten vehicle tanks contains a small fuel find");
 Check(mailOutcomes.Count==2+StreetLootPolicy.CommonBooks.Length+StreetLootPolicy.SkillBooks.Length+1,"all ordinary and research books are reachable without adding unrelated mailbox loot");
 Check(StreetLootPolicy.Mail(2718,"MailboxA")==StreetLootPolicy.Mail(2718,"MailboxA") && StreetLootPolicy.FuelLitres(2718,"CarA")==StreetLootPolicy.FuelLitres(2718,"CarA"),"street loot selection is stable on reload");
+foreach(var access in Enum.GetValues<LootAccess>())
+{
+    Check(LootBalancePolicy.Retention("GEAR_HeavyParka",true,access)==(access==LootAccess.Deep ? 0.01 : 0),"premium clothing is exclusive to deep exploration: "+access);
+    Check(LootBalancePolicy.Retention("GEAR_Hacksaw",false,access)==1,"native Interloper sources survive geographic gating: "+access);
+    Check(LootBalancePolicy.Retention("GEAR_CottonScarf",true,access,true)==(access==LootAccess.Deep ? 0.05 : access==LootAccess.Remote ? 0.01 : 0),"restored clothing cannot bypass equipment gating: "+access);
+}
+Check(ExplorationPolicy.Access("CrashMountainRegion","Design/Loot/PlaneTailStuff/Box")==LootAccess.Deep &&
+    ExplorationPolicy.Access("CrashMountainRegion","Design/Loot/CargoCaches/cargo_creek/Box")==LootAccess.Ordinary,"summit access does not promote lower mountain cargo");
+Check(ExplorationPolicy.Access("RiverValleyRegion_SANDBOX","Design/Generic",0,0,0)==LootAccess.Ordinary &&
+    ExplorationPolicy.Access("RiverValleyRegion_SANDBOX","Design/Generic",1493,203,1742)==LootAccess.Deep,"HRV requires a verified destination, not just its region name");
+Check(ExplorationPolicy.Access("AshMine","CustomSpawnedItem_canoe/Box")==LootAccess.Beach,"renewable source takes precedence over a deep scene");
+Check(ExplorationPolicy.IsProgressionReward("GEAR_TacticalJacket","BunkerXL","Root/Design/Tale3/GEAR_TacticalJacket") &&
+    !ExplorationPolicy.IsProgressionReward("GEAR_TacticalJacket","CoastalRegion","Design/Generic"),"Tales exemption requires its actual progression scene");
+Check(plans.All(plan=>FirearmSpawnPolicy.Items.All(item=>FirearmSpawnPolicy.DeepSites.Any(site=>site.Id==plan.Site(item).Id))),"every new finite allocation uses expedition destinations");
+Check(plans.All(plan=>FirearmSpawnPolicy.Items.Select(item=>plan.Site(item).Path.Split('/')[1]).Distinct().Count()==4),"four unique equipment families use four different expedition destinations");
+var legacyAllocation=FirearmRunState.Create(42,"legacy-geography");
+legacyAllocation.RifleSite=FirearmSpawnPolicy.LegacySites.First(site=>site.Item=="GEAR_Rifle").Id;
+legacyAllocation.RifleCreated=true;
+Check(FirearmRunState.Deserialize(legacyAllocation.Serialize()).RifleSite==legacyAllocation.RifleSite,"old allocated locations and issuance remain valid after geographic changes");
+Check(ExplorationPolicy.Access("RiverValleyRegion_SANDBOX","Design/Mementos/HRV1/CONTAINER_LockBoxB")==LootAccess.Deep &&
+    ExplorationPolicy.Access("RiverValleyRegion_SANDBOX","Design/Mementos/HRV1/GEAR_VisorNoteHRV1")==LootAccess.Remote,
+    "audited deep memento destination does not promote its distant note location");
+Check(FirearmSpawnPolicy.DeepSites.All(site=>ExplorationPolicy.Access(site.Scene,site.Path,site.X,site.Y,site.Z)==LootAccess.Deep),
+    "all new finite gear placements satisfy the geographic deep-access policy");
+int rareMementos=0;
+for(int seed=0;seed<10000;seed++)
+{
+    var reward=MementoRewardPolicy.Choose(seed,"deep-cache",0,LootAccess.Deep);
+    if(MementoRewardPolicy.RareEquipment.Contains(reward)) rareMementos++;
+    if(MementoRewardPolicy.RareEquipment.Contains(MementoRewardPolicy.Choose(seed,"deep-cache",1,LootAccess.Deep)) ||
+       MementoRewardPolicy.RareEquipment.Contains(MementoRewardPolicy.Choose(seed,"deep-cache",0,LootAccess.Remote))) throw new Exception("Memento equipment escaped its one deep slot.");
+}
+Check(rareMementos>65 && rareMementos<140,"deep mementos have one rare equipment opportunity per cache");
+Check(ManufacturingPolicy.Recipes.Where(recipe=>FirearmSpawnPolicy.IsLimitedTool(recipe.Result)).All(recipe=>recipe.Minutes>=240 && recipe.Tools.Contains("GEAR_HighQualityTools") && recipe.Ingredients.Any(item=>item.Item=="GEAR_Leather")),"tool refining has meaningful material, tool, and time requirements");
 Console.WriteLine($"PASS: {checks} policy boundary checks.");

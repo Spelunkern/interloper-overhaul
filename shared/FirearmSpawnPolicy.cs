@@ -1,6 +1,7 @@
+#nullable disable
 namespace InterloperOverhaul;
 
-// Authored base-game outdoor firearm and tool positions, verified against the local 2.55 assets.
+// Verified 2.55 coordinates. Legacy placements remain resolvable for saved allocations.
 public sealed class FirearmSite
 {
     public string Scene { get; }
@@ -25,7 +26,7 @@ public static class FirearmSpawnPolicy
     public static bool IsFiniteItem(string name) => IsStandardFirearm(name) || IsLimitedTool(name) || LightSpawnPolicy.IsLight(name);
     public static readonly string[] Items = { "GEAR_Rifle", "GEAR_Revolver", "GEAR_Knife", "GEAR_Hatchet" };
 
-    public static readonly FirearmSite[] Sites =
+    public static readonly FirearmSite[] LegacySites =
     {
         new("CoastalRegion", "Design/Gear/Weapons/RareRifle/GEAR_Rifle", "GEAR_Rifle", 354.083008f, 203.848999f, 1158.810059f),
         new("CoastalRegion", "Design/Gear/Weapons/Revolver/Rev_lookoutCave/GEAR_Revolver", "GEAR_Revolver", 392.013000f, 148.832001f, 1121.305054f),
@@ -90,10 +91,31 @@ public static class FirearmSpawnPolicy
         new("MountainTownRegion_SANDBOX", "Design/Gear/Hatchet/hatchetGroup1/GEAR_Hatchet", "GEAR_Hatchet", 1365.673950f, 263.625000f, 1201.352051f),
     };
 
+    // New allocations use only these audited expedition destinations. Stable synthetic
+    // paths distinguish managed placements from the original gear at each anchor.
+    public static readonly FirearmSite[] DeepSites = MakeDeepSites();
+    private static FirearmSite[] MakeDeepSites()
+    {
+        var sites=new List<FirearmSite>();
+        foreach(string item in Items)
+        {
+            sites.Add(new("CrashMountainRegion","IO_Expedition/SummitCave/"+item,item,1021.255f,491.307f,1401.380f));
+            sites.Add(new("AshMine","IO_Expedition/GoldMine/"+item,item,-127.879f,-57.021f,212.264f));
+            sites.Add(new("RiverValleyRegion_SANDBOX","IO_Expedition/LakeCave/"+item,item,1493.413f,203.353f,1742.224f));
+            sites.Add(new("RiverValleyRegion_SANDBOX","IO_Expedition/SignalFireNorth/"+item,item,955.803f,194.025f,1264.072f));
+            sites.Add(new("RiverValleyRegion_SANDBOX","IO_Expedition/SignalFireSouth/"+item,item,1214.128f,199.799f,789.743f));
+        }
+        return sites.ToArray();
+    }
+    public static readonly FirearmSite[] Sites=LegacySites.Concat(DeepSites).ToArray();
+
     public static FirearmSite SelectSite(int seed, string item)
     {
-        var sites = Sites.Where(site => site.Item == item).ToArray();
-        return sites[(int)(LootBalancePolicy.Sample(seed, "finite-firearm-site/" + item, 0) * sites.Length)];
+        var sites=DeepSites.Where(site=>site.Item==item).OrderBy(site=>
+            LootBalancePolicy.Sample(seed,"expedition-destination/"+site.Path.Substring(0,site.Path.LastIndexOf('/')),0)).ToArray();
+        int index=Array.IndexOf(Items,item);
+        if(index<0) throw new ArgumentException("Unknown finite item: "+item);
+        return sites[index]; // Different item families occupy distinct destinations.
     }
 
     public static int Condition(int seed, string item) =>
