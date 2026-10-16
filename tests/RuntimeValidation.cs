@@ -159,6 +159,7 @@ internal static class RuntimeValidation
             ItemBalanceValidation.Run(Check);
             PermanentAccessoryValidation.Run(Check);
             ClothingNutritionValidation.Run(Check);
+            FireFeatMendingValidation.Run(Check);
             root = new GameObject("IO_Validation");
             root.SetActive(false);
             GameObject Child(string name)

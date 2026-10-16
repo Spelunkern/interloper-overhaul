@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="../../shared/FireBalancePolicy.cs" Link="FireBalancePolicy.cs" />
     <Compile Include="../../shared/ClothingNutritionPolicy.cs" Link="ClothingNutritionPolicy.cs" />
     <Compile Include="../../shared/PermanentAccessoryPolicy.cs" Link="PermanentAccessoryPolicy.cs" />
     <Compile Include="../../shared/ItemBalancePolicy.cs" Link="ItemBalancePolicy.cs" />

@@ -227,4 +227,13 @@ foreach (string ingredient in new[] { "GEAR_CookingOil", "GEAR_Flour", "GEAR_Oat
         ClothingNutritionPolicy.ContentWeightScale(ingredient)<1, "ingredient mass uses quantity scaling without a second base weight");
 Check(ClothingNutritionPolicy.Food("GEAR_CoffeeCup")==null && ClothingNutritionPolicy.ContentWeightScale("GEAR_GunpowderCan")==1,
     "unlisted calories and recipe resources remain unchanged");
+foreach (string tinder in new[] { "GEAR_Newsprint", "GEAR_NewsprintRoll", "GEAR_PaperStack" })
+    Check(FireBalancePolicy.TinderBonus(tinder+"(Clone)")==8 && ItemBalancePolicy.WeightKg(tinder)==0.05, "paper tinder gets eight points and fifty-gram weight");
+foreach (string tinder in new[] { "GEAR_Tinder", "GEAR_BarkTinder", "GEAR_CattailTinder", "GEAR_CashBundle" })
+    Check(FireBalancePolicy.TinderBonus(tinder)==4,"ordinary tinder gets four success points");
+Check(FireBalancePolicy.TinderBonus("GEAR_Stick")==0 && FireBalancePolicy.TinderBonus("GEAR_BookA")==0,"fuels do not also receive a tinder bonus");
+Check(FireBalancePolicy.FuelSuccessBonus("GEAR_ReclaimedWoodB")==0 && FireBalancePolicy.FuelSuccessBonus("GEAR_Firelog")==50 &&
+    FireBalancePolicy.FuelSuccessBonus("GEAR_CedarFirewood")==null,"only requested fuel success modifiers change");
+Check(FireBalancePolicy.BurnHours("GEAR_BookCooking")==0.5f && FireBalancePolicy.BurnHours("GEAR_Firelog")==3 &&
+    FireBalancePolicy.BurnHours("GEAR_FirewoodHardwood")<0,"book and firelog burn changes leave other fuels alone");
 Console.WriteLine($"PASS: {checks} policy boundary checks.");

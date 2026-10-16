@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.17.0
+
+- Make all seven tinder types grant an actual fire-start success bonus at every
+  skill level, retaining optional tinder at levels 3–5 and showing the chosen bonus.
+- Rebalance paper, cash, firelog, coal, reclaimed wood, and stick weights; increase
+  book, firelog, and stick duration, strengthen firelogs, and remove reclaimed wood's
+  negative fuel success modifier.
+- Increase Blizzard Walker to 50%, Book Smarts to 100% extra research XP, and
+  Straight to the Heart to 100% longer eligible effects; retain native feat eligibility.
+- Lower Mending level 5 to 250 points and allow paid native repair actions on ruined
+  gear at that level without granting free condition for inspection or cancellation.
+- Halve cougar health and passing swipe damage while preserving wounds and
+  native-compatible save health, without repeated scaling on load.
+
 ## 0.16.0
 
 - Rebalance Interloper clothing weights, warmth, wind protection, protection, and

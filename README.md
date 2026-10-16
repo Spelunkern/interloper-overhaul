@@ -3,7 +3,51 @@
 A personal mod for **The Long Dark**, focused on restoring content excluded from
 standard **Interloper**, with a few general quality-of-life changes. By Spelunkern.
 
-## Version 0.16.0: clothing, food, and drink balance
+## Version 0.17.0: fire materials, feats, Mending, and cougars
+
+These changes apply to standard Interloper, including existing gear and saves.
+Fuel durations are base values before normal Firestarting and fire-duration modifiers.
+Success bonuses are percentage points, added before the native 0–100% limit.
+
+| Material | Weight | Fire benefit |
+| --- | --- | --- |
+| Newspaper, rolled newspaper, stack of papers | 0.05 kg each | +8 success points when used as tinder |
+| Tinder plug, birch bark, cattail head | Unchanged | +4 success points when used as tinder |
+| Cash | 0.01 kg | +4 success points when used as tinder |
+| Ordinary and research books, including open models | 0.20 kg | 30 base minutes |
+| Firelog | 1.00 kg | +50 success points as fuel, 180 base minutes, +10°C |
+| Coal | 0.20 kg | |
+| Reclaimed wood | 0.20 kg | Neutral fuel success modifier |
+| Sticks | 0.10 kg | 10 base minutes |
+
+Tinder remains required at Firestarting levels 1–2 and optional at levels 3–5.
+Selecting it improves both the displayed chance and the actual fire-start roll.
+The tinder label displays its bonus. Native consumption rules still apply, and
+repeated previews do not accumulate bonuses or modify the selected fuel permanently.
+
+- **Blizzard Walker:** reduces the headwind walking penalty by 50%.
+- **Book Smarts:** grants 100% extra research skill points (2× normal XP).
+- **Straight to the Heart:** extends eligible stimulant effects by 100% (2× duration).
+
+Feats still require their normal unlocks and must be selected for the run.
+Descriptions use the new benefits; other difficulties restore the authored values.
+
+**Mending level 5 requires 250 points**, instead of 350. Earlier thresholds and
+repair rewards remain unchanged. At level 5, ruined gear with an existing native
+repair action can be repaired through the normal examine menu. Materials, tools,
+time, success chance, and condition gain remain those of that item's repair action.
+The item stays at zero condition until a repair succeeds; viewing or cancelling
+repair does not make it usable. Food and objects without a native repair action
+are not made repairable. The level-5 skill description mentions the new benefit.
+
+**Normal and aurora cougars have half health**: the local authored 300 HP becomes
+150 HP. Their passing swipe's base player damage range drops from 20–40 to 10–20;
+the same 50% scaling applies to passing attacks against other wildlife. Native
+protection calculations, attack timing, injuries, and struggle behavior remain in
+place. Existing wounds retain their proportion of maximum health. Save files keep
+the native HP scale, so loading repeatedly does not halve health again.
+
+## Clothing, food, and drink balance (0.16.0)
 
 The following changes apply to standard Interloper, including existing gear.
 Clothing values are at full condition; protection and sprint penalties use percent.
@@ -507,9 +551,12 @@ Validation code is excluded from the production build. Loader, Harmony, and nati
 the validation even if individual checks report success. The injected probe may
 require forced termination during Unity/.NET shutdown after reporting its results;
 this does not validate a normal playthrough or normal shutdown behavior.
-The 0.16.0 probe passed 793 native runtime checks and 2,249 policy boundary checks.
-These include clothing stats, food calorie migration, partial ingredient mass, native
-inventory aggregation, drink components, and isolation from Stalker and Misery.
+The 0.17.0 probe passed 876 native runtime checks and 2,259 policy boundary checks.
+These include clothing and food migration, ingredient inventory mass, tinder UI and
+success calculations, enabled feat effects, Mending thresholds, native cougar save
+round trips, and isolation from Stalker and Misery. Ruined-repair and cougar-swipe
+checks observe native entry points with controlled callbacks; they do not run combat
+or consume a player's repair resources.
 It was run with `DOTNET_TieredCompilation=0` and
 `DOTNET_EnableWriteXorExecute=0`, as well as the launcher's `DOTNET_ReadyToRun=0`.
 This records the validation environment; it is not a claim
