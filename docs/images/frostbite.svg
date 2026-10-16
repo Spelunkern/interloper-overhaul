@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="280" viewBox="0 0 1120 280" role="img" aria-labelledby="title description">
+  <title id="title">Temporary frostbite and warm recovery</title>
+  <desc id="description">Cold fills the frostbite meter for each body area. A full meter activates temporary frostbite, draining ten condition points per hour per affected area. Warmth reduces the meters; a full meter recovers in at most fifteen warm game minutes and the affliction ends at zero. There is no permanent maximum-condition loss.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#92bdc5"/></marker>
+  </defs>
+  <rect width="1120" height="280" rx="18" fill="#12232b"/>
+  <g font-family="DejaVu Sans, Arial, sans-serif" text-anchor="middle">
+    <text x="560" y="42" fill="#f2f1e9" font-size="23" font-weight="bold">Frostbite: dangerous now, recoverable through warmth</text>
+    <g stroke-width="1.5">
+      <rect x="28" y="76" width="322" height="135" rx="10" fill="#1e3540" stroke="#547783"/>
+      <rect x="399" y="76" width="322" height="135" rx="10" fill="#3b2e32" stroke="#a97670"/>
+      <rect x="770" y="76" width="322" height="135" rx="10" fill="#223d36" stroke="#6c9d85"/>
+    </g>
+    <g fill="#f2f1e9" font-size="18" font-weight="bold">
+      <text x="189" y="111">Cold exposure</text><text x="560" y="111">Full meter: active frostbite</text><text x="931" y="111">Warm recovery</text>
+    </g>
+    <g fill="#d0dcde" font-size="14">
+      <text x="189" y="144">Native coverage and cold checks</text><text x="189" y="168">Separate meter for each body area</text><text x="189" y="192">No immediate condition penalty</text>
+      <text x="560" y="144">10 condition points lost per hour</text><text x="560" y="168">For each affected area; effects stack</text><text x="560" y="192">No permanent condition cap</text>
+      <text x="931" y="144">Meters fall quickly while warm</text><text x="931" y="168">Full recovery: at most 15 warm min</text><text x="931" y="192">Each affliction clears at zero</text>
+    </g>
+    <text x="560" y="251" fill="#c1d1d5" font-size="15">Save/load preserves separate meters. Old permanent cases become temporary full meters.</text>
+  </g>
+  <g fill="none" stroke="#92bdc5" stroke-width="2" marker-end="url(#arrow)"><path d="M358 144H390"/><path d="M729 144H761"/></g>
+</svg>

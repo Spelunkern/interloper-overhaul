@@ -1,5 +1,17 @@
 # Changelog
 
+This file records release history. Older entries describe behavior at that release
+and may be superseded. See the [feature reference](docs/features.md) for current
+rules, values, and recipes.
+
+## Unreleased
+
+- Reorganize the README around current systems and link to detailed feature,
+  installation, compatibility, debug, and development guides.
+- Consolidate current loot and manufacturing rules, removing superseded policies
+  from the active reference; add original progression/frostbite diagrams and media
+  attribution guidance.
+
 ## 0.21.0
 
 - Add an opt-in F8 debug panel with native god mode, needs restoration/maintenance,

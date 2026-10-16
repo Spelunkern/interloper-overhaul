@@ -1,5 +1,10 @@
 # Third-party notices
 
+Code acknowledgements and retained notices are listed below. Documentation
+illustrations and wiki references are described separately in
+[media references](docs/media.md). The Long Dark and its game content belong to
+Hinterland; this independent project does not redistribute the game or its assemblies.
+
 ## Cannery Manufacturing
 
 The manufacturing features were reimplemented for Interloper Overhaul using the
