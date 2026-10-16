@@ -571,8 +571,8 @@ Sources: [frostbite](../src/InterloperOverhaul/FrostbiteBalance.cs),
 These are the shelter's configured bonuses, not a guarantee of a positive final
 feels-like temperature in every weather condition.
 
-Fuel covers gain searchable native containers. On first generation, **5%** of
-tanks contain a bottle with **0.05–0.15 L of kerosene**. Stable container identities
+Fuel covers gain searchable native containers. On first generation, **20%** of
+tanks contain a bottle with **0.10–0.25 L of kerosene**. Stable container identities
 and native saves preserve collected fuel and empty searches; reopening/reloading
 cannot generate more. Industrial tanks and ordinary glove-box/trunk loot retain
 their own behavior.
@@ -581,10 +581,10 @@ their own behavior.
 
 | Result | Ordinary site | Remote site | Deep site |
 | --- | --- | --- | --- |
-| Newspaper or rolled newspaper | 40% | 40% | 40% |
-| Common book | 2% | 2% | 2% |
-| Research book | 0.25% | 0.5% | 1% |
-| Empty | 57.75% | 57.5% | 57% |
+| Newspaper or rolled newspaper | 75% | 75% | 75% |
+| Common book | 8% | 8% | 8% |
+| Research book | 1% | 2% | 3% |
+| Empty | 16% | 15% | 14% |
 
 Selection is stable for each run/mailbox. The pool includes nine common books and
 nine research books. These finds use their own rarity and are not filtered twice;

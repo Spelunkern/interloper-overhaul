@@ -71,12 +71,12 @@ internal static class VehicleStreetValidation
                 key=LootBalance.Key(tank.gameObject);litres=StreetLootPolicy.FuelLitres(seed,key);
                 if(litres>0) break;
             }
-            check(litres>=0.05 && litres<0.15,"native fuel tank fixture selects a small rare kerosene find");
+            check(litres>=0.10 && litres<0.25,"native fuel tank fixture selects a small rare kerosene find");
             tank.Start();
             check(tank.m_Items.Count==1 && !tank.m_NotPopulated,"native tank population produces exactly one rare fuel bottle");
             var fuel=tank.m_Items[0].m_GearItem;items.Add(fuel);
             float ratio=(float)(fuel.m_LiquidItem.m_Liquid/fuel.m_LiquidItem.m_LiquidCapacity);
-            check(Math.Abs(ratio*0.5-litres)<0.000001,"native kerosene item contains the requested fifty-to-one-hundred-fifty millilitres");
+            check(Math.Abs(ratio*0.5-litres)<0.000001,"native kerosene item contains the requested one-hundred-to-two-hundred-fifty millilitres");
             tank.PopulateContents();
             check(tank.m_Items.Count==1,"reopening a populated tank cannot generate extra kerosene");
             fuel.Deserialize(fuel.Serialize(),false);

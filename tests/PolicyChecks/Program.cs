@@ -268,10 +268,16 @@ for(int seed=0;seed<20000;seed++)
     else if(StreetLootPolicy.CommonBooks.Contains(mail)) commonBooks++;
     else if(StreetLootPolicy.SkillBooks.Contains(mail)) skillBooks++;
     double fuel=StreetLootPolicy.FuelLitres(seed,"CoastalRegion/car");
-    if(fuel>0) { fuelFinds++;if(fuel<0.05 || fuel>=0.15) throw new Exception("Fuel quantity outside policy range."); }
+    if(fuel>0) { fuelFinds++;if(fuel<0.10 || fuel>=0.25) throw new Exception("Fuel quantity outside policy range."); }
 }
-Check(papers>7700 && papers<8300 && commonBooks>280 && commonBooks<520 && skillBooks>25 && skillBooks<80,"mailbox frequencies remain near forty percent paper, two percent common books, and quarter-percent research books");
-Check(fuelFinds>850 && fuelFinds<1150,"one in twenty vehicle tanks contains a small fuel find");
+Check(papers>14500 && papers<15500 && commonBooks>1450 && commonBooks<1750 && skillBooks>140 && skillBooks<260,"mailbox frequencies remain near seventy-five percent paper, eight percent common books, and one-percent research books");
+Check(fuelFinds>3750 && fuelFinds<4250,"one in five vehicle tanks contains a small fuel find");
+foreach(var access in new[] { LootAccess.Ordinary,LootAccess.Remote,LootAccess.Deep })
+{
+    double rate=access==LootAccess.Deep ? 0.03 : access==LootAccess.Remote ? 0.02 : 0.01;
+    int research=Enumerable.Range(0,20000).Count(seed=>StreetLootPolicy.SkillBooks.Contains(StreetLootPolicy.Mail(seed,"CoastalRegion/mailbox",access)));
+    Check(Math.Abs(research-20000*rate)<4*Math.Sqrt(20000*rate*(1-rate)),"mailbox research books follow the revised ordinary/remote/deep frequencies: "+access);
+}
 Check(mailOutcomes.Count==2+StreetLootPolicy.CommonBooks.Length+StreetLootPolicy.SkillBooks.Length+1,"all ordinary and research books are reachable without adding unrelated mailbox loot");
 Check(StreetLootPolicy.Mail(2718,"MailboxA")==StreetLootPolicy.Mail(2718,"MailboxA") && StreetLootPolicy.FuelLitres(2718,"CarA")==StreetLootPolicy.FuelLitres(2718,"CarA"),"street loot selection is stable on reload");
 foreach(var access in Enum.GetValues<LootAccess>())

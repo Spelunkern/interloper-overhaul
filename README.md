@@ -57,7 +57,7 @@ plans. Most item/skill/affliction changes also apply to existing saves; see
 
 ## Testing the mod
 
-Current automated baseline: **1,072 native runtime checks** and **3,303 policy
+Current automated baseline: **1,072 native runtime checks** and **3,306 policy
 checks**. These exercise native hooks and isolated fixtures at the main menu;
 full survival traversal, combat, and crafting interruptions still need playtesting. See [development and validation](docs/development.md) for commands,
 coverage, limitations, and a focused manual checklist.

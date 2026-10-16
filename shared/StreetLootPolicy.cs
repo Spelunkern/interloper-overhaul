@@ -12,13 +12,13 @@ public static class StreetLootPolicy
     public static string Mail(int seed,string key,LootAccess access=LootAccess.Ordinary)
     {
         double roll=LootBalancePolicy.Sample(seed,"mailbox/"+key,0);
-        if(roll<0.40) return LootBalancePolicy.Sample(seed,"mailbox/"+key,1)<0.5 ? "GEAR_Newsprint" : "GEAR_NewsprintRoll";
-        var books=roll<0.42 ? CommonBooks : SkillBooks;
-        double research=access==LootAccess.Deep ? 0.01 : access==LootAccess.Remote ? 0.005 : 0.0025;
-        if(roll>=0.42+research) return "";
+        if(roll<0.75) return LootBalancePolicy.Sample(seed,"mailbox/"+key,1)<0.5 ? "GEAR_Newsprint" : "GEAR_NewsprintRoll";
+        var books=roll<0.83 ? CommonBooks : SkillBooks;
+        double research=access==LootAccess.Deep ? 0.03 : access==LootAccess.Remote ? 0.02 : 0.01;
+        if(roll>=0.83+research) return "";
         return books[(int)(LootBalancePolicy.Sample(seed,"mailbox/"+key,2)*books.Length)];
     }
-    public static double FuelLitres(int seed,string key)=>LootBalancePolicy.Sample(seed,"vehicle-fuel/"+key,0)<0.05 ?
-        0.05+0.10*LootBalancePolicy.Sample(seed,"vehicle-fuel/"+key,1) : 0;
+    public static double FuelLitres(int seed,string key)=>LootBalancePolicy.Sample(seed,"vehicle-fuel/"+key,0)<0.20 ?
+        0.10+0.15*LootBalancePolicy.Sample(seed,"vehicle-fuel/"+key,1) : 0;
     public static bool IsMailSupply(string name)=>ItemBalancePolicy.IsBook(name) || LootBalancePolicy.ItemName(name) is "GEAR_Newsprint" or "GEAR_NewsprintRoll";
 }

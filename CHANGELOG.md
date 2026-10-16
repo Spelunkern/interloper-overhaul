@@ -4,6 +4,14 @@ This file records release history. Older entries describe behavior at that relea
 and may be superseded. See the [feature reference](docs/features.md) for current
 rules, values, and recipes.
 
+## 0.23.1
+
+- Correct the roadside-loot balance direction: increase mailbox paper to 75%,
+  common books to 8%, and research books to 1% / 2% / 3% ordinary/remote/deep.
+- Increase fuel finds to 20% of newly generated tanks, with 0.10–0.25 L per find.
+- Keep the exploration-loot increases and Night Walker notification fix. Previously
+  generated or searched mailboxes and fuel tanks are not regenerated.
+
 ## 0.23.0
 
 - Synchronize Night Walker's transient unlock state after feat/profile and survival
