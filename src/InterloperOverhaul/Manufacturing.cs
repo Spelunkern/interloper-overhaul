@@ -26,7 +26,7 @@ internal static class Manufacturing
         installing = true;
         try
         {
-            foreach (var recipe in ManufacturingPolicy.Recipes)
+            foreach (var recipe in ManufacturingPolicy.Recipes.Concat(VariantPolicy.Recipes))
             {
                 bool exists = false;
                 foreach (var bp in manager.m_AllBlueprints)

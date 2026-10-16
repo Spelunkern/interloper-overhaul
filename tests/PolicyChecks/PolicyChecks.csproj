@@ -6,6 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="../../shared/LightSpawnPolicy.cs" Link="LightSpawnPolicy.cs" />
+    <Compile Include="../../shared/VariantPolicy.cs" Link="VariantPolicy.cs" />
+    <Compile Include="../../shared/WorkshopRunState.cs" Link="WorkshopRunState.cs" />
     <Compile Include="../../shared/ManufacturingPolicy.cs" Link="ManufacturingPolicy.cs" />
     <Compile Include="../../shared/WorldPolicy.cs" Link="WorldPolicy.cs" />
     <Compile Include="../../shared/LootBalancePolicy.cs" Link="LootBalancePolicy.cs" />

@@ -7,7 +7,9 @@ namespace InterloperOverhaul;
 // Stored inside the game's save slot, alongside the same snapshot as scene gear.
 public sealed class FirearmRunState
 {
-    public int Version { get; set; } = 2;
+    public int Version { get; set; } = 3;
+    public List<LightAllocation> Lights { get; set; } = new();
+    public bool LightsLegacy { get; set; }
     public int Seed { get; set; }
     public string RunKey { get; set; } = "";
     public string RifleSite { get; set; } = "";
@@ -23,7 +25,7 @@ public sealed class FirearmRunState
 
     public static FirearmRunState Create(int seed, string runKey) => new()
     {
-        Seed = seed, RunKey = runKey,
+        Seed = seed, RunKey = runKey, Lights = LightSpawnPolicy.Allocate(seed),
         RifleSite = FirearmSpawnPolicy.SelectSite(seed, "GEAR_Rifle").Id,
         RevolverSite = FirearmSpawnPolicy.SelectSite(seed, "GEAR_Revolver").Id,
         KnifeSite = FirearmSpawnPolicy.SelectSite(seed, "GEAR_Knife").Id,
@@ -69,9 +71,22 @@ public sealed class FirearmRunState
             state.HatchetSite = FirearmSpawnPolicy.SelectSite(state.Seed, "GEAR_Hatchet").Id;
             state.Version = 2;
         }
-        if (state.Version != 2) throw new InvalidDataException("Unsupported finite item run state version.");
+        if (state.Version == 2)
+        {
+            state.LightsLegacy = true;
+            state.Lights = LightSpawnPolicy.Allocate(state.Seed);
+            state.Version = 3;
+        }
+        if (state.Version != 3) throw new InvalidDataException("Unsupported finite item run state version.");
         foreach (string item in FirearmSpawnPolicy.Items)
             if (state.Site(item).Item != item) throw new InvalidDataException("Invalid finite item placement plan.");
+        if (state.Lights == null || state.Lights.Count != 3 || state.Lights.Select(light => light.Key).Distinct().Count() != 3 ||
+            state.Lights.Select(light => light.SiteId).Distinct().Count() != 3 ||
+            state.Lights.Count(light => light.Item == "GEAR_Flashlight") != 2 ||
+            state.Lights.Count(light => light.Item == "GEAR_Flashlight_LongLasting") != 1)
+            throw new InvalidDataException("Invalid flashlight allocation.");
+        foreach (var light in state.Lights)
+            if (light.Site.Item != light.Item) throw new InvalidDataException("Invalid flashlight site.");
         return state;
     }
 }

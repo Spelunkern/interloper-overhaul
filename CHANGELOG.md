@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.13.0
+
+- Replace authored variant weapon placements and selected Tales/cache variant rewards with physical, variant-specific Workshop Schematics. Preserve native placement selection and reward progression.
+- Add eleven Cannery-only upgrades, including the Bushcraft Bow, with learned schematic requirements, reusable tools, light, and explicit material/time costs.
+- Add seven time-only firearm reversals. Reserve the source weapon during work, preserve its condition and native identity, reject ruined/loaded inputs, and save recipe-specific partial progress.
+- Learn picked-up schematics permanently per run, record their descriptions in journal notes, and avoid inventory clutter or accidental vanilla Bushcraft unlocking.
+- Restore variant Trader eligibility through the native Stalker checks and retain costs and story unlocks; convert received variant rewards into learned schematics.
+- Allocate exactly two standard flashlights at distinct verified world sites and one Miner's Flashlight at the native Concentrator watchroom for new runs. Persist separate native identities and creation flags; suppress additional loot/beachcombing/Trader lights.
+- Migrate finite allocations to version three without adding flashlights to older saves or changing existing firearm/tool identities.
+- Extend policy and native runtime probes for allocation persistence, physical schematic saves, recipe requirements, reservations, rollback, and conversion identity/condition.
+
 ## 0.12.0
 
 - Integrate eight ammunition-workbench recipes: refine improvised knives/hatchets, produce four arrow shafts per cured birch sapling, make flare shells from unused red/marine flares or measured gunpowder, and recycle three unused flares into 100 g powder.

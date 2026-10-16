@@ -142,7 +142,11 @@ internal static class FiniteFirearmValidation
             var variantOffer = Exchange("b930bfe9aa379ec4885009a692cfea2e");
             var specialVariantOffer = Exchange("96daa7434362e754fb7bd4fbb24c8cd4");
             specialVariantOffer.m_IsSpecialRequest = true;
-            check(!variantOffer.IsValidInCurrentGamemode(), "native trader eligibility excludes weapon variants");
+            var interloperMode = Game.ExperienceModeManager.s_CurrentGameMode;
+            Game.ExperienceModeManager.s_CurrentGameMode = Game.ExperienceModeManager.GetGameModeFromName("Stalker");
+            bool nativeVariantEligibility = variantOffer.IsValidInCurrentGamemode();
+            Game.ExperienceModeManager.s_CurrentGameMode = interloperMode;
+            check(variantOffer.IsValidInCurrentGamemode() == nativeVariantEligibility, "schematic trades preserve native Stalker eligibility checks");
             var ammoOffer = Exchange("b077bbe3815612345a39da9a3518c642");
             var casingOffer = Exchange("e5ef5c87193d18f45b64961da0adc56d");
             var knifeOffer = Exchange("5a7d6ed7004a60c49878b62497f2a63f");
@@ -160,8 +164,8 @@ internal static class FiniteFirearmValidation
             var stock = new Il2CppSystem.Collections.Generic.List<Trader.TradeExchangeData>();
             foreach (var offer in new[] { rifleOffer, variantOffer, specialVariantOffer, ammoOffer, casingOffer, knifeOffer, hatchetOffer, otherOffer, storyOffer }) stock.Add(offer);
             TraderFirearmSupplies.Filter(stock, 123, aurora);
-            check(stock.Count == 2 && stock[0].Pointer == otherOffer.Pointer && stock[1].Pointer == storyOffer.Pointer,
-                "trader filters standard guns, variants (including special requests), and scarce supplies while preserving other rewards");
+            check(stock.Count == 4 && stock[0].Pointer == variantOffer.Pointer && stock[1].Pointer == specialVariantOffer.Pointer && stock[2].Pointer == otherOffer.Pointer && stock[3].Pointer == storyOffer.Pointer,
+                "trader preserves schematic trades and special requests while filtering extra guns and scarce supplies");
             int rareAurora = Enumerable.Range(0, 100000).First(n => LootBalancePolicy.KeepTraderSupply(123, "GEAR_RifleAmmoBox", n));
             stock.Clear(); stock.Add(ammoOffer);
             TraderFirearmSupplies.Filter(stock, 123, rareAurora);

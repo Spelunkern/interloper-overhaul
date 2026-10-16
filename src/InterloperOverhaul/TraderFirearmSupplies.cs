@@ -19,7 +19,8 @@ internal static class TraderFirearmSupplies
             var exchange = exchanges[i];
             if (exchange == null || exchange.m_GainedItem == null) continue;
             string item = LootBalancePolicy.TraderItem(exchange.m_GainedItem.AssetGUID);
-            if (LootBalancePolicy.IsWeaponVariant(item) || FirearmSpawnPolicy.IsFiniteItem(item)) { exchanges.RemoveAt(i); continue; }
+            if (LootBalancePolicy.IsWeaponVariant(item)) continue;
+            if (FirearmSpawnPolicy.IsFiniteItem(item)) { exchanges.RemoveAt(i); continue; }
             if (exchange.m_IsSpecialRequest) continue;
             if (!LootBalancePolicy.KeepTraderSupply(seed, item, aurora))
                 exchanges.RemoveAt(i);

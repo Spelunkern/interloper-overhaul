@@ -22,7 +22,7 @@ public static class FirearmSpawnPolicy
     public static bool IsStandardFirearm(string name) => LootBalancePolicy.ItemName(name) is "GEAR_Rifle" or "GEAR_Revolver";
 
     public static bool IsLimitedTool(string name) => LootBalancePolicy.ItemName(name) is "GEAR_Knife" or "GEAR_Hatchet";
-    public static bool IsFiniteItem(string name) => IsStandardFirearm(name) || IsLimitedTool(name);
+    public static bool IsFiniteItem(string name) => IsStandardFirearm(name) || IsLimitedTool(name) || LightSpawnPolicy.IsLight(name);
     public static readonly string[] Items = { "GEAR_Rifle", "GEAR_Revolver", "GEAR_Knife", "GEAR_Hatchet" };
 
     public static readonly FirearmSite[] Sites =

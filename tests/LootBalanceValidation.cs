@@ -35,7 +35,7 @@ internal static class LootBalanceValidation
                 "GEAR_RevolverGreen", "GEAR_RevolverFancy", "GEAR_RevolverStubNosed",
                 "GEAR_Bow_Woodwrights", "GEAR_Bow_Manufactured", "GEAR_SurvivalKnife" })
             {
-                var variant = Child(name).AddComponent<Game.GearItem>();
+                var variant = Child(name + "(Clone)").AddComponent<Game.GearItem>();
                 check(LootBalance.Retention(variant.gameObject) == 0 &&
                     LootBalance.Retention(Game.GearItem.LoadGearItemPrefab(name).gameObject) == 0,
                     "variant blocked in authored prefab and unrestricted scene placement: " + name);
@@ -145,7 +145,7 @@ internal static class LootBalanceValidation
             container.PopulateWithScriptedGear();
             check(container.m_GearToInstantiate.Count == 0, "native scripted containers cannot generate weapon variants");
             radial.m_Spawns.Clear();
-            var variantFind = Child("GEAR_RevolverFancy");
+            var variantFind = Child("GEAR_RevolverFancy(Clone)");
             variantFind.AddComponent<Game.GearItem>();
             radial.m_Spawns.Add(variantFind);
             RareRadialGear.Postfix(radial, 0);

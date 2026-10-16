@@ -53,6 +53,7 @@ internal static class LootBalance
         var gear = go.GetComponent<Game.GearItem>();
         if (gear == null || gear.m_BeenInPlayerInventory || gear.m_HasBeenOwnedByPlayer || gear.m_BeenInContainer) return 1;
         string name = LootBalancePolicy.ItemName(go.name);
+        if (Workshop.Card(gear) != null || (LootBalancePolicy.IsWeaponVariant(name) && Workshop.Authored(gear))) return 1;
         if (RecoveredCasings.Active && WorldPolicy.IsSpentCasing(name)) return 1;
         if (FirearmSpawnPolicy.IsFiniteItem(name)) return FiniteFirearms.IsManaged(gear) ? 1 : 0;
         if (WorldPolicy.IsTaleReward(name) ||
@@ -84,7 +85,18 @@ internal static class LootBalance
         string key = Key(container.gameObject);
         // Never touch m_Items: it includes saved loot and player storage.
         for (int i = pending.Count - 1; i >= first; i--)
+        {
+            var variant = pending[i] == null ? null : VariantPolicy.Find(pending[i].name);
+            if (variant != null && RewardScope.IsRewardContainer(container) && !Workshop.Failed)
+            {
+                // Keep the selected reward opportunity, but deliver its schematic.
+                var card = Workshop.MakeCard(variant, System.Guid.NewGuid().ToString());
+                container.AddGear(card);
+                pending.RemoveAt(i);
+                continue;
+            }
             if (pending[i] != null && !Keep(pending[i], key, i)) pending.RemoveAt(i);
+        }
     }
 }
 

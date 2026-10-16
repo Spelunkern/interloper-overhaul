@@ -172,4 +172,35 @@ Check(ManufacturingPolicy.Recipes.Where(recipe => recipe.PowderResultKg > 0).All
     recipe.Ingredients.Single(input => ManufacturingPolicy.IsFlare(input.Item)).Count == 3), "Recycled powder is measured and costs three flares");
 Check(ManufacturingPolicy.Recipes.Single(recipe => recipe.Id == "ShellFromPowder").PowderRequiredKg == 0.05,
     "Powder-based flare shells consume measured gunpowder");
+
+
+for (int seed = 0; seed < 500; seed++)
+{
+    var state = FirearmRunState.Create(seed,"light-policy");
+    Check(state.Lights.Count == 3 && state.Lights.Count(l => l.Item == "GEAR_Flashlight") == 2 &&
+        state.Lights.Count(l => l.Item == "GEAR_Flashlight_LongLasting") == 1, "exact flashlight allocation");
+    Check(state.Lights.Select(l => l.SiteId).Distinct().Count() == 3, "flashlight locations never overlap");
+    var reload = FirearmRunState.Deserialize(state.Serialize());
+    Check(reload.Lights.Select(l => l.SiteId).SequenceEqual(state.Lights.Select(l => l.SiteId)), "flashlight plan persists");
+    Check(state.Lights.Select(l => state.GuidFor("light/"+l.Key)).Distinct().Count() == 3, "flashlight identities are unique");
+}
+var oldLights = System.Text.Json.Nodes.JsonNode.Parse(FirearmRunState.Create(123,"migration").Serialize())!;
+oldLights["Version"] = 2;
+oldLights.AsObject().Remove("Lights");
+Check(FirearmRunState.Deserialize(oldLights.ToJsonString()).LightsLegacy, "old saves receive no additional flashlights");
+Check(VariantPolicy.Variants.Length == 11 && VariantPolicy.Recipes.Count() == 18, "eleven upgrades and seven firearm reversals");
+foreach (var variant in VariantPolicy.Variants)
+{
+    Check(LootBalancePolicy.IsWeaponVariant(variant.Item), "every variant is blocked as ordinary random loot");
+    Check(!VariantPolicy.Unlocked(variant.Upgrade,new HashSet<string>()), "schematic is required");
+    Check(VariantPolicy.Unlocked(variant.Upgrade,new HashSet<string> { variant.Item }), "learning unlocks the matching upgrade");
+    Check(variant.Upgrade.Ingredients[0].Item == variant.Base && variant.Upgrade.Ingredients[0].Count == 1, "upgrade transforms one base item");
+    if (variant.Reverse != null)
+        Check(variant.Reverse.Ingredients.Length == 1 && variant.Reverse.Result == variant.Base && variant.Reverse.Tools.Length == 0, "reversion costs only time");
+}
+var workshop = new WorkshopRunState();
+workshop.Learned.Add("GEAR_Rifle_Barbs");
+workshop.Cards[Guid.NewGuid().ToString()] = "GEAR_SurvivalKnife";
+workshop.Work.Add(new() { Recipe=VariantPolicy.Variants[4].Upgrade.BlueprintName,WorkGuid=Guid.NewGuid().ToString(),OriginalGuid=Guid.NewGuid().ToString(),Condition=0.37f });
+Check(WorkshopRunState.Deserialize(workshop.Serialize()).Work.Single().Condition == 0.37f, "saved conversion preserves condition");
 Console.WriteLine($"PASS: {checks} policy boundary checks.");

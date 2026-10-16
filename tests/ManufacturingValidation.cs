@@ -36,7 +36,7 @@ internal static class ManufacturingValidation
             check(manager.m_AllBlueprints.Count == count, "manufacturing catalog registration is idempotent");
             var blueprints = new Dictionary<string, Gear.BlueprintData>();
             foreach (var bp in manager.m_AllBlueprints)
-                if (bp != null && ManufacturingPolicy.Find(bp.name) != null) blueprints.Add(bp.name, bp);
+                if (bp != null && ManufacturingPolicy.Recipes.Any(r => r.BlueprintName == bp.name)) blueprints.Add(bp.name, bp);
             check(blueprints.Count == 8, "all eight native manufacturing recipes are registered without duplicate names");
             foreach (var recipe in ManufacturingPolicy.Recipes)
             {

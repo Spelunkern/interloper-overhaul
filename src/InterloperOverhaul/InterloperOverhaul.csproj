@@ -4,7 +4,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <!-- Generated IL2CPP attributes conflict with nullable metadata emission. -->
     <Nullable>disable</Nullable>
-    <Version>0.12.0</Version>
+    <Version>0.13.0</Version>
     <DebugType>portable</DebugType>
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
@@ -33,6 +33,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="../../shared/LightSpawnPolicy.cs" Link="LightSpawnPolicy.cs" />
+    <Compile Include="../../shared/VariantPolicy.cs" Link="VariantPolicy.cs" />
+    <Compile Include="../../shared/WorkshopRunState.cs" Link="WorkshopRunState.cs" />
     <Compile Include="../../shared/ManufacturingPolicy.cs" Link="ManufacturingPolicy.cs" />
     <Compile Include="../../shared/WorldPolicy.cs" Link="WorldPolicy.cs" />
     <Compile Include="../../shared/LootBalancePolicy.cs" Link="LootBalancePolicy.cs" />
@@ -43,6 +46,7 @@
     <DefineConstants>$(DefineConstants);IO_VALIDATION</DefineConstants>
   </PropertyGroup>
   <ItemGroup Condition="'$(RuntimeValidation)' == 'true'">
+    <Compile Include="../../tests/WorkshopValidation.cs" Link="WorkshopValidation.cs" />
     <Compile Include="../../tests/ManufacturingValidation.cs" Link="ManufacturingValidation.cs" />
     <Compile Include="../../tests/RuntimeValidation.cs" Link="RuntimeValidation.cs" />
     <Compile Include="../../tests/BeachcombingValidation.cs" Link="BeachcombingValidation.cs" />

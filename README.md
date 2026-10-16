@@ -3,7 +3,66 @@
 A personal mod for **The Long Dark**, focused on restoring content excluded from
 standard **Interloper**, with a few general quality-of-life changes. By Spelunkern.
 
-## Version 0.12.0: integrated cannery manufacturing
+## Version 0.13.0: variant schematics and finite flashlights
+
+In standard Interloper, authored variant weapon placements now yield physical
+**Workshop Schematics** instead of usable weapons. Their native location selection
+and spawn rolls still apply; the additional restored-loot rarity roll does not.
+Selected Tales/cache variant rewards become schematics, and variant Trader offers
+retain their native costs and progression. Random ordinary loot and beachcombing
+cannot supply variant weapons. Previously serialized or owned variants are preserved.
+
+Schematics use an existing blueprint-card model with a variant-specific English
+name and description. Picking one up records it permanently for that run, appends
+its description to journal notes, unlocks its recipe, and removes the card from the
+inventory. All eleven variants are included, including the Bushcraft Bow.
+
+Upgrades require the **Bleak Inlet Cannery ammunition workbench**, light, the
+learned schematic, and one usable base item. Quality tools are required for firearm
+and Survival Knife upgrades; bows require a standard, improvised, or Survival Knife.
+Tools are reusable and use native crafting wear. There is no additional skill gate.
+
+| Result | Base item | Additional consumed materials | Base time |
+| --- | --- | --- | --- |
+| Survival Knife | Hunting knife | 3 scrap metal, 1 cured leather, 1 cloth | 180 min |
+| Forester's Revolver | Revolver | 3 scrap metal, 1 cured maple, 1 cured leather | 240 min |
+| Warden's Revolver | Revolver | 2 scrap metal, 1 cured leather | 180 min |
+| Hunter's Revolver | Revolver | 4 scrap metal, 2 cured leather | 300 min |
+| Vaughn's Rifle | Rifle | 3 scrap metal, 1 cured leather | 300 min |
+| Barb's Rifle | Rifle | 6 scrap metal, 1 cured maple, 2 cured leather | 420 min |
+| Curator's Rifle | Rifle | 5 scrap metal, 1 cured maple, 1 cloth | 480 min |
+| Ranger's Rifle | Rifle | 4 scrap metal, 1 cured maple, 2 cured leather | 420 min |
+| Woodwright's Bow | Survival bow | 1 cured maple, 2 cured guts, 1 cured leather | 300 min |
+| Sport Bow | Survival bow | 2 scrap metal, 1 cured maple, 2 cured guts | 360 min |
+| Bushcraft Bow | Survival bow | 1 cured birch, 2 cured guts, 1 cloth | 240 min |
+
+Once a firearm-family schematic is known, any variant in that family can be
+returned to its common version at the Cannery: **30 minutes for a revolver or
+60 minutes for a rifle**, with no materials or tool required and no material refund.
+Upgrading and reverting preserve normalized condition and the original weapon's
+native identity. Ruined weapons, loaded firearms, and firearms containing spent
+casings cannot start a conversion. The base is reserved as one native work item;
+interrupted work retains its recipe, condition, and progress through saves. A failed
+start returns the original item. Conversions never issue an additional world weapon.
+
+Each **new Interloper run** allocates **two standard flashlights** at two distinct,
+seed-selected verified outdoor placements and **one Miner's Flashlight** at its
+native Concentrator watchroom placement. Their initial condition is seed-selected
+from 1–100%; native aurora/battery behavior is unchanged. Locations, creation flags,
+and separate native identities persist with the save. Revisits, loss, destruction,
+and harvesting do not produce replacements. Extra flashlights are blocked in
+ordinary loot, beachcombing, and Trader offers. Existing allocation snapshots migrate
+to version three without issuing extra lights or changing the original firearm/tool
+identities; start a new game for the exact flashlight counts.
+
+Automated checks cover native card text/saves, recipe locks and tools, world-site
+replacement, reward conversion, flashlight identities/saves, unloaded input gating,
+reservation/rollback, interrupted-work serialization, and condition/identity transfer.
+A full Cannery UI playthrough with time acceleration, interruptions, and Trader
+collection still requires in-game testing. The automated probe stays at the menu
+and does not open an existing survival save.
+
+## Integrated cannery manufacturing (0.12.0)
 
 Standard Interloper gains eight native crafting recipes at **ammunition workbenches**.
 They use the existing crafting UI, light/tool requirements, material consumption,
@@ -31,7 +90,7 @@ consume casing/wadding materials; they do not add rifle/revolver ammunition or c
 upgrades are repeatable and do not consume or reroll those world allocations.
 Manufactured gear is treated as player-owned, so the rarity and spawn-cap filters
 cannot delete it. Additional tools still cannot spawn through beachcombing or Trader
-stock. Weapon variants remain disabled.
+stock. Variant upgrades follow the schematic system above.
 
 Native **milling machines** can repair and restore the distress pistol and standard
 crampons. Repairs require 1 scrap metal and 30 base minutes; full restoration from
@@ -77,7 +136,7 @@ serialization, retained tool wear, repeated population, old payload migration,
 additional scripted/world gear, beachcombing rejection, and Trader filtering.
 Full travel/save/quit/reload playthrough testing remains necessary.
 
-## Weapon variants temporarily disabled (0.10.0)
+## Historical variant ban (0.10.0; superseded by 0.13.0)
 
 New weapon variants no longer spawn in standard Interloper: Barb's, Curator's,
 Vaughn's and Ranger rifles; Forester's, Warden's and Hunter's revolvers;
@@ -104,7 +163,7 @@ there is no replacement if an allocated weapon is lost, ruined, or harvested.
 
 Additional standard rifles/revolvers are suppressed in fresh world loot, containers,
 beachcombing, and Trader stock. Weapon variants are outside this two-weapon
-allocation and are currently disabled by the 0.10.0 rule above.
+allocation and now use the 0.13.0 schematic conversion system above.
 
 Found rifle/revolver ammunition retains **0.25%** of its previous opportunities;
 found empty casings retain **0.5%**. These are independent retention rolls after
@@ -144,7 +203,7 @@ Newly generated restored loot now receives an additional retention roll:
 | Ordinary restored items, including food | 5% (1 in 20) |
 | Hunting knife and standard hatchet | One allocated item each per new run (0.11.0) |
 | Other restored utility tools and premium clothing | 1% (1 in 100) |
-| Special rifle/revolver variants, special bows, and the Survival Knife | Disabled as of 0.10.0 |
+| Special rifle/revolver variants, special bows, and the Survival Knife | Schematics at authored sites/rewards; Cannery upgrades (0.13.0) |
 
 These are **additional retention rates**, not chances per container or guarantees
 per region. Native table selection and spawn chances still apply. A rejected item
@@ -327,7 +386,8 @@ Validation code is excluded from the production build. Loader, Harmony, and nati
 the validation even if individual checks report success. The injected probe may
 require forced termination during Unity/.NET shutdown after reporting its results;
 this does not validate a normal playthrough or normal shutdown behavior.
-The 0.12.0 probe was run with `DOTNET_TieredCompilation=0` and
+The 0.13.0 probe passed 448 native runtime checks and 2,216 policy boundary checks.
+It was run with `DOTNET_TieredCompilation=0` and
 `DOTNET_EnableWriteXorExecute=0`, as well as the launcher's `DOTNET_ReadyToRun=0`.
 This records the validation environment; it is not a claim
 that intermittent loader startup or probe shutdown failures have been resolved.

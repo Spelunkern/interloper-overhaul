@@ -16,7 +16,7 @@ public static class LootBalancePolicy
     public static bool IsWeaponVariant(string name) => ItemName(name) is
         "GEAR_Rifle_Barbs" or "GEAR_Rifle_Curators" or "GEAR_Rifle_Vaughns" or "GEAR_Rifle_Trader" or
         "GEAR_RevolverGreen" or "GEAR_RevolverFancy" or "GEAR_RevolverStubNosed" or
-        "GEAR_Bow_Woodwrights" or "GEAR_Bow_Manufactured" or "GEAR_SurvivalKnife";
+        "GEAR_Bow_Bushcraft" or "GEAR_Bow_Woodwrights" or "GEAR_Bow_Manufactured" or "GEAR_SurvivalKnife";
 
     // Authored 2.55 gear-data GUIDs. Read references in Trader filters without
     // synchronously loading assets while the native exchange catalog is loading.
@@ -32,6 +32,9 @@ public static class LootBalancePolicy
         "ab8fccd8c80c0c442aeeb244d6cf396b" => "GEAR_RevolverAmmoSingle",
         "e1e4e7d1932d79b46aab8b9034f04c17" => "GEAR_RevolverAmmoBox",
         "1096a8e89e17d7646867f1caaa751cb0" => "GEAR_RevolverAmmoCasing",
+        "cbb1ed6b3512d12449c16c6d6d0324c4" => "GEAR_Flashlight",
+        "57add83fba71ef34fbc42cfc1b29c56e" => "GEAR_Flashlight_LongLasting",
+        "4ea7dbb5cb65a8b49b4f8504a4287652" => "GEAR_Bow_Bushcraft",
         "2e03fa64f3ab1d141a584daf81e358f5" => "GEAR_SurvivalKnife",
         "96daa7434362e754fb7bd4fbb24c8cd4" => "GEAR_Bow_Manufactured",
         "4c5b21d92f282da4594dc59dd73a9f4a" => "GEAR_Bow_Woodwrights",
@@ -53,7 +56,7 @@ public static class LootBalancePolicy
     {
         name = ItemName(name);
         if (FirearmSpawnPolicy.IsFiniteItem(name)) return 0; // Supplied only by the finite world allocation.
-        if (IsWeaponVariant(name)) return 0; // Temporarily disabled, regardless of authored difficulty restrictions.
+        if (IsWeaponVariant(name)) return 0; // Physical variants are excluded from generic random loot; authored sites yield schematics.
         if (IsLiveFirearmAmmo(name)) return 0.0025;
         if (WorldPolicy.IsSpentCasing(name)) return 0.005;
         if (!restored || WorldPolicy.IsTaleReward(name)) return 1;

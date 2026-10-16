@@ -155,6 +155,7 @@ internal static class RuntimeValidation
             LootBalanceValidation.Run(Check);
             FiniteFirearmValidation.Run(Check);
             ManufacturingValidation.Run(Check);
+            WorkshopValidation.Run(Check);
             root = new GameObject("IO_Validation");
             root.SetActive(false);
             GameObject Child(string name)

@@ -24,7 +24,7 @@ internal static class FiniteFirearms
 
     internal static void Reset()
     {
-        State = null; failedLoad = false; deserialized.Clear(); initialConditions.Clear();
+        State = null; failedLoad = false; deserialized.Clear(); initialConditions.Clear(); Workshop.Reset();
     }
 
     internal static void ReadSlot(Game.SlotData slot)
@@ -71,6 +71,9 @@ internal static class FiniteFirearms
 
     internal static void AfterStart(Game.GearItem gear)
     {
+        Workshop.InitializeCard(gear);
+        if (WorkshopConversions.Record(gear.m_InProgressCraftItem) is ConversionState work)
+        { gear.SetNormalizedHP(work.Condition,false); Empty(gear); return; }
         int id = gear.GetInstanceID();
         if (initialConditions.Remove(id, out int condition))
         {
@@ -84,6 +87,7 @@ internal static class FiniteFirearms
         if (deserialized.Remove(id) || gear.m_BeenInPlayerInventory || gear.m_HasBeenOwnedByPlayer ||
             gear.m_BeenInContainer || IsManaged(gear)) return;
         if (!variant && FirearmSpawnPolicy.IsStandardFirearm(gear.name) && State?.Legacy == true) return;
+        if (variant && Workshop.ReplaceWorldVariant(gear)) return;
         // Catch fresh weapons whose native spawner skipped RollSpawnChance entirely.
         gear.gameObject.SetActive(false);
     }
@@ -92,6 +96,7 @@ internal static class FiniteFirearms
     {
         if (State == null || !FirearmSpawnPolicy.IsFiniteItem(gear.name)) return false;
         string guid = Game.ObjectGuid.GetGuidFromGameObject(gear.gameObject);
+        if (LightSpawnPolicy.IsLight(gear.name)) return State.Lights.Any(light => light.Item == LootBalancePolicy.ItemName(gear.name) && guid == State.GuidFor("light/" + light.Key));
         return guid == State.GuidFor(LootBalancePolicy.ItemName(gear.name));
     }
 
@@ -104,7 +109,7 @@ internal static class FiniteFirearms
         gun.ClearSpentCasings();
     }
 
-    internal static Game.GearItem CreateWeapon(string item, FirearmSite site, Scene scene)
+    internal static Game.GearItem CreateWeapon(string item, FirearmSite site, Scene scene, LightAllocation light = null)
     {
         var gear = Game.GearItem.InstantiateGearItem(item);
         if (gear == null) throw new InvalidOperationException("Could not instantiate " + item);
@@ -116,14 +121,14 @@ internal static class FiniteFirearms
                 WorldObjects.PathOf(candidate.gameObject) == site.Path);
             gear.transform.position = source != null ? source.transform.position : new Vector3(site.X, site.Y, site.Z);
             gear.transform.rotation = source != null ? source.transform.rotation : Quaternion.identity;
-            Game.ObjectGuid.MaybeAttachObjectGuidAddOrReplace(gear.gameObject, State.GuidFor(item));
+            Game.ObjectGuid.MaybeAttachObjectGuidAddOrReplace(gear.gameObject, State.GuidFor(light == null ? item : "light/" + light.Key));
             gear.m_DisableSerialization = false;
             gear.SkipSpawnChanceRollInitialDecayAndAutoEvolve();
             int condition = FirearmSpawnPolicy.Condition(State.Seed, item);
             initialConditions[gear.GetInstanceID()] = condition;
             gear.SetNormalizedHP(condition / 100f, false);
             Empty(gear); // Also zero the legacy field before GunItem.Start can fill the clip.
-            State.SetCreated(item, true);
+            if (light == null) State.SetCreated(item, true); else light.Created = true;
             return gear;
         }
         catch
@@ -139,6 +144,7 @@ internal static class FiniteFirearms
             Game.SaveGameSystem.IsRestoreInProgress() || Game.SaveGameSystem.IsSceneRestoreInProgress() || failedLoad) return;
         if (State == null) State = FirearmRunState.Create(Game.GameManager.GetRandomSeed(0), RunKey);
         if (State.Legacy) return;
+        PopulateLights();
         foreach (string item in FirearmSpawnPolicy.Items)
         {
             if (State.IsLegacy(item) || State.Created(item)) continue;
@@ -147,6 +153,17 @@ internal static class FiniteFirearms
             if (!scene.IsValid() || !scene.isLoaded) continue;
             try { CreateWeapon(item, site, scene); }
             catch (Exception ex) { MelonLogger.Error("[Finite firearms] Failed to place allocated item: " + ex); }
+        }
+    }
+
+    internal static void PopulateLights()
+    {
+        if (State == null || State.Legacy || State.LightsLegacy) return;
+        foreach (var light in State.Lights)
+        {
+            if (light.Created) continue;
+            var scene = SceneManager.GetSceneByName(light.Site.Scene);
+            if (scene.IsValid() && scene.isLoaded) CreateWeapon(light.Item, light.Site, scene, light);
         }
     }
 
@@ -216,6 +233,6 @@ internal static class NoAdditionalStandardFirearmTrades
     {
         if (!__result || !LootBalance.Active || __instance.m_GainedItem == null) return;
         string item = LootBalancePolicy.TraderItem(__instance.m_GainedItem.AssetGUID);
-        if (FirearmSpawnPolicy.IsFiniteItem(item) || LootBalancePolicy.IsWeaponVariant(item)) __result = false;
+        if (FirearmSpawnPolicy.IsFiniteItem(item)) __result = false;
     }
 }
