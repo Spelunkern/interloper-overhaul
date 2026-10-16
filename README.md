@@ -3,7 +3,23 @@
 A personal mod for **The Long Dark**, focused on restoring content excluded from
 standard **Interloper**, with a few general quality-of-life changes. By Spelunkern.
 
-## Version 0.9.0: finite standard firearms
+## Version 0.10.0: weapon variants temporarily disabled
+
+New weapon variants no longer spawn in standard Interloper: Barb's, Curator's,
+Vaughn's and Ranger rifles; Forester's, Warden's and Hunter's revolvers;
+Woodwright's and Sport bows; and the Survival Knife. The block covers fresh world
+placements, random/scripted containers (including reward caches), beachcombing,
+and Trader offers, including variant offers marked as special requests. Rejected
+loot is not replaced. Other difficulties and clothing rewards are unaffected.
+
+Already saved or acquired variants are preserved. Start a new survival game for a
+world without previously generated variants. This temporary rule supersedes their
+former 0.25% retention tier; their future distribution has not been defined yet.
+Validation checks all ten actual variant prefabs, skipped-roll placements, saved
+and owned gear, scripted containers, fresh radial finds, reward-generation scopes,
+Trader stock, and isolation from Stalker and Misery.
+
+## Finite standard firearms (0.9.0)
 
 Each **new Interloper run** allocates exactly **one standard rifle and one standard
 revolver**. The world seed independently chooses their locations from 28 verified
@@ -13,9 +29,8 @@ does not choose the locations. Locations are materialized when their regions loa
 there is no replacement if an allocated weapon is lost, ruined, or harvested.
 
 Additional standard rifles/revolvers are suppressed in fresh world loot, containers,
-beachcombing, and Trader stock. **Special variants retain their existing rules** and
-are outside this two-weapon allocation. The original restored-item rarity tier for
-variants remains 0.25% for generated loot.
+beachcombing, and Trader stock. Weapon variants are outside this two-weapon
+allocation and are currently disabled by the 0.10.0 rule above.
 
 Found rifle/revolver ammunition retains **0.25%** of its previous opportunities;
 found empty casings retain **0.5%**. These are independent retention rolls after
@@ -25,7 +40,7 @@ are preserved. Other ammunition types, such as flare shells, retain their own ru
 
 Trader ammunition/casing offers also use these retention rates, with a stable
 decision per world seed, item, and native aurora number. Reopening the radio or
-reloading cannot reroll the same aurora. Special requests, underlying exchange
+reloading cannot reroll the same aurora. Non-variant special requests, underlying exchange
 assets, other stock, prices, and existing active trades are preserved.
 
 The allocation and separate creation flags are stored as an opaque UTF-8 payload
@@ -54,7 +69,7 @@ Newly generated restored loot now receives an additional retention roll:
 | --- | --- |
 | Ordinary restored items, including food | 5% (1 in 20) |
 | Knives, hatchets, restored utility tools, and premium clothing | 1% (1 in 100) |
-| Special rifle/revolver variants, special bows, and the Survival Knife | 0.25% (1 in 400) |
+| Special rifle/revolver variants, special bows, and the Survival Knife | Disabled as of 0.10.0 |
 
 These are **additional retention rates**, not chances per container or guarantees
 per region. Native table selection and spawn chances still apply. A rejected item
@@ -74,7 +89,7 @@ Existing Interloper loot sources are preserved: a native placed hammer, for
 example, does not become rare just because hammers were excluded from container
 tables. Unique Tales rewards, the HRV Signal Fire satchel,
 notes, keys, structures, and containers themselves do not receive this rarity roll.
-Trader firearm and ammunition availability follows the 0.9.0 rules above; prices
+Trader firearm, variant, and ammunition availability follows the rules above; prices
 and progression remain unchanged.
 
 Rarity is deterministic from the world seed, source location, item, and opportunity
@@ -236,7 +251,7 @@ Validation code is excluded from the production build. Loader, Harmony, and nati
 the validation even if individual checks report success. The injected probe may
 require forced termination during Unity/.NET shutdown after reporting its results;
 this does not validate a normal playthrough or normal shutdown behavior.
-The 0.9.0 probe was run with `DOTNET_TieredCompilation=0` and
+The 0.10.0 probe was run with `DOTNET_TieredCompilation=0` and
 `DOTNET_EnableWriteXorExecute=0`, as well as the launcher's `DOTNET_ReadyToRun=0`.
 This records the validation environment; it is not a claim
 that intermittent loader startup or probe shutdown failures have been resolved.

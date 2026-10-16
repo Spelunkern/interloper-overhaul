@@ -1,7 +1,7 @@
 using MelonLoader;
 using InterloperOverhaul;
 
-[assembly: MelonInfo(typeof(Mod), "Interloper Overhaul", "0.9.0", "Spelunkern", "https://github.com/Spelunkern/interloper-overhaul")]
+[assembly: MelonInfo(typeof(Mod), "Interloper Overhaul", "0.10.0", "Spelunkern", "https://github.com/Spelunkern/interloper-overhaul")]
 [assembly: MelonGame("Hinterland", "TheLongDark")]
 
 namespace InterloperOverhaul;
@@ -21,6 +21,6 @@ public sealed class Mod : MelonMod
 
     public override void OnInitializeMelon()
     {
-        LoggerInstance.Msg("Interloper Overhaul 0.9.0 loaded. One allocated rifle and revolver per new Interloper run; found ammo retention 0.25%, casings 0.5%. Direct main menu enabled globally.");
+        LoggerInstance.Msg("Interloper Overhaul 0.10.0 loaded. One allocated rifle and revolver per new Interloper run; found ammo retention 0.25%, casings 0.5%. Weapon variants disabled. Direct main menu enabled globally.");
     }
 }

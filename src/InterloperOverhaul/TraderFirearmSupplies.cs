@@ -17,8 +17,10 @@ internal static class TraderFirearmSupplies
         for (int i = exchanges.Count - 1; i >= 0; i--)
         {
             var exchange = exchanges[i];
-            if (exchange == null || exchange.m_IsSpecialRequest || exchange.m_GainedItem == null) continue;
+            if (exchange == null || exchange.m_GainedItem == null) continue;
             string item = LootBalancePolicy.TraderItem(exchange.m_GainedItem.AssetGUID);
+            if (LootBalancePolicy.IsWeaponVariant(item)) { exchanges.RemoveAt(i); continue; }
+            if (exchange.m_IsSpecialRequest) continue;
             if (FirearmSpawnPolicy.IsStandardFirearm(item) || !LootBalancePolicy.KeepTraderSupply(seed, item, aurora))
                 exchanges.RemoveAt(i);
         }

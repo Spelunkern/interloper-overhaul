@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.10.0
+
+- Temporarily disable new rifle/revolver variants, special bows, and the Survival Knife in standard Interloper.
+- Block fresh world placements (including skipped spawn rolls), random/scripted container rewards, beachcombing finds, and Trader offers, including variant special requests.
+- Preserve saved/acquired variants, other difficulties, and the existing one-standard-rifle/one-standard-revolver allocation.
+- Resolve variant Trader identities from the installed 2.55 DLC catalog without loading assets in stock filters.
+
 ## 0.9.0
 
 - Allocate exactly one standard rifle and one standard revolver for each new Interloper run, independently selected from 28 audited base-game outdoor placements.

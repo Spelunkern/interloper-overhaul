@@ -111,6 +111,10 @@ internal static class FiniteFirearmValidation
                 m_GainedItem = new Gear.AssetReferenceGearItemData(guid), m_GainedItemAmount = 1
             };
             var rifleOffer = Exchange("b9474d5e3b25bbe4e8c2f3772da8cdab");
+            var variantOffer = Exchange("b930bfe9aa379ec4885009a692cfea2e");
+            var specialVariantOffer = Exchange("96daa7434362e754fb7bd4fbb24c8cd4");
+            specialVariantOffer.m_IsSpecialRequest = true;
+            check(!variantOffer.IsValidInCurrentGamemode(), "native trader eligibility excludes weapon variants");
             var ammoOffer = Exchange("b077bbe3815612345a39da9a3518c642");
             var casingOffer = Exchange("e5ef5c87193d18f45b64961da0adc56d");
             var knifeOffer = Exchange("5a7d6ed7004a60c49878b62497f2a63f");
@@ -121,10 +125,10 @@ internal static class FiniteFirearmValidation
             int aurora = Enumerable.Range(0, 10000).First(n => !LootBalancePolicy.KeepTraderSupply(123, "GEAR_RifleAmmoBox", n) &&
                 !LootBalancePolicy.KeepTraderSupply(123, "GEAR_RifleAmmoCasing", n));
             var stock = new Il2CppSystem.Collections.Generic.List<Trader.TradeExchangeData>();
-            foreach (var offer in new[] { rifleOffer, ammoOffer, casingOffer, knifeOffer, storyOffer }) stock.Add(offer);
+            foreach (var offer in new[] { rifleOffer, variantOffer, specialVariantOffer, ammoOffer, casingOffer, knifeOffer, storyOffer }) stock.Add(offer);
             TraderFirearmSupplies.Filter(stock, 123, aurora);
             check(stock.Count == 2 && stock[0].Pointer == knifeOffer.Pointer && stock[1].Pointer == storyOffer.Pointer,
-                "trader scarcity filters normal guns and firearm supplies while preserving other stock and story rewards");
+                "trader filters standard guns, variants (including special requests), and scarce supplies while preserving other rewards");
             int rareAurora = Enumerable.Range(0, 100000).First(n => LootBalancePolicy.KeepTraderSupply(123, "GEAR_RifleAmmoBox", n));
             stock.Clear(); stock.Add(ammoOffer);
             TraderFirearmSupplies.Filter(stock, 123, rareAurora);

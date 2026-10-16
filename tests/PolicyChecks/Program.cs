@@ -79,7 +79,7 @@ Check(LootBalancePolicy.Retention("GEAR_PeanutButter", true) == 0.05, "Restored 
 foreach (string name in new[] { "GEAR_HeavyParka", "GEAR_Knife", "GEAR_CowichanSweater", "GEAR_PremiumWinterCoat" })
     Check(LootBalancePolicy.Retention(name, true) == 0.01, "Premium restored loot retains one percent: " + name);
 foreach (string name in new[] { "GEAR_Rifle_Curators", "GEAR_Bow_Woodwrights", "GEAR_SurvivalKnife" })
-    Check(LootBalancePolicy.Retention(name, true) == 0.0025, "Special variants retain a quarter percent: " + name);
+    Check(LootBalancePolicy.Retention(name, true) == 0, "Special variants are temporarily disabled: " + name);
 Check(LootBalancePolicy.Retention("GEAR_HeavyParka(Clone)", true) == 0.01, "Cloned gear uses the same rarity tier");
 Check(LootBalancePolicy.Retention("GEAR_Knife (12)", true) == 0.01, "Authored numbered instances use the same tier");
 foreach (string name in new[] { "GEAR_Hammer", "GEAR_Stick" })
@@ -100,7 +100,7 @@ foreach (string name in new[] { "GEAR_Rifle", "GEAR_Revolver", "GEAR_Rifle(Clone
     Check(LootBalancePolicy.Retention(name, true) == 0 && LootBalancePolicy.Retention(name, false) == 0, "Unallocated standard firearms never enter ordinary loot");
 }
 foreach (string name in new[] { "GEAR_Rifle_Curators", "GEAR_Rifle_Trader", "GEAR_RevolverFancy" })
-    Check(!FirearmSpawnPolicy.IsStandardFirearm(name) && LootBalancePolicy.Retention(name, true) == 0.0025, "Special variants remain outside the global limit");
+    Check(!FirearmSpawnPolicy.IsStandardFirearm(name) && LootBalancePolicy.Retention(name, true) == 0, "Disabled variants remain outside the standard firearm allocation");
 foreach (string name in new[] { "GEAR_RifleAmmoSingle", "GEAR_RifleAmmoBox", "GEAR_RevolverAmmoSingle", "GEAR_RevolverAmmoBox" })
     Check(LootBalancePolicy.Retention(name, true) == 0.0025 && LootBalancePolicy.Retention(name, false) == 0.0025, "Found ammunition uses quarter-percent retention");
 foreach (string name in new[] { "GEAR_RifleAmmoCasing", "GEAR_RevolverAmmoCasing" })
@@ -124,8 +124,19 @@ Check(Enumerable.Range(0, 100000).Count(aurora => LootBalancePolicy.KeepTraderSu
     "Trader ammunition availability follows quarter-percent retention across auroras");
 Check(LootBalancePolicy.KeepTraderSupply(123, "GEAR_RifleAmmoBox", 4) == LootBalancePolicy.KeepTraderSupply(123, "GEAR_RifleAmmoBox", 4),
     "Reloading the same trader aurora cannot reroll supply availability");
-Check(Enumerable.Range(0, 1000).All(aurora => LootBalancePolicy.KeepTraderSupply(123, "GEAR_Rifle_Trader", aurora)),
-    "Special firearm variants retain their own trader rules");
+Check(Enumerable.Range(0, 1000).All(aurora => !LootBalancePolicy.KeepTraderSupply(123, "GEAR_Rifle_Trader", aurora)),
+    "Weapon variants are absent from every trader aurora");
 Check(FirearmSpawnPolicy.IsStandardFirearm("GearItemData_Rifle") && LootBalancePolicy.IsLiveFirearmAmmo("GearItemData_RifleAmmoBox"),
     "Trader gear-data asset names resolve to the correct firearm and ammunition identities");
+Check(LootBalancePolicy.TraderItem("2e03fa64f3ab1d141a584daf81e358f5") == "GEAR_SurvivalKnife" && LootBalancePolicy.Retention("GearItemData_SurvivalKnife", false) == 0, "Variant authored identity and unrestricted source blocked: SurvivalKnife");
+Check(LootBalancePolicy.TraderItem("96daa7434362e754fb7bd4fbb24c8cd4") == "GEAR_Bow_Manufactured" && LootBalancePolicy.Retention("GearItemData_Bow_Manufactured", false) == 0, "Variant authored identity and unrestricted source blocked: Bow_Manufactured");
+Check(LootBalancePolicy.TraderItem("4c5b21d92f282da4594dc59dd73a9f4a") == "GEAR_Bow_Woodwrights" && LootBalancePolicy.Retention("GearItemData_Bow_Woodwrights", false) == 0, "Variant authored identity and unrestricted source blocked: Bow_Woodwrights");
+Check(LootBalancePolicy.TraderItem("9554b92c571828948b07f11703c50dea") == "GEAR_RevolverFancy" && LootBalancePolicy.Retention("GearItemData_RevolverFancy", false) == 0, "Variant authored identity and unrestricted source blocked: RevolverFancy");
+Check(LootBalancePolicy.TraderItem("fc0ad0fa37b22274cb0a9964f5dcbf4b") == "GEAR_RevolverGreen" && LootBalancePolicy.Retention("GearItemData_RevolverGreen", false) == 0, "Variant authored identity and unrestricted source blocked: RevolverGreen");
+Check(LootBalancePolicy.TraderItem("1a5913c327c618046bdebe220935e903") == "GEAR_RevolverStubNosed" && LootBalancePolicy.Retention("GearItemData_RevolverStubNosed", false) == 0, "Variant authored identity and unrestricted source blocked: RevolverStubNosed");
+Check(LootBalancePolicy.TraderItem("28e60db238cbfb549a7a1da9498f65f1") == "GEAR_Rifle_Barbs" && LootBalancePolicy.Retention("GearItemData_Rifle_Barbs", false) == 0, "Variant authored identity and unrestricted source blocked: Rifle_Barbs");
+Check(LootBalancePolicy.TraderItem("118e9d9493692c44ba7a0acb6133fc21") == "GEAR_Rifle_Curators" && LootBalancePolicy.Retention("GearItemData_Rifle_Curators", false) == 0, "Variant authored identity and unrestricted source blocked: Rifle_Curators");
+Check(LootBalancePolicy.TraderItem("b930bfe9aa379ec4885009a692cfea2e") == "GEAR_Rifle_Trader" && LootBalancePolicy.Retention("GearItemData_Rifle_Trader", false) == 0, "Variant authored identity and unrestricted source blocked: Rifle_Trader");
+Check(LootBalancePolicy.TraderItem("32ed5798a3d3189429b3d08ef20eec63") == "GEAR_Rifle_Vaughns" && LootBalancePolicy.Retention("GearItemData_Rifle_Vaughns", false) == 0, "Variant authored identity and unrestricted source blocked: Rifle_Vaughns");
+Check(!LootBalancePolicy.IsWeaponVariant("GEAR_Knife") && !LootBalancePolicy.IsWeaponVariant("GEAR_Bow") && !LootBalancePolicy.IsWeaponVariant("GEAR_TacticalJacket"), "Ordinary weapons and clothing are outside the variant ban");
 Console.WriteLine($"PASS: {checks} policy boundary checks.");

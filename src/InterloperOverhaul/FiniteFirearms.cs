@@ -66,7 +66,7 @@ internal static class FiniteFirearms
 
     internal static void RememberDeserialized(Game.GearItem gear)
     {
-        if (FirearmSpawnPolicy.IsStandardFirearm(gear.name)) deserialized.Add(gear.GetInstanceID());
+        if (FirearmSpawnPolicy.IsStandardFirearm(gear.name) || LootBalancePolicy.IsWeaponVariant(gear.name)) deserialized.Add(gear.GetInstanceID());
     }
 
     internal static void AfterStart(Game.GearItem gear)
@@ -78,12 +78,13 @@ internal static class FiniteFirearms
             Empty(gear);
             return;
         }
-        if (!LootBalance.Active || !FirearmSpawnPolicy.IsStandardFirearm(gear.name)) return;
+        bool variant = LootBalancePolicy.IsWeaponVariant(gear.name);
+        if (!LootBalance.Active || (!variant && !FirearmSpawnPolicy.IsStandardFirearm(gear.name))) return;
         if (Game.SaveGameSystem.IsRestoreInProgress() || Game.SaveGameSystem.IsSceneRestoreInProgress()) return;
         if (deserialized.Remove(id) || gear.m_BeenInPlayerInventory || gear.m_HasBeenOwnedByPlayer ||
             gear.m_BeenInContainer || IsManaged(gear)) return;
-        if (State?.Legacy == true) return;
-        // Catch fresh guns whose native spawner skipped RollSpawnChance entirely.
+        if (!variant && State?.Legacy == true) return;
+        // Catch fresh weapons whose native spawner skipped RollSpawnChance entirely.
         gear.gameObject.SetActive(false);
     }
 
@@ -214,6 +215,7 @@ internal static class NoAdditionalStandardFirearmTrades
     private static void Postfix(Trader.TradeExchangeData __instance, ref bool __result)
     {
         if (!__result || !LootBalance.Active || __instance.m_GainedItem == null) return;
-        if (FirearmSpawnPolicy.IsStandardFirearm(LootBalancePolicy.TraderItem(__instance.m_GainedItem.AssetGUID))) __result = false;
+        string item = LootBalancePolicy.TraderItem(__instance.m_GainedItem.AssetGUID);
+        if (FirearmSpawnPolicy.IsStandardFirearm(item) || LootBalancePolicy.IsWeaponVariant(item)) __result = false;
     }
 }

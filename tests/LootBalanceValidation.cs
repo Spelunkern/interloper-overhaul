@@ -24,12 +24,32 @@ internal static class LootBalanceValidation
         {
             foreach (var fixture in new[] { ("GEAR_Rifle", 0.0), ("GEAR_Revolver", 0.0), ("GEAR_Knife", 0.01),
                 ("GEAR_HeavyParka", 0.01), ("GEAR_PremiumWinterCoat", 0.01), ("GEAR_CowichanSweater", 0.01),
-                ("GEAR_Rifle_Curators", 0.0025), ("GEAR_SurvivalKnife", 0.0025), ("GEAR_PeanutButter", 0.05),
+                ("GEAR_Rifle_Curators", 0.0), ("GEAR_SurvivalKnife", 0.0), ("GEAR_PeanutButter", 0.05),
                 ("GEAR_RifleAmmoSingle", 0.0025), ("GEAR_RifleAmmoCasing", 0.005), ("GEAR_TacticalJacket", 1.0) })
             {
                 var prefab = Game.GearItem.LoadGearItemPrefab(fixture.Item1);
                 check(prefab != null && LootBalance.Retention(prefab.gameObject) == fixture.Item2,
                     "authored restored prefab receives correct retention: " + fixture.Item1);
+            }
+            foreach (string name in new[] { "GEAR_Rifle_Barbs", "GEAR_Rifle_Curators", "GEAR_Rifle_Vaughns", "GEAR_Rifle_Trader",
+                "GEAR_RevolverGreen", "GEAR_RevolverFancy", "GEAR_RevolverStubNosed",
+                "GEAR_Bow_Woodwrights", "GEAR_Bow_Manufactured", "GEAR_SurvivalKnife" })
+            {
+                var variant = Child(name).AddComponent<Game.GearItem>();
+                check(LootBalance.Retention(variant.gameObject) == 0 &&
+                    LootBalance.Retention(Game.GearItem.LoadGearItemPrefab(name).gameObject) == 0,
+                    "variant blocked in authored prefab and unrestricted scene placement: " + name);
+                variant.m_RolledSpawnChance = true;
+                FiniteFirearms.AfterStart(variant);
+                check(!variant.gameObject.activeSelf, "variant cannot bypass suppression by skipping the native spawn roll: " + name);
+                variant.gameObject.SetActive(true);
+                FiniteFirearms.RememberDeserialized(variant);
+                FiniteFirearms.AfterStart(variant);
+                check(variant.gameObject.activeSelf, "previously serialized variant survives initialization: " + name);
+                variant.m_HasBeenOwnedByPlayer = true;
+                FiniteFirearms.AfterStart(variant);
+                check(variant.gameObject.activeSelf && LootBalance.Retention(variant.gameObject) == 1,
+                    "acquired variant remains usable: " + name);
             }
             var hammerGo = Child("GEAR_Hammer");
             var hammer = hammerGo.AddComponent<Game.GearItem>();
@@ -107,13 +127,29 @@ internal static class LootBalanceValidation
             container.PopulateWithScriptedGear();
             check(container.m_GearToInstantiate.Count == (keep ? 1 : 0), "native scripted generation invokes the rarity patch");
 
+            var variantPrefab = Game.GearItem.LoadGearItemPrefab("GEAR_Rifle_Trader").gameObject;
+            container.m_GearToInstantiate.Clear();
+            container.m_ScriptedItemPrefabs = new Il2CppReferenceArray<GameObject>(new[] { variantPrefab });
+            container.PopulateWithScriptedGear();
+            check(container.m_GearToInstantiate.Count == 0, "native scripted containers cannot generate weapon variants");
+            radial.m_Spawns.Clear();
+            var variantFind = Child("GEAR_RevolverFancy");
+            variantFind.AddComponent<Game.GearItem>();
+            radial.m_Spawns.Add(variantFind);
+            RareRadialGear.Postfix(radial, 0);
+            check(radial.m_Spawns.Count == 0, "fresh beachcombing variants are rejected");
+
             RewardScope.Enter();
-            try { check(LootBalance.Retention(rifle) == 0.01, "restored cache reward scopes retain Interloper rarity"); }
+            try
+            {
+                check(LootBalance.Retention(rifle) == 0.01, "restored cache reward scopes retain Interloper rarity");
+                check(LootBalance.Retention(variantPrefab) == 0, "temporary reward generation scope cannot restore variants");
+            }
             finally { RewardScope.Leave(); }
             foreach (string difficulty in new[] { "Stalker", "Misery" })
             {
                 Game.ExperienceModeManager.s_CurrentGameMode = Game.ExperienceModeManager.GetGameModeFromName(difficulty);
-                check(LootBalance.Retention(rifle) == 1, difficulty + " is excluded from loot rarity changes");
+                check(LootBalance.Retention(rifle) == 1 && LootBalance.Retention(variantPrefab) == 1, difficulty + " is excluded from loot rarity and variant changes");
             }
         }
         finally
