@@ -4,6 +4,21 @@ This file records release history. Older entries describe behavior at that relea
 and may be superseded. See the [feature reference](docs/features.md) for current
 rules, values, and recipes.
 
+## 0.23.0
+
+- Synchronize Night Walker's transient unlock state after feat/profile and survival
+  restoration, preventing repeat announcements of its already-earned event badge.
+  Preserve native eligibility, progression, selected feats, and genuine new unlocks.
+- Increase restored ordinary supplies from 5% retention to 15% ordinary, 25% remote,
+  35% deep, and 10% beach; raise restored equipment to 5% remote / 15% deep and
+  deep-only premium clothing to 5%. Native Interloper sources retain their rules.
+- Raise the first deep-memento slot's rare-equipment selection from 1% to 5%.
+- Reduce mailbox paper from 75% to 40% and common books from 4% to 2%; research
+  books keep their 0.25% / 0.5% / 1% ordinary/remote/deep chances.
+- Reduce fuel-tank finds from 10% to 5%, retaining 0.05–0.15 L amounts.
+- Preserve finite equipment counts, ammo/casing rarity, saved loot, and deterministic
+  decisions. Only new, unrolled opportunities use the revised rates.
+
 ## 0.22.0
 
 - Keep runtime item-data and affliction-definition clones alive through Unity's

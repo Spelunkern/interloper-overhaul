@@ -19,7 +19,7 @@ DLC content still requires ownership and native access/progression.
 | --- | --- | --- |
 | Coastal Highway houses | Saved selections are redirected to intact variants when the region loads | No, for the house redirect |
 | Bunker interiors | Existing assignments, including old Interloper-specific interiors, are preserved | Yes, for normal initial distribution |
-| Containers and loot | Searched containers, visited-scene contents, and saved finds are not regenerated | Yes, for the complete restored distribution |
+| Containers and loot | Searched containers, visited-scene contents, and saved finds are not regenerated; revised retention rates apply only to new opportunities | Yes, for the complete restored distribution |
 | Finite firearms/tools/lights | Existing allocation snapshots, identities, conditions, and issued flags remain | Yes, for current locations and exact new-run counts |
 | Region/feat selection | Existing starting choices are not replaced | Yes |
 | Item weights, clothing, food, fuel, skills | Applied to existing eligible gear and native systems; food retains consumed proportion | No |

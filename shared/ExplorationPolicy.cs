@@ -50,8 +50,14 @@ public static class ExplorationPolicy
 
     public static double EquipmentRetention(string item,LootAccess access,bool equipment)
     {
-        if (IsPremium(item)) return access==LootAccess.Deep ? 0.01 : 0;
-        if (equipment || IsUtility(item)) return access==LootAccess.Deep ? 0.05 : access==LootAccess.Remote ? 0.01 : 0;
-        return 0.05;
+        if (IsPremium(item)) return access==LootAccess.Deep ? 0.05 : 0;
+        if (equipment || IsUtility(item)) return access==LootAccess.Deep ? 0.15 : access==LootAccess.Remote ? 0.05 : 0;
+        return access switch
+        {
+            LootAccess.Deep => 0.35,
+            LootAccess.Remote => 0.25,
+            LootAccess.Beach => 0.10,
+            _ => 0.15
+        };
     }
 }

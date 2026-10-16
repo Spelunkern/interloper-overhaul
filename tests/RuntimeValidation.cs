@@ -177,6 +177,7 @@ internal static class RuntimeValidation
             ItemBalanceValidation.Run(Check);
             PermanentAccessoryValidation.Run(Check);
             ClothingNutritionValidation.Run(Check);
+            FeatNotificationValidation.Run(Check);
             FireFeatMendingValidation.Run(Check);
             CookingPreparationValidation.Run(Check);
             SurvivalBalanceValidation.Run(Check);

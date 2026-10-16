@@ -41,8 +41,8 @@ git diff --check
 ./scripts/validate-runtime.sh
 ```
 
-The current verified baseline is **3,296 policy checks** and **1,066 native runtime
-checks** on game 2.55 / mod 0.22.0. Counts record that run, rather than promising
+The current verified baseline is **3,303 policy checks** and **1,072 native runtime
+checks** on game 2.55 / mod 0.23.0. Counts record that run, rather than promising
 coverage of every gameplay interaction. Documentation-only updates do not require
 opening the game or replacing the installed DLL.
 
@@ -78,7 +78,7 @@ is not evidence that those native/runtime issues are fixed.
 | World/loot | Authored tables, excluded objects, rarity boundaries, source geography, allocation diversity, old snapshots, rejected beach opportunities | Complete world yield, expedition traversal/pickup, full beach respawn cycles |
 | Crafting/variants | Native recipes, tools/materials, Cannery start gate, reserved inputs, rollback, progress and identity serialization | Full UI flow, time acceleration, interruptions, Trader collection |
 | Items/accessories | Weights, contents/stacks, permanent unlocks, selection, repair setup, clothing/calorie migration, scene unload/asset collection followed by native pickup | Complete clothing/inventory/first-aid interactions during normal play |
-| Fire/skills/combat | Tinder display/rolls, feat values, skill thresholds, controlled repair/morale/swipe hooks, cougar save round trips | Actual fire-start loops, ruined repair with resource consumption, combat |
+| Fire/skills/combat | Tinder display/rolls, feat values, existing/new unlock notification behavior, skill thresholds, controlled repair/morale/swipe hooks, cougar save round trips | Actual fire-start loops, ruined repair with resource consumption, combat |
 | Food/afflictions | Bundle crafting/partial saves, salt accounting, separate frostbite gauges, parasite medication/rest, legacy conversion | First-aid UI, exposed body parts, long recovery and interruption sequences |
 | Vehicles/mail/caches | Warmth, fuel identity/quantity/empty saves, mailbox pools, 24/25-stone requirement boundary | Search interaction, physical placement, revisits across regions |
 

@@ -62,13 +62,13 @@ Sources: [world policy](../shared/WorldPolicy.cs),
 
 | Newly restored source | Premium clothing | Other restored clothing/tools | Ordinary restored supplies |
 | --- | --- | --- | --- |
-| Ordinary buildings, vehicles, containers | Excluded | Excluded | 5% retained |
-| Beachcombing, including large-find contents | Excluded | Excluded | 5% retained |
-| Remote destinations, ordinary memento/radio caches | Excluded | 1% retained | 5% retained |
-| Verified deep destinations, Tales bunkers | 1% retained | 5% retained | 5% retained |
+| Ordinary buildings, vehicles, containers | Excluded | Excluded | 15% retained |
+| Beachcombing, including large-find contents | Excluded | Excluded | 10% retained |
+| Remote destinations, ordinary memento/radio caches | Excluded | 5% retained | 25% retained |
+| Verified deep destinations, Tales bunkers | 5% retained | 15% retained | 35% retained |
 
 A retention rate is an **additional roll after native selection**, not a chance
-per container. For example, 1% retention keeps roughly one out of one hundred
+per container. For example, 5% retention keeps roughly one out of twenty
 eligible restored opportunities before accounting for how often the game selects
 that item. Rejected opportunities remain empty; no replacement roll is granted.
 
@@ -127,7 +127,7 @@ stump remover, and dusting sulfur.
 
 Remote/deep selections favor expedition supplies: cured leather, scrap, sewing
 kits, whetstones, bandages, matches, and the two ammunition chemicals. Only the
-**first slot of a deep memento** can select rare equipment, at **1%**: a
+**first slot of a deep memento** can select rare equipment, at **5%**: a
 firestriker, quality tools, gauntlets, or wool long underwear. Other slots and
 ordinary/remote mementos cannot roll this pool. No firearm, usable variant, or
 finished ammunition is introduced through this replacement pool.
@@ -136,7 +136,7 @@ finished ammunition is introduced through this replacement pool.
 | --- | --- | --- | --- |
 | Ordinary cache, any slot | 100% | 0% | 0% |
 | Remote cache, any slot | 30% | 70% | 0% |
-| Deep cache, first slot | 30% | 69% | 1% |
+| Deep cache, first slot | 30% | 65% | 5% |
 | Deep cache, later slots | 30% | 70% | 0% |
 
 These are selections between replacement pools. Items shared by two pools can
@@ -158,7 +158,7 @@ follow schematic conversion instead of granting usable variants.
 | Trader ammunition/casing offers | Same retention rates, stable for the run/item/native aurora number |
 | Authored stump-remover/dusting-sulfur world placements | Base spawn-chance floors of 25% ordinary/beach, 50% remote, 75% deep; higher native chances remain |
 
-The two chemicals bypass the ordinary 5% restored-loot filter and can appear in
+The two chemicals bypass the restored-supply retention filter and can appear in
 memento supplies. A spawn-chance floor does not force an item into every location:
 native difficulty scaling and location/group selection still apply. Other
 ammunition types, such as flare shells, retain their own rules.
@@ -476,6 +476,13 @@ repeated previews do not accumulate bonuses or modify the selected fuel permanen
 Feats still require their normal unlocks and must be selected for the run.
 Descriptions use the new benefits; other difficulties restore the authored values.
 
+Night Walker's already-earned event-badge unlock is synchronized when restoring
+feat/profile or survival state. Loading a run does not reannounce that existing
+unlock. Locked feats are not awarded, selected feats and progression are preserved,
+and a genuinely new unlock outside restoration keeps its native announcement.
+This notification correction applies globally; the benefit changes above remain
+Interloper-only.
+
 ### Mending
 
 **Mending level 5 requires 250 points**, instead of 350. Earlier thresholds and
@@ -564,7 +571,7 @@ Sources: [frostbite](../src/InterloperOverhaul/FrostbiteBalance.cs),
 These are the shelter's configured bonuses, not a guarantee of a positive final
 feels-like temperature in every weather condition.
 
-Fuel covers gain searchable native containers. On first generation, **10%** of
+Fuel covers gain searchable native containers. On first generation, **5%** of
 tanks contain a bottle with **0.05–0.15 L of kerosene**. Stable container identities
 and native saves preserve collected fuel and empty searches; reopening/reloading
 cannot generate more. Industrial tanks and ordinary glove-box/trunk loot retain
@@ -574,10 +581,10 @@ their own behavior.
 
 | Result | Ordinary site | Remote site | Deep site |
 | --- | --- | --- | --- |
-| Newspaper or rolled newspaper | 75% | 75% | 75% |
-| Common book | 4% | 4% | 4% |
+| Newspaper or rolled newspaper | 40% | 40% | 40% |
+| Common book | 2% | 2% | 2% |
 | Research book | 0.25% | 0.5% | 1% |
-| Empty | 20.75% | 20.5% | 20% |
+| Empty | 57.75% | 57.5% | 57% |
 
 Selection is stable for each run/mailbox. The pool includes nine common books and
 nine research books. These finds use their own rarity and are not filtered twice;

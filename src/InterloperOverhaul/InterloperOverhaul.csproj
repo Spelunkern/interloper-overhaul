@@ -4,7 +4,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <!-- Generated IL2CPP attributes conflict with nullable metadata emission. -->
     <Nullable>disable</Nullable>
-    <Version>0.22.0</Version>
+    <Version>0.23.0</Version>
     <DebugType>portable</DebugType>
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
@@ -55,6 +55,7 @@
     <DefineConstants>$(DefineConstants);IO_VALIDATION</DefineConstants>
   </PropertyGroup>
   <ItemGroup Condition="'$(RuntimeValidation)' == 'true'">
+    <Compile Include="../../tests/FeatNotificationValidation.cs" Link="FeatNotificationValidation.cs" />
     <Compile Include="../../tests/ItemDataLifetimeValidation.cs" Link="ItemDataLifetimeValidation.cs" />
     <Compile Include="../../tests/VehicleStreetValidation.cs" Link="VehicleStreetValidation.cs" />
     <Compile Include="../../tests/AfflictionValidation.cs" Link="AfflictionValidation.cs" />
