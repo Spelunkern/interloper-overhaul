@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.14.0
+
+- Apply the requested lighter weights to can openers, all insulated flasks, recycled cans, improvised tools, stones, standard arrows, both hand flares, car batteries, replacement fuses, all ordinary/research books, snares, ropes, woodworking tools, and both spray-paint can models.
+- Increase standard and Spelunker's lantern warmth from 3°C to 6°C using their native heat sources.
+- Remove passive condition decay from insulated flasks without repairing existing wear, changing fall damage, preventing drink cooling, or removing contents weight.
+- Keep spray paint at 0.20 kg total while preserving its remaining paint and uses.
+- Apply item balance to existing and newly created Interloper gear, preserve native stack/content calculations and saves, and isolate authored assets and other difficulties.
+- Add runtime checks for native prefabs, weight previews, save/reload, stacks, flask contents/aging, lantern warmth/fuel, and difficulty isolation.
+
 ## 0.13.0
 
 - Replace authored variant weapon placements and selected Tales/cache variant rewards with physical, variant-specific Workshop Schematics. Preserve native placement selection and reward progression.

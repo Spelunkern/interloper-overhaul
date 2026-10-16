@@ -3,7 +3,44 @@
 A personal mod for **The Long Dark**, focused on restoring content excluded from
 standard **Interloper**, with a few general quality-of-life changes. By Spelunkern.
 
-## Version 0.13.0: variant schematics and finite flashlights
+## Version 0.14.0: item weight and lantern warmth balance
+
+Standard Interloper uses the following item weights, including gear already saved
+in the world or inventory. No new run is required for these item adjustments.
+
+| Item | Weight |
+| --- | --- |
+| Can opener | 0.10 kg |
+| Insulated flasks, all seven styles (empty) | 0.10 kg |
+| Recycled can (empty) | 0.10 kg |
+| Improvised hatchet | 1.50 kg |
+| Improvised knife | 0.50 kg |
+| Stones | 0.10 kg each |
+| Standard arrows | 0.10 kg each |
+| Red and marine flares | 0.20 kg each |
+| Car battery | 5.00 kg |
+| Replacement fuse | 0.10 kg |
+| Ordinary and research books, including open book models | 0.20 kg each |
+| Snare | 0.20 kg |
+| Mountaineering rope | 2.50 kg |
+| Woodworking tools | 1.00 kg |
+| Spray paint, both can models | 0.20 kg total |
+
+Standard and Spelunker's lanterns provide **+6°C** through their native heat source.
+Fuel consumption, light, heat radius, and ignition behavior retain their normal rules.
+Insulated flasks no longer lose condition with time; their existing condition and
+fall damage remain intact. Their drinks still cool normally and contribute their
+native weight. Recycled cans also retain the weight of their contents. Spray paint
+has a fixed 0.20 kg total weight, without replenishing paint or changing its uses.
+Stack sizes, research progress, crafting recipes, and loot availability are unaffected.
+
+Native gear-data clones keep the new base weights and flask decay rate local to
+Interloper instances; canonical prefabs are restored after inventory weight previews.
+Other difficulties keep their authored values. Automated runtime checks cover actual
+item weights, stacks, flask contents and aging, both lanterns, save/reload, and
+switching to Stalker and Misery in the same process.
+
+## Variant schematics and finite flashlights (0.13.0)
 
 In standard Interloper, authored variant weapon placements now yield physical
 **Workshop Schematics** instead of usable weapons. Their native location selection
@@ -386,7 +423,7 @@ Validation code is excluded from the production build. Loader, Harmony, and nati
 the validation even if individual checks report success. The injected probe may
 require forced termination during Unity/.NET shutdown after reporting its results;
 this does not validate a normal playthrough or normal shutdown behavior.
-The 0.13.0 probe passed 448 native runtime checks and 2,216 policy boundary checks.
+The 0.14.0 probe passed 664 native runtime checks and 2,220 policy boundary checks.
 It was run with `DOTNET_TieredCompilation=0` and
 `DOTNET_EnableWriteXorExecute=0`, as well as the launcher's `DOTNET_ReadyToRun=0`.
 This records the validation environment; it is not a claim

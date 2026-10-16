@@ -203,4 +203,8 @@ workshop.Learned.Add("GEAR_Rifle_Barbs");
 workshop.Cards[Guid.NewGuid().ToString()] = "GEAR_SurvivalKnife";
 workshop.Work.Add(new() { Recipe=VariantPolicy.Variants[4].Upgrade.BlueprintName,WorkGuid=Guid.NewGuid().ToString(),OriginalGuid=Guid.NewGuid().ToString(),Condition=0.37f });
 Check(WorkshopRunState.Deserialize(workshop.Serialize()).Work.Single().Condition == 0.37f, "saved conversion preserves condition");
+Check(ItemBalancePolicy.IsBook("GEAR_BookGunsmithing(Clone)") && ItemBalancePolicy.IsBook("GEAR_BookLabE_Open_01"), "research and ordinary books share the lighter weight");
+Check(!ItemBalancePolicy.IsBook("GEAR_Logbook_A01") && ItemBalancePolicy.WeightKg("GEAR_Logbook_A01") < 0, "weightless narrative logs are outside book rebalance");
+Check(ItemBalancePolicy.IsFlask("GEAR_InsulatedFlask_G(Clone)") && !ItemBalancePolicy.IsFlask("GEAR_CookingPot"), "all insulated flask styles are covered without changing other containers");
+Check(ItemBalancePolicy.WeightKg("GEAR_ArrowManufactured") < 0 && ItemBalancePolicy.WeightKg("GEAR_ArrowHardened") < 0 && ItemBalancePolicy.WeightKg("GEAR_FlareGunAmmoSingle") < 0, "special arrows and flare shells retain their own weights");
 Console.WriteLine($"PASS: {checks} policy boundary checks.");
