@@ -162,6 +162,8 @@ internal static class RuntimeValidation
             FireFeatMendingValidation.Run(Check);
             CookingPreparationValidation.Run(Check);
             SurvivalBalanceValidation.Run(Check);
+            AfflictionValidation.Run(Check);
+            VehicleStreetValidation.Run(Check);
             root = new GameObject("IO_Validation");
             root.SetActive(false);
             GameObject Child(string name)

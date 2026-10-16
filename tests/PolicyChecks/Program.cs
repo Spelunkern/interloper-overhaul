@@ -256,4 +256,22 @@ for (int seed=0;seed<500;seed++)
 }
 Check(outcomes.Count==MementoRewardPolicy.Supplies.Length,"memento supply pool is reachable across runs");
 Check(LootBalancePolicy.Retention("GEAR_StumpRemover",true)==1 && LootBalancePolicy.Retention("GEAR_DustingSulfur",true)==1,"ammunition chemicals bypass restored-loot rarity");
+Check(StreetLootPolicy.IsFuelCover("CarSedanFuelCover_Prefab") && StreetLootPolicy.IsFuelCover("CarTruckFuelCover_Prefab(Clone)") &&
+    !StreetLootPolicy.IsFuelCover("OBJ_ElevatedFuelTankA_Prefab"),"vehicle fuel loot excludes industrial tanks");
+Check(StreetLootPolicy.IsMailboxSpawner("SpawnPrefab_mailbox") && !StreetLootPolicy.IsMailboxSpawner("SpawnPrefab_FrontWellLiquids"),"mail loot targets only mailbox spawners");
+int papers=0,commonBooks=0,skillBooks=0,fuelFinds=0;
+var mailOutcomes=new HashSet<string>();
+for(int seed=0;seed<20000;seed++)
+{
+    string mail=StreetLootPolicy.Mail(seed,"CoastalRegion/mailbox");mailOutcomes.Add(mail);
+    if(mail is "GEAR_Newsprint" or "GEAR_NewsprintRoll") papers++;
+    else if(StreetLootPolicy.CommonBooks.Contains(mail)) commonBooks++;
+    else if(StreetLootPolicy.SkillBooks.Contains(mail)) skillBooks++;
+    double fuel=StreetLootPolicy.FuelLitres(seed,"CoastalRegion/car");
+    if(fuel>0) { fuelFinds++;if(fuel<0.05 || fuel>=0.15) throw new Exception("Fuel quantity outside policy range."); }
+}
+Check(papers>14500 && papers<15500 && commonBooks>650 && commonBooks<950 && skillBooks>650 && skillBooks<950,"mailbox frequencies remain near seventy-five percent paper and eight percent books");
+Check(fuelFinds>1800 && fuelFinds<2200,"one in ten vehicle tanks contains a small fuel find");
+Check(mailOutcomes.Count==2+StreetLootPolicy.CommonBooks.Length+StreetLootPolicy.SkillBooks.Length+1,"all ordinary and research books are reachable without adding unrelated mailbox loot");
+Check(StreetLootPolicy.Mail(2718,"MailboxA")==StreetLootPolicy.Mail(2718,"MailboxA") && StreetLootPolicy.FuelLitres(2718,"CarA")==StreetLootPolicy.FuelLitres(2718,"CarA"),"street loot selection is stable on reload");
 Console.WriteLine($"PASS: {checks} policy boundary checks.");

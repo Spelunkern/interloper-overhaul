@@ -47,7 +47,7 @@ internal static class SurvivalBalanceValidation
             var manager=Gear.BlueprintManager.Instance;
             SurvivalBalance.Recipes(manager);
             var noisemaker=manager.m_AllBlueprints.ToArray().First(bp=>bp.name=="BLUEPRINT_GEAR_NoiseMaker_B");
-            check(noisemaker.CanCraftAtLocation(Game.CraftingLocation.Workbench) && !noisemaker.IsLocked(false),"native survival noisemaker recipe is unlocked and accepts an ordinary workbench");
+            check(noisemaker.CanCraftAtLocation(Game.CraftingLocation.Workbench) && !noisemaker.m_IgnoreLockInSurvival,"native survival noisemaker recipe retains discovery-based learning at an ordinary workbench");
             var mementos=new GameObject("Mementos");mementos.transform.SetParent(root.transform);
             var cache=new GameObject("Cache");cache.transform.SetParent(mementos.transform);
             var box=cache.AddComponent<Game.Container>();

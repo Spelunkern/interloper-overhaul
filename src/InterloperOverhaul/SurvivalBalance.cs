@@ -45,7 +45,7 @@ internal static class SurvivalBalance
             {
                 if (!locations.ContainsKey(bp.Pointer)) locations[bp.Pointer]=(bp.m_RequiredCraftingLocation,bp.m_IgnoreLockInSurvival);
                 bp.m_RequiredCraftingLocation=ItemBalance.Active ? Game.CraftingLocation.Workbench : locations[bp.Pointer].Location;
-                bp.m_IgnoreLockInSurvival=ItemBalance.Active || locations[bp.Pointer].IgnoreLock;
+                bp.m_IgnoreLockInSurvival=locations[bp.Pointer].IgnoreLock;
             }
         }
     }

@@ -55,6 +55,7 @@ internal static class LootBalance
         string name = LootBalancePolicy.ItemName(go.name);
         if (Workshop.Card(gear) != null || (LootBalancePolicy.IsWeaponVariant(name) && Workshop.Authored(gear))) return 1;
         if (RecoveredCasings.Active && WorldPolicy.IsSpentCasing(name)) return 1;
+        if (MailboxLoot.Spawning && StreetLootPolicy.IsMailSupply(name)) return 1;
         if (FirearmSpawnPolicy.IsFiniteItem(name)) return FiniteFirearms.IsManaged(gear) ? 1 : 0;
         if (WorldPolicy.IsTaleReward(name) ||
             WorldPolicy.IsSignalFireSatchel(go.scene.name, WorldObjects.PathOf(go))) return 1;

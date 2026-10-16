@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.19.0
+
+- Rework frostbite into temporary, independently recoverable body-area afflictions
+  dealing ten condition points per game hour each, with rapid warm recovery and
+  no permanent condition cap. Preserve partial recovery and migrate legacy cases.
+- Keep initial severe-laceration attack damage and wounds while removing the
+  seventy-two-hour recurring syndrome and its periodic extra wounds and risks.
+- Disable cabin fever and clear existing cabin fever and risk.
+- Give parasites fixed immediate 20% condition/fatigue-cap penalties, one native
+  medication dose, and twenty-four hours of rest, preserving treatment on reload.
+- Restore discovery-based noisemaker recipe learning without removing ordinary
+  workbench crafting or previous noisemaker balance.
+- Double prybar struggle damage and flee multipliers.
+- Increase vehicle interior warmth to 15°C and built-in bed warmth to 5°C.
+- Add persistent searchable vehicle fuel tanks with rare 0.05–0.15 L kerosene finds.
+- Stock native mailbox spawners with frequent newspapers and rare ordinary or
+  research books using deterministic selections and native pickup persistence.
+- Reduce rock-cache construction to twenty-five stones and cap dismantling refunds
+  at the new cost without changing capacity, build time, or regional limits.
+
 ## 0.18.0
 
 - Lower Cooking 5 to 250 points; restore food-specific poisoning and parasite

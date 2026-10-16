@@ -3,6 +3,49 @@
 A personal mod for **The Long Dark**, focused on restoring content excluded from
 standard **Interloper**, with a few general quality-of-life changes. By Spelunkern.
 
+## Version 0.19.0: temporary afflictions, defensive tools, and roadside supplies
+
+These changes apply to standard Interloper, including loaded afflictions.
+
+- **Frostbite:** reaching a body's full frostbite meter causes one temporary
+  affliction for that area. Each affected area drains ten condition points per
+  game hour; different areas stack. There is no permanent condition cap or
+  immediate condition loss. Native cold, clothing, and frozen-clothing checks
+  still fill meters. Warming reduces meters rapidly, with a full meter recovering
+  in at most fifteen warm game minutes. An area's affliction ends only when its
+  meter empties. Recovery and separate areas survive saves; old permanent cases
+  become temporary full meters without granting free condition healing.
+- **Severe lacerations:** keep the initial attack damage and initial wounds, then
+  immediately end the ongoing syndrome. No seventy-two-hour condition/stamina
+  debuff, recurring bleeding, or extra periodic infection risks. Existing recurring
+  laceration syndromes are also cleared; their existing wounds still need care.
+- **Cabin fever:** cannot develop. Existing cabin fever and risk are cleared.
+- **Intestinal parasites:** immediately reduce maximum condition and fatigue
+  capacity by 20%; those penalties never escalate. Treatment is one normal dose
+  of antibiotics or reishi tea, followed by twenty-four accumulated hours of
+  sleeping or passing time. Medication and partial recovery persist through saves.
+  Rest before medication does not count. Native infection risks remain in place,
+  including the previous Cooking-5 exception for ruined foods.
+- **Noisemakers:** must still be found to learn the survival recipe. Keep ordinary
+  workbench crafting and the previous weight, damage, and morale changes. Existing
+  legitimately learned recipes remain learned.
+- **Prybar:** double its native struggle damage multiplier (1.25 to 2.5) and
+  double its flee-chance multiplier (1.5 to 3). Other struggle properties remain.
+- **Vehicles:** +15°C interior warmth and +5°C built-in bed warmth. Fuel covers
+  gain a native searchable container with a stable ID. On first generation, 10%
+  of tanks contain a fuel bottle holding 0.05–0.15 litres of kerosene. Containers
+  and the small fuel amounts use native saves; reopening and reloading do not
+  regenerate loot. Industrial tanks and ordinary glove-box/trunk loot are unchanged.
+- **Mailboxes:** use the native physical-item spawner, with a stable per-run and
+  per-mailbox selection: 75% newspaper, 4% ordinary book, 4% skill book, 17% empty.
+  Book selection includes nine common and nine research books. These finds use
+  their own rarity rather than receiving the restored-loot filter a second time.
+  Existing native gear persistence continues to track collected items.
+- **Rock caches:** require twenty-five stones instead of fifty. The native
+  requirement checks, placement blueprint, and completed build share the new cost.
+  Dismantling returns no more than twenty-five stones, preventing material duplication.
+  Capacity, build time, and region limits stay unchanged.
+
 ## Version 0.18.0: cooking, shelters, explosives, and memento rewards
 
 These changes apply to standard Interloper.
@@ -26,8 +69,8 @@ These changes apply to standard Interloper.
 - **Snow shelters:** +30°C inside, with a +5°C native bed bonus while sleeping
   or passing time. Ordinary daily and blizzard deterioration are both halved.
 - **Noisemakers:** 0.10 kg and craftable at ordinary workbenches, with the native
-  materials and time; the survival recipe is available without learning it at the
-  cannery. Wildlife blast damage is 250
+  materials and time; the survival recipe requires finding a noisemaker to learn
+  it. Wildlife blast damage is 250
   instead of 50. Player blast and in-hand detonation damage are fixed at 250;
   original blast radii and native injuries remain. Their native thrown/hit morale
   events impose at least a 100-percentage-point timberwolf morale penalty.
@@ -592,15 +635,22 @@ Validation code is excluded from the production build. Loader, Harmony, and nati
 the validation even if individual checks report success. The injected probe may
 require forced termination during Unity/.NET shutdown after reporting its results;
 this does not validate a normal playthrough or normal shutdown behavior.
-The 0.18.0 probe passed 943 native runtime checks and 3,267 policy boundary checks.
+The 0.19.0 probe passed 1,009 native runtime checks and 3,273 policy boundary checks.
 These include clothing and food migration, ingredient inventory mass, tinder UI and
 success calculations, enabled feat effects, Mending thresholds, native cougar save
 round trips, Cooking thresholds and immunity scopes, partial-bundle reloads and
 native crafting factories, mixed curing-salt saves, shelter settings, noisemaker
 recipes and damage fields, deterministic memento replacements, and isolation from
-Stalker and Misery. Ruined-repair, noisemaker morale, and cougar-swipe
+Stalker and Misery. New checks cover separate temporary frostbite gauges and
+legacy migration, parasite medication/rest saves, affliction clearing, native prybar
+flee calculations, vehicle warmth, actual mailbox research-book spawning, unique
+fuel-tank IDs, small fuel amounts and empty-container saves, and the native rock-cache
+requirement checks at twenty-four and twenty-five stones.
+Ruined-repair, noisemaker morale, and cougar-swipe
 checks observe native entry points with controlled callbacks; they do not run combat
-or consume a player's repair resources.
+or consume a player's repair resources. The new affliction and roadside probes
+use controlled components at the main menu; they do not replace a survival
+playthrough, first-aid UI inspection, or a complete vehicle-search interaction.
 It was run with `DOTNET_TieredCompilation=0` and
 `DOTNET_EnableWriteXorExecute=0`, as well as the launcher's `DOTNET_ReadyToRun=0`.
 This records the validation environment; it is not a claim
