@@ -1,7 +1,6 @@
 # Feature and balance reference
 
 [Overview](../README.md) · [Install](installation.md) · [Save compatibility](compatibility.md)
-· [Debug tools](debug-tools.md)
 
 This is the current behavior of Interloper Overhaul, checked against the local
 **2.55** installation and the policies in this repository. Values below apply to

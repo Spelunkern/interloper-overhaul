@@ -9,8 +9,9 @@ internal static class AfflictionInterface
     internal static Game.AfflictionDefinition Definition(Game.AfflictionDefinition original)
     {
         if (!ItemBalance.Active || original==null || (original.m_AfflictionType!=Game.AfflictionType.Frostbite && original.m_AfflictionType!=Game.AfflictionType.IntestinalParasites)) return original;
-        if (definitions.TryGetValue(original.GetInstanceID(),out var cached)) return cached;
+        if (definitions.TryGetValue(original.GetInstanceID(),out var cached) && cached!=null) return cached;
         var clone=UnityEngine.Object.Instantiate(original).Cast<Game.AfflictionDefinition>();
+        clone.hideFlags=UnityEngine.HideFlags.HideAndDontSave;
         clone.name=original.name;
         bool frost=original.m_AfflictionType==Game.AfflictionType.Frostbite;
         clone.m_HPReduction=frost ? 0 : 20;

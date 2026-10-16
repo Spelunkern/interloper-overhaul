@@ -34,9 +34,24 @@ internal static class RuntimeValidation
                 if (menu.gameObject.scene.isLoaded && menu.m_MainWindow != null &&
                     menu.m_MainWindow.activeInHierarchy && menu.HasFadedIn() && menu.GetAlpha() >= 0.99f)
                 {
-                    DebugTools.Rendered=false;DebugTools.SetOpen(true);
-                    for(int guiFrame=0;guiFrame<5;guiFrame++) yield return null;
-                    DebugTools.SetOpen(false);
+                    var lifetime=ItemDataLifetimeValidation.Run(Check);
+                    try
+                    {
+                        while(true)
+                        {
+                            bool next;
+                            try { next=lifetime.MoveNext(); }
+                            catch(Exception ex)
+                            {
+                                MelonLogger.Error("[Validation] FAILURE: item-data lifetime regression: "+ex);
+                                System.Environment.Exit(1);
+                                yield break;
+                            }
+                            if(!next) break;
+                            yield return lifetime.Current;
+                        }
+                    }
+                    finally { (lifetime as IDisposable)?.Dispose(); }
                     Run(menu);
                     yield break;
                 }
@@ -167,7 +182,6 @@ internal static class RuntimeValidation
             SurvivalBalanceValidation.Run(Check);
             AfflictionValidation.Run(Check);
             VehicleStreetValidation.Run(Check);
-            DebugToolsValidation.Run(Check);
             root = new GameObject("IO_Validation");
             root.SetActive(false);
             GameObject Child(string name)

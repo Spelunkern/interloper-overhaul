@@ -25,14 +25,11 @@ in the [changelog](CHANGELOG.md).
 | Fire and skills | Useful tinder at high skill, improved fuel, stronger feats, Cooking/Mending 5 at 250 points | [Fire and skills](docs/features.md#fire-skills-and-feats) |
 | Afflictions and wildlife | Temporary but dangerous frostbite, shorter parasite treatment, no cabin fever, weaker cougars, stronger defensive prybar | [Afflictions and combat](docs/features.md#afflictions-and-wildlife) |
 | Shelter and supplies | Warmer shelters/cars, occasional fuel tanks, paper in mailboxes, cheaper rock caches, revised noisemakers | [Shelters and supplies](docs/features.md#shelters-roadside-supplies-and-explosives) |
-| Debugging | Opt-in F8 panel with flight, god mode, item grants, time controls, and position bookmarks | [Debug tools](docs/debug-tools.md) |
 
 ![Equipment progression from exploration to Cannery upgrades](docs/images/progression.svg)
 
 **Scope:** gameplay changes target standard Interloper. Pilgrim, Voyageur, Stalker,
-Misery, Custom, challenges, and Wintermute keep their own balance. Fast startup is
-global. Debug tools can be explicitly enabled in a loaded survival game and are
-separate from normal balance.
+Misery, Custom, challenges, and Wintermute keep their own balance. Fast startup is global.
 
 ## Install and play
 
@@ -60,16 +57,9 @@ plans. Most item/skill/affliction changes also apply to existing saves; see
 
 ## Testing the mod
 
-Press **F8**, then enable the tools for the current session. **F9** starts flight
-or returns to its origin; use the panel's landing button to move the survivor.
-The panel also grants items with selectable condition, restores needs, and shows
-allocation diagnostics. [Controls and persistence](docs/debug-tools.md) explain
-which experiments can be saved.
-
-Current automated baseline: **1,038 native runtime checks** and **3,296 policy
+Current automated baseline: **1,066 native runtime checks** and **3,296 policy
 checks**. These exercise native hooks and isolated fixtures at the main menu;
-full survival traversal, combat, crafting interruptions, and flight placement still
-need playtesting. See [development and validation](docs/development.md) for commands,
+full survival traversal, combat, and crafting interruptions still need playtesting. See [development and validation](docs/development.md) for commands,
 coverage, limitations, and a focused manual checklist.
 
 ## Documentation and references
@@ -77,7 +67,6 @@ coverage, limitations, and a focused manual checklist.
 - [Complete feature and balance reference](docs/features.md)
 - [Installation and troubleshooting](docs/installation.md)
 - [Existing saves and compatibility](docs/compatibility.md)
-- [Debug panel guide](docs/debug-tools.md)
 - [Development, validation, and issue reports](docs/development.md)
 - [Illustrations and wiki references](docs/media.md)
 - [Release history](CHANGELOG.md)

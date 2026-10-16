@@ -21,6 +21,7 @@ internal static class CattailBundle
         source=Game.GearItem.LoadGearItemPrefab(FoodPreparationPolicy.Cattail);
         if (source==null) throw new InvalidOperationException("Cattail stalk prefab is unavailable.");
         data=UnityEngine.Object.Instantiate(source.m_GearItemData).Cast<Gear.GearItemData>();
+        data.hideFlags=HideFlags.HideAndDontSave;
         data.name="GearItemData_IO_CattailBundle";
         data.m_BaseWeight=source.m_GearItemData.m_BaseWeight*10;
         data.m_LocalizedName=new Game.LocalizedString { m_LocalizationID="IO_CattailBundle_Name" };
@@ -224,7 +225,11 @@ internal static class PreserveCraftedBundleIdentity
     {
         // Native asset-reference instantiation renames a new object after Awake.
         // Restore its custom identity before inventory/container stack matching.
-        if (__0!=null && FoodPreparationPolicy.IsBundle(__0.m_GearItemData?.name ?? ""))
+        if (__0==null) return;
+        var data=__0.m_GearItemData;
+        // A managed wrapper can outlive its native Unity object. ?. tests CLR
+        // null only and calls Object.name on an already-unloaded asset.
+        if (data!=null && FoodPreparationPolicy.IsBundle(data.name))
             CattailBundle.Configure(__0,false);
     }
 }

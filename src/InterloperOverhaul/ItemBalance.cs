@@ -17,8 +17,12 @@ internal static class ItemBalance
     internal static bool Active => LootBalance.Active;
     internal static Gear.GearItemData BalancedData(Gear.GearItemData original, double weight, bool flask)
     {
-        if (data.TryGetValue(original.GetInstanceID(),out var cached)) return cached;
+        if (data.TryGetValue(original.GetInstanceID(),out var cached) && cached != null) return cached;
         var clone = UnityEngine.Object.Instantiate(original).Cast<Gear.GearItemData>();
+        // Unity cannot see references held only by the managed IL2CPP wrapper cache.
+        // In particular, prefab weight previews temporarily detach this clone.
+        // Keep it alive across UnloadUnusedAssets and scene transitions.
+        clone.hideFlags = HideFlags.HideAndDontSave;
         clone.name = original.name;
         clone.m_BaseWeight = Units.ItemWeight.FromKilograms((float)weight);
         if (flask) clone.m_DailyHPDecay = 0;

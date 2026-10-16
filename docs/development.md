@@ -1,6 +1,6 @@
 # Development and validation
 
-[Overview](../README.md) · [Features](features.md) · [Debug tools](debug-tools.md)
+[Overview](../README.md) · [Features](features.md)
 
 ## Build and repository layout
 
@@ -41,8 +41,8 @@ git diff --check
 ./scripts/validate-runtime.sh
 ```
 
-The current verified baseline is **3,296 policy checks** and **1,038 native runtime
-checks** on game 2.55 / mod 0.21.0. Counts record that run, rather than promising
+The current verified baseline is **3,296 policy checks** and **1,066 native runtime
+checks** on game 2.55 / mod 0.22.0. Counts record that run, rather than promising
 coverage of every gameplay interaction. Documentation-only updates do not require
 opening the game or replacing the installed DLL.
 
@@ -77,11 +77,10 @@ is not evidence that those native/runtime issues are fixed.
 | --- | --- | --- |
 | World/loot | Authored tables, excluded objects, rarity boundaries, source geography, allocation diversity, old snapshots, rejected beach opportunities | Complete world yield, expedition traversal/pickup, full beach respawn cycles |
 | Crafting/variants | Native recipes, tools/materials, Cannery start gate, reserved inputs, rollback, progress and identity serialization | Full UI flow, time acceleration, interruptions, Trader collection |
-| Items/accessories | Weights, contents/stacks, permanent unlocks, selection, repair setup, clothing/calorie migration | Complete clothing/inventory/first-aid interactions during normal play |
+| Items/accessories | Weights, contents/stacks, permanent unlocks, selection, repair setup, clothing/calorie migration, scene unload/asset collection followed by native pickup | Complete clothing/inventory/first-aid interactions during normal play |
 | Fire/skills/combat | Tinder display/rolls, feat values, skill thresholds, controlled repair/morale/swipe hooks, cougar save round trips | Actual fire-start loops, ruined repair with resource consumption, combat |
 | Food/afflictions | Bundle crafting/partial saves, salt accounting, separate frostbite gauges, parasite medication/rest, legacy conversion | First-aid UI, exposed body parts, long recovery and interruption sequences |
 | Vehicles/mail/caches | Warmth, fuel identity/quantity/empty saves, mailbox pools, 24/25-stone requirement boundary | Search interaction, physical placement, revisits across regions |
-| Debug panel | Actual OnGUI callback, native damage/input/weight hooks, spawns, save-proxy masks, session reset | Flight movement/landing, terrain safety, full user interaction in a loaded world |
 
 Controlled callbacks and menu fixtures do not simulate attacks, consume a player's
 repair resources, or replace a complete travel/save/quit/reload playthrough. The
@@ -91,8 +90,7 @@ are exported, and setting the native Steam app IDs.
 ## Manual playtest checklist
 
 Use a disposable Interloper run and keep an unmodified backup for migration checks.
-The [debug guide](debug-tools.md) explains which actions can be saved. Existing
-loot must not be mistaken for the distribution of a newly generated world.
+Existing loot must not be mistaken for the distribution of a newly generated world.
 
 | Scenario | Observe |
 | --- | --- |
@@ -102,6 +100,7 @@ loot must not be mistaken for the distribution of a newly generated world.
 | Schematics | Native site gives the correct card/text; pickup learns one recipe; save/reload retains knowledge |
 | Cannery conversions | Correct light/tools/materials; empty input firearm; condition/identity preserved; interrupted work resumes; reversal costs only time |
 | Other manufacturing | Reject starts outside the Cannery; correct partial powder; fresh-flare requirements; milling restoration |
+| Pickup after travel | Collect research/common books, newsprint, and tools before/after multiple interior transitions; inspection models must disappear and items enter inventory |
 | Clothing and accessories | Full/worn values; vest repair; belt affects tools only; one heaviest per type; holster affects one rifle; duplicates do not stack |
 | Food and fire | Partial food/bundle weights; mixed salt deposits; tinder selection at Firestarting 3+; UI chance matches behavior |
 | Mending/Cooking 5 | Ruined repair starts and consumes normal materials; ruined food keeps native risks; non-ruined food retains immunity |
@@ -109,7 +108,6 @@ loot must not be mistaken for the distribution of a newly generated world.
 | Wildlife/noisemakers | Cougar swipe/health; prybar flee; timberwolf morale; fixed player explosive damage |
 | Roadside supplies | Tank-search interaction; small fuel quantity; persistent empty tanks; paper/book collection in mailboxes |
 | Shelter/cache | Warmth while inside and resting; slower shelter decay; 25-stone build/dismantle |
-| Debug flight | F8 input capture; F9 start/return; E/Ctrl/Q movement; panel landing; scene transition cleanup |
 | Difficulty isolation | Compare Stalker/Misery item and system values after returning to the menu in the same process |
 
 ## Reporting a problem
@@ -119,7 +117,6 @@ Include the following in an issue or playtest report:
 - Game, mod, MelonLoader, and operating-system versions, plus other installed mods.
 - Difficulty and whether the run predates the current mod/allocation rules.
 - Region/location, item or recipe, expected result, actual result, and exact steps.
-- Whether debug tools were enabled and which actions were used.
 - A relevant screenshot and the error section of `MelonLoader/Latest.log` or
   `Player.log`; do not publish account information or unrelated private files.
 - Whether it reproduces after saving/reloading, revisiting, or in a disposable new run.

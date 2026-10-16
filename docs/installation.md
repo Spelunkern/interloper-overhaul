@@ -63,7 +63,7 @@ building and deploying it.
 | Missing generated references during build | Run setup and launch the game once to let MelonLoader generate its assemblies, then close it and deploy |
 | Deploy refuses to run | Close The Long Dark before replacing its loaded DLL |
 | Restored content missing in a visited scene | Saved scene contents and searched containers are preserved; test a new run for generation changes |
-| F8 opens a disabled debug panel | Load a game, then enable tools for the current session |
+| Pickup fails or an inspected object stays in front of the camera | Update to the current build and restart the game; the fixed item-data lifetime bug interrupted pickup after scene/asset unloading |
 | Intermittent crash before the menu | Inspect loader/game logs; the launcher includes tested runtime settings, but intermittent native/loader startup failures have still been observed |
 | Old and new mod both load | Remove the obsolete `Mods/TheLongDarkMod.dll` scaffold; keep only the current DLL |
 

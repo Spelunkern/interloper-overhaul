@@ -10,7 +10,7 @@ The verified environment is native **Linux x64**, The Long Dark **2.55**, Unity
 
 Content and balance changes target **standard Interloper**. Other difficulties,
 Custom, challenges, and story mode retain their native settings. Fast startup is
-global. The opt-in debug panel is independent of the Interloper balance gate.
+global. The integrated GM/debug panel has been removed.
 DLC content still requires ownership and native access/progression.
 
 ## New versus existing runs
@@ -41,7 +41,7 @@ more equipment than the current new-run distribution allows. Save migration does
 not delete those items to enforce new counts. If allocation data cannot be decoded,
 spawning fails closed instead of silently replacing the plan.
 
-Crafted gear and debug grants are player-owned and do not consume world allocations.
+Crafted gear is player-owned and does not consume world allocations.
 Weapon conversions retain native identity, normalized condition, and interrupted
 work. Permanent accessory and learned-schematic unlocks are run-specific and do not
 carry into a new game.
@@ -58,7 +58,7 @@ save-data-mod dependency. The manufacturing implementation is integrated here;
 installing an older manufacturing mod alongside it has not been validated.
 
 Compatibility with mods patching the same loot generation, crafting, item weights,
-afflictions, input, or native flight methods is not guaranteed. Include the complete
+or affliction methods is not guaranteed. Include the complete
 mod list when reporting an interaction; do not assume two independent weight or
 spawn patches will combine safely.
 
@@ -72,5 +72,7 @@ The custom Cattail Bundle depends on this mod's item factory, and schematic/acce
 unlocks are represented by mod-managed state rather than equivalent vanilla physical
 items. A pre-mod backup is the reliable way to return to a fully vanilla run.
 
-[Debug tool persistence](debug-tools.md#what-persists) describes the distinction
-between temporary options and saveable experiments.
+The former GM/debug options were session-only and are no longer included. Items,
+learned recipes, treatment, or other ordinary changes already saved while testing
+remain part of that save; removing the panel does not roll back inventories or
+progression.

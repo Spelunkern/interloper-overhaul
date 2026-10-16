@@ -4,10 +4,23 @@ This file records release history. Older entries describe behavior at that relea
 and may be superseded. See the [feature reference](docs/features.md) for current
 rules, values, and recipes.
 
-## Unreleased
+## 0.22.0
+
+- Keep runtime item-data and affliction-definition clones alive through Unity's
+  unused-asset collection and scene changes; discard destroyed cache entries.
+- Guard bundle identity checks against destroyed native Unity data. This fixes
+  pickup exceptions affecting books, newsprint, and other balanced items, which
+  could leave inspection models attached to the camera across scene transitions.
+- Remove the integrated GM/debug panel, flight, hotkeys, item grants, time/weight/
+  invulnerability overrides, and their patches and module dependencies.
+- Add native regression checks for scene unload, real unused-asset collection,
+  post-collection inventory pickup, and destroyed Unity wrapper/cache handling.
+- Keep the system-based documentation and update it for the removed debug tools.
+
+### Documentation
 
 - Reorganize the README around current systems and link to detailed feature,
-  installation, compatibility, debug, and development guides.
+  installation, compatibility, and development guides.
 - Consolidate current loot and manufacturing rules, removing superseded policies
   from the active reference; add original progression/frostbite diagrams and media
   attribution guidance.

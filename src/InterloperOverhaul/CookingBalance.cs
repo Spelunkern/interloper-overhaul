@@ -29,9 +29,10 @@ internal static class CookingBalance
         if (!ItemBalance.Active || item==null || !item.gameObject.scene.IsValid() || LootBalancePolicy.ItemName(item.name)!="GEAR_CookedBarPemmican") return;
         var data=item.m_GearItemData;
         if (data==null) return;
-        if (!pemmicanData.TryGetValue(data.GetInstanceID(),out var balanced))
+        if (!pemmicanData.TryGetValue(data.GetInstanceID(),out var balanced) || balanced == null)
         {
             balanced=UnityEngine.Object.Instantiate(data).Cast<Gear.GearItemData>();
+            balanced.hideFlags=UnityEngine.HideFlags.HideAndDontSave;
             balanced.name=data.name;
             balanced.m_DailyHPDecay=data.m_MaxHP*0.001f;
             pemmicanData[data.GetInstanceID()]=balanced;
