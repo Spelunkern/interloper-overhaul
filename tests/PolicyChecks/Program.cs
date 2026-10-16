@@ -217,4 +217,14 @@ var accessories = new PermanentAccessoryState { ToolBelt=true,RifleHolster=true 
 Check(PermanentAccessoryState.Deserialize(accessories.Serialize()).ToolBelt && PermanentAccessoryState.Deserialize(accessories.Serialize()).RifleHolster,
     "permanent accessory unlocks survive a save round trip");
 Check(!new PermanentAccessoryState().ToolBelt && !new PermanentAccessoryState().RifleHolster,"new runs begin without collectible bonuses");
+foreach (var food in ClothingNutritionPolicy.Calories)
+{
+    Check(food.Original > 0 && food.Target > food.Original, "calorie increases have valid migration baselines");
+    Check(ClothingNutritionPolicy.Food(food.Item+"(Clone)")==food, "calorie lookup normalizes spawned names");
+}
+foreach (string ingredient in new[] { "GEAR_CookingOil", "GEAR_Flour", "GEAR_OatsTin", "GEAR_Salt", "GEAR_SaltBag" })
+    Check(ItemBalancePolicy.WeightKg(ingredient)<0 && ClothingNutritionPolicy.ContentWeightScale(ingredient)>0 &&
+        ClothingNutritionPolicy.ContentWeightScale(ingredient)<1, "ingredient mass uses quantity scaling without a second base weight");
+Check(ClothingNutritionPolicy.Food("GEAR_CoffeeCup")==null && ClothingNutritionPolicy.ContentWeightScale("GEAR_GunpowderCan")==1,
+    "unlisted calories and recipe resources remain unchanged");
 Console.WriteLine($"PASS: {checks} policy boundary checks.");

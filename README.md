@@ -3,7 +3,53 @@
 A personal mod for **The Long Dark**, focused on restoring content excluded from
 standard **Interloper**, with a few general quality-of-life changes. By Spelunkern.
 
-## Version 0.15.0: armor balance and permanent accessory upgrades
+## Version 0.16.0: clothing, food, and drink balance
+
+The following changes apply to standard Interloper, including existing gear.
+Clothing values are at full condition; protection and sprint penalties use percent.
+
+| Clothing | Weight | Other changes |
+| --- | --- | --- |
+| Rabbitskin hat | 0.25 kg | |
+| Hardhat | 0.50 kg | 10% protection |
+| Cotton scarf | Unchanged | +1°C wind protection |
+| Bearskin coat | 4.00 kg | 5°C warmth, 15% sprint penalty |
+| Moose-hide cloak | 3.50 kg | 4°C warmth, 25% protection |
+| Wolfskin coat | 2.50 kg | 10% protection, 5% sprint penalty |
+| Wolfskin pants | 2.00 kg | |
+| Deerskin pants | 1.50 kg | |
+| Improvised crampons | 1.00 kg | No protection, 10% sprint penalty; climbing benefits retained |
+
+| Food or ingredient | Full weight | Full calories, where changed |
+| --- | --- | --- |
+| Condensed milk, dog food | 0.20 kg each | |
+| Peaches | 0.25 kg | |
+| Tomato soup | Unchanged | 600 |
+| Sodas, including the energy drink | 0.20 kg each | |
+| Canned corn | 0.25 kg | |
+| Canned ham | Unchanged | 1,500 |
+| Canned pineapple | 0.25 kg | 600 |
+| Cereal | Unchanged | 1,000 |
+| Dried apples | Unchanged | 600 |
+| Pickles | 0.50 kg | 800 |
+| Cooking oil | 0.50 kg | |
+| Flour | 1.00 kg | |
+| Potatoes, raw and cooked | 0.10 kg each | |
+| Oats | 0.75 kg | |
+| Salt | 0.10 kg | |
+| Salt bag | 3.00 kg | |
+
+Oil, flour, oats, and salt retain their native recipe quantities and container
+capacities. Their carried mass scales with the remaining contents. Existing food
+retains its consumed proportion and cooking calorie bonus when migrated; repeated
+save/load cycles do not multiply calories or refill empty food.
+
+Acorn coffee matches normal coffee: 10% immediate fatigue recovery, 50% fatigue
+accumulation for one hour. Burdock tea retains its medicinal effect and gains the
+native birch-bark restoration benefit: 2.5 condition per hour for two hours.
+Other difficulties retain their original clothing, food, and drink behavior.
+
+## Armor balance and permanent accessory upgrades (0.15.0)
 
 In standard Interloper, the **Ballistic Vest** weighs **2 kg**, provides **20% maximum
 protection**, and reduces the sprint bar by **10%**. Its portable native repair action
@@ -461,7 +507,9 @@ Validation code is excluded from the production build. Loader, Harmony, and nati
 the validation even if individual checks report success. The injected probe may
 require forced termination during Unity/.NET shutdown after reporting its results;
 this does not validate a normal playthrough or normal shutdown behavior.
-The 0.15.0 probe passed 692 native runtime checks and 2,231 policy boundary checks.
+The 0.16.0 probe passed 793 native runtime checks and 2,249 policy boundary checks.
+These include clothing stats, food calorie migration, partial ingredient mass, native
+inventory aggregation, drink components, and isolation from Stalker and Misery.
 It was run with `DOTNET_TieredCompilation=0` and
 `DOTNET_EnableWriteXorExecute=0`, as well as the launcher's `DOTNET_ReadyToRun=0`.
 This records the validation environment; it is not a claim

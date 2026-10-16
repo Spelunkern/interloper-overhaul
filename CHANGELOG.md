@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.16.0
+
+- Rebalance Interloper clothing weights, warmth, wind protection, protection, and
+  sprint penalties; retain the improvised crampons' climbing benefits.
+- Reduce the requested food and ingredient weights and increase tomato soup,
+  canned ham, pineapple, cereal, dried apple, and pickle calories.
+- Preserve partially consumed food and cooking calorie bonuses across legacy-save
+  migration and repeated reloads. Ingredient recipe quantities remain unchanged.
+- Match acorn coffee's fatigue benefit to normal coffee and add birch-bark condition
+  restoration to burdock tea without removing its medicinal effect.
+- Keep these changes exclusive to standard Interloper.
+
 ## 0.15.0
 
 - Set the Ballistic Vest to 2 kg, 20% maximum protection, and a 10% sprint-bar penalty in Interloper.

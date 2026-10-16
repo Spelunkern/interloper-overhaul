@@ -1,7 +1,7 @@
 using MelonLoader;
 using InterloperOverhaul;
 
-[assembly: MelonInfo(typeof(Mod), "Interloper Overhaul", "0.15.0", "Spelunkern", "https://github.com/Spelunkern/interloper-overhaul")]
+[assembly: MelonInfo(typeof(Mod), "Interloper Overhaul", "0.16.0", "Spelunkern", "https://github.com/Spelunkern/interloper-overhaul")]
 [assembly: MelonGame("Hinterland", "TheLongDark")]
 
 namespace InterloperOverhaul;
@@ -25,6 +25,6 @@ public sealed class Mod : MelonMod
 
     public override void OnInitializeMelon()
     {
-        LoggerInstance.Msg("Interloper Overhaul 0.15.0 loaded. One allocated rifle, revolver, hunting knife, and hatchet per new Interloper run; found ammo retention 0.25%, casings 0.5%. Variant workshop schematics enabled. Two standard flashlights and one miner flashlight per new run. Native cannery manufacturing and item weight/warmth balance enabled in Interloper. Permanent tool-belt and rifle-holster collectibles enabled in Interloper. Direct main menu enabled globally.");
+        LoggerInstance.Msg("Interloper Overhaul 0.16.0 loaded. One allocated rifle, revolver, hunting knife, and hatchet per new Interloper run; found ammo retention 0.25%, casings 0.5%. Variant workshop schematics enabled. Two standard flashlights and one miner flashlight per new run. Native cannery manufacturing and item weight/warmth balance enabled in Interloper. Permanent tool-belt and rifle-holster collectibles enabled in Interloper. Clothing, nutrition, and drink-effect balance enabled in Interloper. Direct main menu enabled globally.");
     }
 }
