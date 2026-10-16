@@ -24,6 +24,7 @@ public static class FirearmSpawnPolicy
 
     public static bool IsLimitedTool(string name) => LootBalancePolicy.ItemName(name) is "GEAR_Knife" or "GEAR_Hatchet";
     public static bool IsFiniteItem(string name) => IsStandardFirearm(name) || IsLimitedTool(name) || LightSpawnPolicy.IsLight(name);
+    public const int CopiesPerRun = 2;
     public static readonly string[] Items = { "GEAR_Rifle", "GEAR_Revolver", "GEAR_Knife", "GEAR_Hatchet" };
 
     public static readonly FirearmSite[] LegacySites =
@@ -107,17 +108,41 @@ public static class FirearmSpawnPolicy
         }
         return sites.ToArray();
     }
-    public static readonly FirearmSite[] Sites=LegacySites.Concat(DeepSites).ToArray();
+    // Offset the second placement slightly so two different item families sharing
+    // an expedition destination do not occupy the same pickup position.
+    public static readonly FirearmSite[] SecondSites=DeepSites.Select(site=>new FirearmSite(
+        site.Scene,site.Path.Replace("IO_Expedition/","IO_ExpeditionSecond/"),site.Item,
+        site.X+0.30f,site.Y+0.02f,site.Z)).ToArray();
+    public static readonly FirearmSite[] Sites=LegacySites.Concat(DeepSites).Concat(SecondSites).ToArray();
+    public static string Destination(FirearmSite site)=>site.Path.StartsWith("IO_Expedition",StringComparison.Ordinal)
+        ? site.Scene+"/"+site.Path.Split('/')[1] : site.Id;
+    private static FirearmSite[] RankedSites(int seed,string item)=>DeepSites.Where(site=>site.Item==item)
+        .OrderBy(site=>LootBalancePolicy.Sample(seed,"expedition-destination/"+site.Path.Substring(0,site.Path.LastIndexOf('/')),0)).ToArray();
 
     public static FirearmSite SelectSite(int seed, string item)
     {
-        var sites=DeepSites.Where(site=>site.Item==item).OrderBy(site=>
-            LootBalancePolicy.Sample(seed,"expedition-destination/"+site.Path.Substring(0,site.Path.LastIndexOf('/')),0)).ToArray();
         int index=Array.IndexOf(Items,item);
         if(index<0) throw new ArgumentException("Unknown finite item: "+item);
-        return sites[index]; // Different item families occupy distinct destinations.
+        return RankedSites(seed,item)[index]; // Preserve the original first-copy plan.
     }
-
-    public static int Condition(int seed, string item) =>
-        1 + (int)(LootBalancePolicy.Sample(seed, "finite-firearm-condition/" + item, 0) * 100);
+    public static FirearmSite SelectSecondSite(int seed,string item,FirearmSite first)
+    {
+        int index=Array.IndexOf(Items,item);
+        if(index<0) throw new ArgumentException("Unknown finite item: "+item);
+        var sites=RankedSites(seed,item);
+        for(int step=0;step<sites.Length;step++)
+        {
+            var candidate=sites[(index+2+step)%sites.Length];
+            if(Destination(candidate)!=Destination(first))
+                return SecondSites.Single(site=>site.Item==item && Destination(site)==Destination(candidate));
+        }
+        throw new InvalidOperationException("No distinct destination for second finite item.");
+    }
+    public static int Condition(int seed,string item)=>Condition(seed,item,0);
+    public static int Condition(int seed,string item,int copy)
+    {
+        if(copy<0 || copy>=CopiesPerRun) throw new ArgumentOutOfRangeException(nameof(copy));
+        string key=item+(copy==0 ? "" : "/2");
+        return 1+(int)(LootBalancePolicy.Sample(seed,"finite-firearm-condition/"+key,0)*100);
+    }
 }

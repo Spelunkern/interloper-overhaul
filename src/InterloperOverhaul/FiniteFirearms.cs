@@ -42,10 +42,10 @@ internal static class FiniteFirearms
             {
                 State = FirearmRunState.Create(Game.GameManager.GetRandomSeed(0), RunKey);
                 // A pre-mod save can already contain unknown guns in unloaded scenes.
-                // Preserve them without allocating two more or pretending to migrate it.
+                // Preserve them without allocating new copies or pretending to migrate it.
                 State.Legacy = slot != null && slot.HasData(Game.SlotData.GLOBAL_KEY);
                 if (State.Legacy)
-                    MelonLogger.Msg("[Finite firearms] Existing save preserved. Start a new Interloper game for exactly one allocated rifle, revolver, hunting knife, and hatchet.");
+                    MelonLogger.Msg("[Finite firearms] Existing save preserved. Start a new Interloper game for exactly two allocated rifles, revolvers, hunting knives, and hatchets.");
             }
         }
         catch (Exception ex)
@@ -97,7 +97,7 @@ internal static class FiniteFirearms
         if (State == null || !FirearmSpawnPolicy.IsFiniteItem(gear.name)) return false;
         string guid = Game.ObjectGuid.GetGuidFromGameObject(gear.gameObject);
         if (LightSpawnPolicy.IsLight(gear.name)) return State.Lights.Any(light => light.Item == LootBalancePolicy.ItemName(gear.name) && guid == State.GuidFor("light/" + light.Key));
-        return guid == State.GuidFor(LootBalancePolicy.ItemName(gear.name));
+        return Enumerable.Range(0,FirearmSpawnPolicy.CopiesPerRun).Any(copy=>guid==State.GuidFor(LootBalancePolicy.ItemName(gear.name),copy));
     }
 
     internal static void Empty(Game.GearItem gear)
@@ -109,7 +109,7 @@ internal static class FiniteFirearms
         gun.ClearSpentCasings();
     }
 
-    internal static Game.GearItem CreateWeapon(string item, FirearmSite site, Scene scene, LightAllocation light = null)
+    internal static Game.GearItem CreateWeapon(string item, FirearmSite site, Scene scene, LightAllocation light = null, int copy = 0)
     {
         var gear = Game.GearItem.InstantiateGearItem(item);
         if (gear == null) throw new InvalidOperationException("Could not instantiate " + item);
@@ -121,14 +121,14 @@ internal static class FiniteFirearms
                 WorldObjects.PathOf(candidate.gameObject) == site.Path);
             gear.transform.position = source != null ? source.transform.position : new Vector3(site.X, site.Y, site.Z);
             gear.transform.rotation = source != null ? source.transform.rotation : Quaternion.identity;
-            Game.ObjectGuid.MaybeAttachObjectGuidAddOrReplace(gear.gameObject, State.GuidFor(light == null ? item : "light/" + light.Key));
+            Game.ObjectGuid.MaybeAttachObjectGuidAddOrReplace(gear.gameObject, light==null ? State.GuidFor(item,copy) : State.GuidFor("light/"+light.Key));
             gear.m_DisableSerialization = false;
             gear.SkipSpawnChanceRollInitialDecayAndAutoEvolve();
-            int condition = FirearmSpawnPolicy.Condition(State.Seed, item);
+            int condition = FirearmSpawnPolicy.Condition(State.Seed, item,copy);
             initialConditions[gear.GetInstanceID()] = condition;
             gear.SetNormalizedHP(condition / 100f, false);
             Empty(gear); // Also zero the legacy field before GunItem.Start can fill the clip.
-            if (light == null) State.SetCreated(item, true); else light.Created = true;
+            if (light == null) State.SetCreated(item,copy,true); else light.Created = true;
             return gear;
         }
         catch
@@ -146,12 +146,13 @@ internal static class FiniteFirearms
         if (State.Legacy) return;
         PopulateLights();
         foreach (string item in FirearmSpawnPolicy.Items)
+        for(int copy=0;copy<FirearmSpawnPolicy.CopiesPerRun;copy++)
         {
-            if (State.IsLegacy(item) || State.Created(item)) continue;
-            var site = State.Site(item);
+            if (State.IsLegacy(item) || State.Created(item,copy)) continue;
+            var site = State.Site(item,copy);
             var scene = SceneManager.GetSceneByName(site.Scene);
             if (!scene.IsValid() || !scene.isLoaded) continue;
-            try { CreateWeapon(item, site, scene); }
+            try { CreateWeapon(item,site,scene,copy:copy); }
             catch (Exception ex) { MelonLogger.Error("[Finite firearms] Failed to place allocated item: " + ex); }
         }
     }

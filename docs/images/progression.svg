@@ -1,13 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1120" height="350" viewBox="0 0 1120 350" role="img" aria-labelledby="title description">
   <title id="title">Firearm progression in Interloper Overhaul</title>
-  <desc id="description">Obtain a finite common firearm, learn a variant schematic, and upgrade at the Cannery with materials and time. A variant can return to the common firearm at the Cannery for 30 minutes for revolvers or 60 minutes for rifles, without additional materials.</desc>
+  <desc id="description">Obtain one of two finite common firearms of each type, learn a variant schematic, and upgrade at the Cannery with materials and time. A variant can return to the common firearm at the Cannery for 30 minutes for revolvers or 60 minutes for rifles, without additional materials.</desc>
   <defs>
     <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#92bdc5"/></marker>
   </defs>
   <rect width="1120" height="350" rx="18" fill="#12232b"/>
   <g font-family="DejaVu Sans, Arial, sans-serif" text-anchor="middle">
     <text x="560" y="42" fill="#f2f1e9" font-size="23" font-weight="bold">Explore. Learn. Build. Reconfigure.</text>
-    <text x="560" y="72" fill="#c1d1d5" font-size="15">One world rifle and one world revolver per new run</text>
+    <text x="560" y="72" fill="#c1d1d5" font-size="15">Two world rifles and two world revolvers per run</text>
     <g fill="#1e3540" stroke="#547783" stroke-width="1.5">
       <rect x="28" y="106" width="230" height="112" rx="10"/>
       <rect x="306" y="106" width="230" height="112" rx="10"/>

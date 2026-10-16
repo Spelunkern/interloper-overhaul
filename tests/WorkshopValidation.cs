@@ -106,19 +106,26 @@ internal static class WorkshopValidation
             var source = Game.GearItem.InstantiateGearItem("GEAR_Rifle");
             items.Add(source);
             source.SkipSpawnChanceRollInitialDecayAndAutoEvolve();
+            Game.ObjectGuid.MaybeAttachObjectGuidAddOrReplace(source.gameObject,FiniteFirearms.State.GuidFor("GEAR_Rifle",1));
+            var spare=Game.GearItem.InstantiateGearItem("GEAR_Rifle");items.Add(spare);
+            spare.SkipSpawnChanceRollInitialDecayAndAutoEvolve();spare.SetNormalizedHP(0.62f,false);
+            spare.m_InPlayerInventory=spare.m_BeenInPlayerInventory=spare.m_HasBeenOwnedByPlayer=true;
+            Game.ObjectGuid.MaybeAttachObjectGuidAddOrReplace(spare.gameObject,FiniteFirearms.State.GuidFor("GEAR_Rifle",0));
+            FiniteFirearms.Empty(spare);
             source.SetNormalizedHP(0.37f,false);
             source.m_InPlayerInventory = source.m_BeenInPlayerInventory = source.m_HasBeenOwnedByPlayer = true;
             FiniteFirearms.Empty(source);
             inventory.m_Items.Add(new Gear.GearItemObject(source));
+            inventory.m_Items.Add(new Gear.GearItemObject(spare));
             var recipe = VariantPolicy.Variants[4].Upgrade;
             var bpUpgrade = Blueprint(recipe.BlueprintName);
             check(WorkshopConversions.Source(recipe,inventory)?.Pointer == source.Pointer,"unloaded base weapon is eligible for conversion");
             source.m_GunItem.m_RoundsInClip = 1;
-            check(WorkshopConversions.Source(recipe,inventory) == null,"loaded firearm cannot enter conversion");
+            check(!WorkshopConversions.Eligible(source,recipe.Ingredients[0].Item) && WorkshopConversions.Source(recipe,inventory)?.Pointer==spare.Pointer,"a loaded copy is skipped while the other unloaded rifle remains eligible for conversion");
             FiniteFirearms.Empty(source);
             var reservation = WorkshopConversions.Reserve(recipe,inventory);
             items.Add(reservation.Work);
-            check(reservation != null && !source.m_InPlayerInventory && inventory.m_Items.Count == 1,"conversion reserves the source and creates exactly one work item");
+            check(reservation != null && !source.m_InPlayerInventory && inventory.m_Items.Count == 2,"conversion reserves the source and creates exactly one work item");
             check(bpUpgrade.GetInProgressItem(inventory,null)?.Pointer == reservation.Work.m_InProgressCraftItem.Pointer &&
                 bpUpgrade.NumNeedsConsuming(0,reservation.Work.m_InProgressCraftItem) == 0,"reserved base is not requested or consumed twice");
             reservation.Work.m_InProgressCraftItem.IncrementProgress(40);
@@ -165,18 +172,21 @@ internal static class WorkshopValidation
                     "completion cannot consume the returned common firearm after the work record is removed");
             }
             finally { ManufacturingCraftScope.Finalizer(previousScope); }
+            check(FiniteFirearms.IsManaged(reverseReservation.Work) && spare.m_InPlayerInventory &&
+                Workshop.GuidOf(spare)==FiniteFirearms.State.GuidFor("GEAR_Rifle",0) && Math.Abs(spare.GetNormalizedCondition()-0.62f)<0.001f,
+                "second-copy upgrade/reversal retains its managed identity and leaves the other common rifle untouched");
             phase = "reservation rollback";
             UnityEngine.Object.DestroyImmediate(reverseReservation.Work.m_InProgressCraftItem);
             reverseReservation.Work.m_InProgressCraftItem = null;
             var rollback = WorkshopConversions.Reserve(recipe,inventory);
             items.Add(rollback.Work);
             WorkshopConversions.CloseReservation(rollback,false);
-            check(reverseReservation.Work.m_InPlayerInventory && Workshop.State.Work.Count == 0 && inventory.m_Items.Count == 1,
+            check(reverseReservation.Work.m_InPlayerInventory && Workshop.State.Work.Count == 0 && inventory.m_Items.Count == 2,
                 "a failed start returns the original weapon and removes the unfinished output");
             phase = "schematic pickup";
             Workshop.State.Learned.Remove("GEAR_Rifle_Vaughns");
             inventory.AddGear(card);
-            check(Workshop.State.Learned.Contains("GEAR_Rifle_Vaughns") && inventory.m_Items.Count == 1,
+            check(Workshop.State.Learned.Contains("GEAR_Rifle_Vaughns") && inventory.m_Items.Count == 2,
                 "native inventory pickup learns the schematic without retaining inventory clutter");
             phase = "Trader schematic delivery";
             Workshop.State.Learned.Remove("GEAR_Rifle_Trader");
@@ -184,7 +194,7 @@ internal static class WorkshopValidation
             items.Add(traderReward);
             traderReward.m_HasBeenOwnedByPlayer = true;
             inventory.AddGear(traderReward);
-            check(Workshop.State.Learned.Contains("GEAR_Rifle_Trader") && inventory.m_Items.Count == 1,
+            check(Workshop.State.Learned.Contains("GEAR_Rifle_Trader") && inventory.m_Items.Count == 2,
                 "receiving a new Trader variant learns its schematic without issuing a firearm");
             phase = "save slot";
             var slot = new Game.SlotData();

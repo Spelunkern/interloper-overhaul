@@ -4,6 +4,20 @@ This file records release history. Older entries describe behavior at that relea
 and may be superseded. See the [feature reference](docs/features.md) for current
 rules, values, and recipes.
 
+## 0.24.0
+
+- Allocate two common rifles, two revolvers, two hunting knives, and two standard
+  hatchets per run, each with independent location, condition, native identity,
+  and permanent issuance state. Firearms still start empty.
+- Spread the eight copies across five expedition destinations; copies of a family
+  use different destinations, with small offsets to separate shared-site pickups.
+- Migrate known saved allocations to format four, preserving the original copies
+  and issuing only one additional copy per eligible family. Preserve unknown-count
+  legacy exclusions and all flashlight allocations.
+- Validate both-copy population, wear/ammunition saves, migration after a lost first
+  copy, duplicate prevention, malformed payload rejection, and conversions with two
+  common rifles in inventory.
+
 ## 0.23.2
 
 - Set restored-loot retention halfway between the pre-increase and 0.23 rates:

@@ -175,16 +175,20 @@ Sources: [exploration](../shared/ExplorationPolicy.cs),
 
 | Item | New-run world allocation | Initial state |
 | --- | --- | --- |
-| Standard rifle | 1 | 1–100% condition; no ammunition or spent casings |
-| Standard revolver | 1 | 1–100% condition; no ammunition or spent casings |
-| Hunting knife | 1 | 1–100% condition |
-| Standard hatchet | 1 | 1–100% condition |
+| Standard rifle | 2 | 1–100% condition; no ammunition or spent casings |
+| Standard revolver | 2 | 1–100% condition; no ammunition or spent casings |
+| Hunting knife | 2 | 1–100% condition |
+| Standard hatchet | 2 | 1–100% condition |
 | Standard flashlight | 2, at distinct selected sites | 1–100% condition |
 | Miner's Flashlight | 1, at the native Concentrator watchroom placement | 1–100% condition |
 
-The rifle, revolver, knife, and hatchet occupy **four different destinations**
-selected from five: summit cave, Ash Canyon gold mine, HRV Lake Cave, and the two
-HRV Signal Fire destinations. Exploration order does not choose the allocation.
+The eight firearm/tool copies are distributed across **five expedition destinations**:
+summit cave, Ash Canyon gold mine, HRV Lake Cave, and the two HRV Signal Fire sites.
+The two copies of a type always occupy different destinations, with at most two
+allocated items at each destination in a new run. Second-copy placements use small
+pickup offsets to separate them from other items at the same anchor. Exploration
+order does not choose the allocation. Each copy has its own seeded condition,
+native identity, and permanent issuance flag.
 
 Standard flashlights select two verified placements from Ash Canyon, the Forlorn
 Muskeg plane crash, HRV Lake Cave, summit cave, and the Broken Railroad ravine site.
@@ -196,14 +200,18 @@ loss, harvesting, or destruction do not grant replacements. Fresh generic loot,
 scripted/random containers, caches, beachcombing, and Trader offers cannot issue
 additional copies of these finite items.
 
-**The knife/hatchet limit is a world-allocation limit.** Paid manufacturing can
+**The two-per-type knife/hatchet limit is a world-allocation limit.** Paid manufacturing can
 produce further standard tools; it does not consume or reroll that allocation.
 Firearm variants consume the existing base weapon and can be reverted, allowing
-one world firearm to support different upgrades over time.
+each base firearm to support different upgrades over time.
 
-Existing saves retain their original allocation plan and serialized equipment,
-including legacy locations. They are not retroactively reduced to these counts or
-granted a new expedition allocation. See [save compatibility](compatibility.md).
+Existing saves with known mod allocations migrate to the new format: original
+locations, identities, condition, and issuance flags remain; one additional copy
+of each tracked type is allocated at a different deep destination. Saving records
+its independent issuance flag, so repeated loads cannot grant more copies. A lost
+original is not replaced. Legacy flags still suppress types whose older count was
+unknown. Saves predating allocation tracking retain their existing treatment and
+receive no new managed equipment. See [save compatibility](compatibility.md).
 
 Sources: [equipment destinations](../shared/FirearmSpawnPolicy.cs),
 [flashlight destinations](../shared/LightSpawnPolicy.cs),
@@ -281,7 +289,7 @@ and previously extinguished flares do not count as unused inputs. Recycling crea
 a partially filled native gunpowder can, rather than a free full can. Shell recipes
 consume casing/wadding materials; they do not add rifle/revolver ammunition or casings.
 
-**The one-knife/one-hatchet rule limits world allocation.** Paid manufacturing
+**The two-per-type knife/hatchet rule limits world allocation.** Paid manufacturing
 upgrades are repeatable and do not consume or reroll those world allocations.
 Manufactured gear is treated as player-owned, so the rarity and spawn-cap filters
 cannot delete it. Additional tools still cannot spawn through beachcombing or Trader

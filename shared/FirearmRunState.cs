@@ -4,10 +4,18 @@ using System.Text.Json;
 
 namespace InterloperOverhaul;
 
+public sealed class AdditionalEquipmentAllocation
+{
+    public string Item { get; set; } = "";
+    public string SiteId { get; set; } = "";
+    public bool Created { get; set; }
+}
+
 // Stored inside the game's save slot, alongside the same snapshot as scene gear.
 public sealed class FirearmRunState
 {
-    public int Version { get; set; } = 3;
+    public int Version { get; set; } = 4;
+    public List<AdditionalEquipmentAllocation> Additional { get; set; } = new();
     public List<LightAllocation> Lights { get; set; } = new();
     public bool LightsLegacy { get; set; }
     public int Seed { get; set; }
@@ -23,13 +31,43 @@ public sealed class FirearmRunState
     public bool HatchetCreated { get; set; }
     public bool ToolsLegacy { get; set; }
 
-    public static FirearmRunState Create(int seed, string runKey) => new()
+    public static FirearmRunState Create(int seed, string runKey)
     {
-        Seed = seed, RunKey = runKey, Lights = LightSpawnPolicy.Allocate(seed),
-        RifleSite = FirearmSpawnPolicy.SelectSite(seed, "GEAR_Rifle").Id,
-        RevolverSite = FirearmSpawnPolicy.SelectSite(seed, "GEAR_Revolver").Id,
-        KnifeSite = FirearmSpawnPolicy.SelectSite(seed, "GEAR_Knife").Id,
-        HatchetSite = FirearmSpawnPolicy.SelectSite(seed, "GEAR_Hatchet").Id
+        var state=new FirearmRunState
+        {
+            Seed=seed,RunKey=runKey,Lights=LightSpawnPolicy.Allocate(seed),
+            RifleSite=FirearmSpawnPolicy.SelectSite(seed,"GEAR_Rifle").Id,
+            RevolverSite=FirearmSpawnPolicy.SelectSite(seed,"GEAR_Revolver").Id,
+            KnifeSite=FirearmSpawnPolicy.SelectSite(seed,"GEAR_Knife").Id,
+            HatchetSite=FirearmSpawnPolicy.SelectSite(seed,"GEAR_Hatchet").Id
+        };
+        state.AllocateAdditional();
+        return state;
+    }
+    private void AllocateAdditional()=>Additional=FirearmSpawnPolicy.Items.Select(item=>new AdditionalEquipmentAllocation
+    {
+        Item=item,SiteId=FirearmSpawnPolicy.SelectSecondSite(Seed,item,Site(item)).Id
+    }).ToList();
+    public FirearmSite Site(string item,int copy)=>copy switch
+    {
+        0=>Site(item),
+        1=>FirearmSpawnPolicy.Sites.Single(site=>site.Id==Additional.Single(allocation=>allocation.Item==item).SiteId),
+        _=>throw new ArgumentOutOfRangeException(nameof(copy))
+    };
+    public bool Created(string item,int copy)=>copy switch
+    {
+        0=>Created(item),1=>Additional.Single(allocation=>allocation.Item==item).Created,
+        _=>throw new ArgumentOutOfRangeException(nameof(copy))
+    };
+    public void SetCreated(string item,int copy,bool value)
+    {
+        if(copy==0) SetCreated(item,value);
+        else if(copy==1) Additional.Single(allocation=>allocation.Item==item).Created=value;
+        else throw new ArgumentOutOfRangeException(nameof(copy));
+    }
+    public string GuidFor(string item,int copy)=>copy switch
+    {
+        0=>GuidFor(item),1=>GuidFor(item+"/2"),_=>throw new ArgumentOutOfRangeException(nameof(copy))
     };
 
     public FirearmSite Site(string item) => FirearmSpawnPolicy.Sites.Single(site => site.Id == (item switch
@@ -77,9 +115,23 @@ public sealed class FirearmRunState
             state.Lights = LightSpawnPolicy.Allocate(state.Seed);
             state.Version = 3;
         }
-        if (state.Version != 3) throw new InvalidDataException("Unsupported finite item run state version.");
+        if(state.Version==3)
+        {
+            // Keep the original locations, identities, and issuance flags intact.
+            // Only the newly added copy receives a new deterministic allocation.
+            state.AllocateAdditional();
+            state.Version=4;
+        }
+        if (state.Version != 4) throw new InvalidDataException("Unsupported finite item run state version.");
         foreach (string item in FirearmSpawnPolicy.Items)
             if (state.Site(item).Item != item) throw new InvalidDataException("Invalid finite item placement plan.");
+        if(state.Additional==null || state.Additional.Count!=FirearmSpawnPolicy.Items.Length ||
+            state.Additional.Select(allocation=>allocation.Item).Distinct().Count()!=FirearmSpawnPolicy.Items.Length)
+            throw new InvalidDataException("Invalid second-copy allocation.");
+        foreach(string item in FirearmSpawnPolicy.Items)
+            if(!FirearmSpawnPolicy.SecondSites.Any(site=>site.Id==state.Site(item,1).Id) || state.Site(item,1).Item!=item ||
+                FirearmSpawnPolicy.Destination(state.Site(item,0))==FirearmSpawnPolicy.Destination(state.Site(item,1)))
+                throw new InvalidDataException("Second copy requires a distinct destination for the same item.");
         if (state.Lights == null || state.Lights.Count != 3 || state.Lights.Select(light => light.Key).Distinct().Count() != 3 ||
             state.Lights.Select(light => light.SiteId).Distinct().Count() != 3 ||
             state.Lights.Count(light => light.Item == "GEAR_Flashlight") != 2 ||

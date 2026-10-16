@@ -20,7 +20,8 @@ DLC content still requires ownership and native access/progression.
 | Coastal Highway houses | Saved selections are redirected to intact variants when the region loads | No, for the house redirect |
 | Bunker interiors | Existing assignments, including old Interloper-specific interiors, are preserved | Yes, for normal initial distribution |
 | Containers and loot | Searched containers, visited-scene contents, and saved finds are not regenerated; revised retention rates apply only to new opportunities | Yes, for the complete restored distribution |
-| Finite firearms/tools/lights | Existing allocation snapshots, identities, conditions, and issued flags remain | Yes, for current locations and exact new-run counts |
+| Finite firearms/tools | Known mod allocations preserve the first copy and add one independently tracked second copy per eligible type; older unknown counts stay excluded | No for tracked runs; yes for the full guarantees in untracked legacy runs |
+| Finite flashlights | Existing locations, identities, and issuance flags remain; no additional lights are issued | Yes, for exact new-run counts in pre-flashlight saves |
 | Region/feat selection | Existing starting choices are not replaced | Yes |
 | Item weights, clothing, food, fuel, skills | Applied to existing eligible gear and native systems; food retains consumed proportion | No |
 | Permanent accessories | Carried/equipped Tool Belts and Rifle Holsters convert into run unlocks after loading | No |
@@ -32,9 +33,12 @@ DLC content still requires ownership and native access/progression.
 Allocation plans and creation flags live inside the native save slot, with stable
 native item identities. They are not separate loose save files. Loading/revisiting
 does not issue replacements for lost or destroyed finite equipment. Legacy site
-catalogs remain resolvable for snapshots created by earlier versions; new versions
-do not reroll those destinations. Older snapshots only retain allocations their
-format supports; they do not retroactively receive all newer finite items.
+catalogs remain resolvable for snapshots created by earlier versions. Format-four
+migration keeps each first-copy destination and adds one second firearm/tool per
+tracked type, at a distinct deep destination. These new copies have independent
+identities and issuance flags. Repeated migration/reload cannot grant further copies
+or replace lost originals. Formats predating tracked tools keep their unknown-tool
+legacy flag; pre-allocation saves remain excluded. Flashlight migration is unchanged.
 
 Already saved/acquired tools and variants are preserved, so an older run can contain
 more equipment than the current new-run distribution allows. Save migration does

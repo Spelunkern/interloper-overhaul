@@ -1,5 +1,6 @@
 extern alias GameAssembly;
 
+using System.Text.Json.Nodes;
 using Game = GameAssembly::Il2Cpp;
 using Trader = GameAssembly::Il2CppTLD.Trader;
 using Gear = GameAssembly::Il2CppTLD.Gear;
@@ -21,6 +22,7 @@ internal static class FiniteFirearmValidation
             state.RevolverSite = FirearmSpawnPolicy.Sites.First(site => site.Scene == "LakeRegion_SANDBOX").Id;
             state.KnifeSite = FirearmSpawnPolicy.Sites.First(site => site.Item == "GEAR_Knife" && site.Scene == "LakeRegion_SANDBOX").Id;
             state.HatchetSite = FirearmSpawnPolicy.Sites.First(site => site.Item == "GEAR_Hatchet" && site.Scene == "LakeRegion_SANDBOX").Id;
+            state.LightsLegacy=true; // Flashlights have their own native fixture.
             FiniteFirearms.State = state;
             var slot = new Game.SlotData();
             check(FiniteFirearms.WriteSlot(slot) && slot.HasData(FiniteFirearms.SaveKey),
@@ -33,17 +35,29 @@ internal static class FiniteFirearmValidation
 
             var rifleScene = SceneManager.CreateScene("RuralRegion_SANDBOX");
             var revolverScene = SceneManager.CreateScene("LakeRegion_SANDBOX");
+            var scenes=new List<Scene> { rifleScene,revolverScene };
+            foreach(var allocation in state.Additional)
+            {
+                var site=state.Site(allocation.Item,1);
+                var scene=SceneManager.GetSceneByName(site.Scene);
+                if(!scene.IsValid()) scene=SceneManager.CreateScene(site.Scene);
+                if(!scenes.Contains(scene)) scenes.Add(scene);
+            }
+            bool ManagedEquipment(Game.GearItem gear)=>FirearmSpawnPolicy.Items.Contains(LootBalancePolicy.ItemName(gear.name)) &&
+                scenes.Contains(gear.gameObject.scene) && FiniteFirearms.IsManaged(gear);
             FiniteFirearms.PopulateLoadedScenes();
             spawned.AddRange(Resources.FindObjectsOfTypeAll<Game.GearItem>().Where(gear =>
-                (gear.gameObject.scene == rifleScene || gear.gameObject.scene == revolverScene) && FiniteFirearms.IsManaged(gear)));
-            check(spawned.Count == 4 && FirearmSpawnPolicy.Items.All(state.Created),
-                "loaded selected regions create exactly one rifle, revolver, hunting knife, and hatchet");
+                ManagedEquipment(gear)));
+            check(spawned.Count==8 && FirearmSpawnPolicy.Items.All(item=>Enumerable.Range(0,2).All(copy=>state.Created(item,copy))) &&
+                FirearmSpawnPolicy.Items.All(item=>spawned.Count(gear=>LootBalancePolicy.ItemName(gear.name)==item)==2),
+                "loaded selected regions create exactly two rifles, revolvers, hunting knives, and hatchets");
             foreach (var gear in spawned)
             {
                 string item = LootBalancePolicy.ItemName(gear.name);
+                int copy=Workshop.GuidOf(gear)==state.GuidFor(item,1) ? 1 : 0;
                 check(FiniteFirearms.IsManaged(gear) && LootBalance.Retention(gear.gameObject) == 1 && gear.m_RolledSpawnChance,
                     "allocated firearm bypasses ordinary spawn suppression: " + item);
-                check(Math.Abs(gear.GetNormalizedCondition() * 100 - FirearmSpawnPolicy.Condition(state.Seed, item)) < 0.1,
+                check(Math.Abs(gear.GetNormalizedCondition() * 100 - FirearmSpawnPolicy.Condition(state.Seed,item,copy)) < 0.1,
                     "allocated firearm receives seed-selected initial condition: " + item);
                 check(!FirearmSpawnPolicy.IsStandardFirearm(item) || (gear.m_GunItem != null && gear.m_GunItem.NumRoundsInClip() == 0 &&
                     gear.m_GunItem.NumSpentCasingsInClip() == 0 && gear.m_GunItem.m_RoundsInClip == 0),
@@ -51,11 +65,11 @@ internal static class FiniteFirearmValidation
                 gear.m_LastUpdatedTODHoursInitialized = true; // Menu fixture has no running survival clock.
                 gear.ManualStart();
                 check(gear.gameObject.activeSelf && Math.Abs(gear.GetNormalizedCondition() * 100 -
-                    FirearmSpawnPolicy.Condition(state.Seed, item)) < 0.1, "native initialization preserves allocated condition and firearm: " + item);
+                    FirearmSpawnPolicy.Condition(state.Seed,item,copy)) < 0.1, "native initialization preserves allocated condition and firearm: " + item);
             }
             FiniteFirearms.PopulateLoadedScenes();
             check(Resources.FindObjectsOfTypeAll<Game.GearItem>().Count(gear =>
-                (gear.gameObject.scene == rifleScene || gear.gameObject.scene == revolverScene) && FiniteFirearms.IsManaged(gear)) == 4,
+                ManagedEquipment(gear)) == 8,
                 "repeated region population does not create additional firearms");
             bool Registered(Game.GearItem gear)
             {
@@ -71,44 +85,51 @@ internal static class FiniteFirearmValidation
             try
             {
                 string scenePayload = Game.GearManager.Serialize();
-                check(FirearmSpawnPolicy.Items.All(item => scenePayload.Contains(state.GuidFor(item))),
-                    "native world gear serialization includes all four allocated item identities");
+                check(FirearmSpawnPolicy.Items.All(item=>Enumerable.Range(0,2).All(copy=>scenePayload.Contains(state.GuidFor(item,copy)))),
+                    "native world gear serialization includes all eight distinct allocated identities");
             }
             finally { Game.GearManager.m_Gear = previousGearList; }
 
             check(FiniteFirearms.WriteSlot(slot), "issued firearm flags saved in the same native slot snapshot");
             FiniteFirearms.State = null;
             FiniteFirearms.ReadSlot(slot);
-            check(FirearmSpawnPolicy.Items.All(FiniteFirearms.State.Created) && !FiniteFirearms.State.Legacy,
-                "loading saved allocation preserves both issuance flags");
+            check(FirearmSpawnPolicy.Items.All(item=>Enumerable.Range(0,2).All(copy=>FiniteFirearms.State.Created(item,copy))) && !FiniteFirearms.State.Legacy,
+                "loading saved allocation preserves all eight independent issuance flags");
             FiniteFirearms.PopulateLoadedScenes();
             check(Resources.FindObjectsOfTypeAll<Game.GearItem>().Count(gear =>
-                (gear.gameObject.scene == rifleScene || gear.gameObject.scene == revolverScene) && FiniteFirearms.IsManaged(gear)) == 4,
+                ManagedEquipment(gear)) == 8,
                 "restored issuance prevents replacement after scene reload");
 
-            var original = spawned.First(gear => FirearmSpawnPolicy.IsStandardFirearm(gear.name));
-            var originalGun = original.m_GunItem;
-            originalGun.AddRoundsToClip(1, 100);
-            original.SetNormalizedHP(0.37f, false);
-            var proxy = original.Serialize();
-            string originalName = LootBalancePolicy.ItemName(original.name);
-            UnityEngine.Object.DestroyImmediate(original.gameObject);
-            var restored = Game.GearItem.InstantiateAndDeserializeGearItem(originalName, proxy);
-            spawned.Add(restored);
-            check(Math.Abs(restored.GetNormalizedCondition() - 0.37f) < 0.001f && restored.m_GunItem.NumRoundsInClip() == 1,
-                "native gear serialization preserves later damage and player-loaded ammunition");
-            restored.m_LastUpdatedTODHoursInitialized = true;
-            restored.ManualStart();
-            check(restored.m_GunItem.NumRoundsInClip() == 1 && Math.Abs(restored.GetNormalizedCondition() - 0.37f) < 0.001f,
-                "loading an acquired firearm does not empty or reroll it");
-
-            foreach (string item in new[] { "GEAR_Knife", "GEAR_Hatchet" })
+            foreach(var original in spawned.Where(gear=>FirearmSpawnPolicy.IsStandardFirearm(gear.name)).ToArray())
             {
-                var tool = spawned.Single(gear => gear != null && LootBalancePolicy.ItemName(gear.name) == item);
+                var originalGun = original.m_GunItem;
+                originalGun.AddRoundsToClip(1, 100);
+                original.SetNormalizedHP(0.37f, false);
+                var proxy = original.Serialize();
+                string originalName = LootBalancePolicy.ItemName(original.name);
+                var savedScene=original.gameObject.scene;
+                UnityEngine.Object.DestroyImmediate(original.gameObject);
+                var restored = Game.GearItem.InstantiateAndDeserializeGearItem(originalName, proxy);
+                SceneManager.MoveGameObjectToScene(restored.gameObject,savedScene);
+                spawned.Add(restored);
+                check(FiniteFirearms.IsManaged(restored) && Math.Abs(restored.GetNormalizedCondition() - 0.37f) < 0.001f && restored.m_GunItem.NumRoundsInClip() == 1,
+                    "native gear serialization preserves later damage and player-loaded ammunition");
+                restored.m_LastUpdatedTODHoursInitialized = true;
+                restored.ManualStart();
+                check(restored.m_GunItem.NumRoundsInClip() == 1 && Math.Abs(restored.GetNormalizedCondition() - 0.37f) < 0.001f,
+                    "loading an acquired firearm does not empty or reroll it");
+
+            }
+            foreach (string item in new[] { "GEAR_Knife", "GEAR_Hatchet" })
+            foreach(int copy in Enumerable.Range(0,2))
+            {
+                var tool = spawned.Single(gear => gear != null && Workshop.GuidOf(gear)==state.GuidFor(item,copy));
                 tool.SetNormalizedHP(0.37f, false);
                 var toolProxy = tool.Serialize();
+                var savedScene=tool.gameObject.scene;
                 UnityEngine.Object.DestroyImmediate(tool.gameObject);
                 var restoredTool = Game.GearItem.InstantiateAndDeserializeGearItem(item, toolProxy);
+                SceneManager.MoveGameObjectToScene(restoredTool.gameObject,savedScene);
                 spawned.Add(restoredTool);
                 restoredTool.m_LastUpdatedTODHoursInitialized = true;
                 restoredTool.ManualStart();
@@ -116,6 +137,28 @@ internal static class FiniteFirearmValidation
                     Math.Abs(restoredTool.GetNormalizedCondition() - 0.37f) < 0.001f,
                     "native tool serialization preserves managed identity and player wear: " + item);
             }
+
+            // A version-three save knows the first copies, but has never issued
+            // the second copies. Simulate that world without opening a real save.
+            var oldPlan=JsonNode.Parse(state.Serialize());oldPlan["Version"]=3;
+            oldPlan.AsObject().Remove("Additional");
+            foreach(var gear in spawned.Where(gear=>gear!=null && FirearmSpawnPolicy.Items.Contains(LootBalancePolicy.ItemName(gear.name))).ToArray())
+                if(Workshop.GuidOf(gear)==state.GuidFor(LootBalancePolicy.ItemName(gear.name),1) || Workshop.GuidOf(gear)==state.GuidFor("GEAR_Rifle"))
+                    UnityEngine.Object.DestroyImmediate(gear.gameObject);
+            slot.m_Dict[FiniteFirearms.SaveKey]=new Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStructArray<byte>(System.Text.Encoding.UTF8.GetBytes(oldPlan.ToJsonString()));
+            FiniteFirearms.ReadSlot(slot);
+            check(FiniteFirearms.State.Version==4 && FirearmSpawnPolicy.Items.All(FiniteFirearms.State.Created) &&
+                FiniteFirearms.State.Additional.All(allocation=>!allocation.Created),
+                "native old-slot migration retains first-copy issuance and adds only unissued second copies");
+            FiniteFirearms.PopulateLoadedScenes();
+            spawned.AddRange(Resources.FindObjectsOfTypeAll<Game.GearItem>().Where(ManagedEquipment));
+            check(Resources.FindObjectsOfTypeAll<Game.GearItem>().Count(ManagedEquipment)==7 &&
+                FirearmSpawnPolicy.Items.All(item=>FiniteFirearms.State.Created(item,1)) &&
+                !Resources.FindObjectsOfTypeAll<Game.GearItem>().Any(gear=>gear!=null && Workshop.GuidOf(gear)==state.GuidFor("GEAR_Rifle")),
+                "migration issues one new copy per family without replacing a lost first-copy rifle");
+            FiniteFirearms.WriteSlot(slot);FiniteFirearms.ReadSlot(slot);FiniteFirearms.PopulateLoadedScenes();
+            check(Resources.FindObjectsOfTypeAll<Game.GearItem>().Count(ManagedEquipment)==7,
+                "migrated second-copy issuance survives save/reload without duplicates");
 
             var legacy = new Game.SlotData();
             check(Game.SaveGameSlots.SaveDataToSlot(legacy, Game.SlotData.GLOBAL_KEY, (Il2CppSystem.String)"validation-global"),

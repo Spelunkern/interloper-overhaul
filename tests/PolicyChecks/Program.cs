@@ -108,10 +108,19 @@ foreach (string name in new[] { "GEAR_RifleAmmoCasing", "GEAR_RevolverAmmoCasing
 Check(FirearmSpawnPolicy.LegacySites.Count(site => FirearmSpawnPolicy.IsStandardFirearm(site.Item)) == 28 && FirearmSpawnPolicy.Sites.Select(site => site.Id).Distinct().Count() == FirearmSpawnPolicy.Sites.Length, "Audited firearm site identities are unique");
 Check(FirearmSpawnPolicy.Sites.All(site => !site.Path.Contains("Whiteout") && !site.Path.Contains("research")), "Challenge and quest-only positions excluded");
 var plans = Enumerable.Range(0, 1000).Select(seed => FirearmRunState.Create(seed, "Sandbox/123")).ToArray();
-Check(plans.All(plan => plan.Site("GEAR_Rifle").Item == "GEAR_Rifle" && plan.Site("GEAR_Revolver").Item == "GEAR_Revolver"), "Every seed allocates exactly one location for each standard firearm");
+Check(plans.All(plan => plan.Site("GEAR_Rifle").Item == "GEAR_Rifle" && plan.Site("GEAR_Revolver").Item == "GEAR_Revolver"), "Every seed preserves a first location for each standard firearm");
 Check(plans.Select(plan => plan.RifleSite).Distinct().Count() > 1 && plans.Select(plan => plan.RevolverSite).Distinct().Count() > 1, "Both firearm locations vary between seeds");
 Check(plans.All(plan => FirearmSpawnPolicy.Condition(plan.Seed, "GEAR_Rifle") is >= 1 and <= 100), "All allocated rifle conditions are usable and within range");
 Check(plans.Select(plan => FirearmSpawnPolicy.Condition(plan.Seed, "GEAR_Revolver")).Distinct().Count() > 90, "Random revolver conditions cover the full range");
+var copies=FirearmSpawnPolicy.Items.SelectMany(item=>Enumerable.Range(0,FirearmSpawnPolicy.CopiesPerRun).Select(copy=>(Item:item,Copy:copy))).ToArray();
+Check(copies.Length==8 && plans.All(plan=>plan.Additional.Count==4 && copies.All(copy=>plan.Site(copy.Item,copy.Copy).Item==copy.Item)),"every seed allocates exactly two of each of the four finite equipment families");
+Check(plans.All(plan=>copies.Select(copy=>plan.GuidFor(copy.Item,copy.Copy)).Distinct().Count()==8),"all eight finite copies have distinct stable identities");
+Check(plans.All(plan=>FirearmSpawnPolicy.Items.All(item=>FirearmSpawnPolicy.Destination(plan.Site(item,0))!=FirearmSpawnPolicy.Destination(plan.Site(item,1)))),"the two copies of a family never share an expedition destination");
+Check(plans.All(plan=>copies.GroupBy(copy=>FirearmSpawnPolicy.Destination(plan.Site(copy.Item,copy.Copy))).Count()==5 &&
+    copies.GroupBy(copy=>FirearmSpawnPolicy.Destination(plan.Site(copy.Item,copy.Copy))).All(group=>group.Count()<=2)),"eight new-run placements cover five destinations with at most two items at each");
+Check(plans.All(plan=>copies.All(copy=>FirearmSpawnPolicy.Condition(plan.Seed,copy.Item,copy.Copy) is >=1 and <=100)) &&
+    plans.Count(plan=>FirearmSpawnPolicy.Condition(plan.Seed,"GEAR_Rifle",0)!=FirearmSpawnPolicy.Condition(plan.Seed,"GEAR_Rifle",1))>900,"second copies have independently seeded usable conditions");
+Check(FirearmSpawnPolicy.SecondSites.All(site=>ExplorationPolicy.Access(site.Scene,site.Path,site.X,site.Y,site.Z)==LootAccess.Deep),"second-copy offsets stay inside the audited deep destinations");
 var allocation = FirearmRunState.Create(123, "Sandbox/123");
 string before = allocation.Serialize();
 allocation.SetCreated("GEAR_Rifle", true);
@@ -144,7 +153,7 @@ foreach (string item in new[] { "GEAR_Knife", "GEAR_Hatchet" })
     Check(FirearmSpawnPolicy.IsFiniteItem(item) && LootBalancePolicy.Retention(item, true) == 0 && LootBalancePolicy.Retention(item, false) == 0,
         "Unallocated standard tools are excluded from all generated loot: " + item);
     Check(plans.All(plan => plan.Site(item).Item == item) && plans.Select(plan => plan.Site(item).Id).Distinct().Count() > 1,
-        "Exactly one native tool placement is chosen per seed: " + item);
+        "A stable first native tool placement is chosen per seed: " + item);
     allocation.SetCreated(item, true);
     var restoredPlan = FirearmRunState.Deserialize(allocation.Serialize());
     Check(restoredPlan.Created(item) && restoredPlan.Site(item).Id == allocation.Site(item).Id && restoredPlan.GuidFor(item) == allocation.GuidFor(item),
@@ -156,6 +165,31 @@ foreach (string field in new[] { "KnifeSite", "HatchetSite", "KnifeCreated", "Ha
 var migratedPlan = FirearmRunState.Deserialize(oldPlan.ToJsonString());
 Check(migratedPlan.ToolsLegacy && migratedPlan.IsLegacy("GEAR_Knife") && !migratedPlan.IsLegacy("GEAR_Rifle") && migratedPlan.RifleSite == allocation.RifleSite,
     "Version-one saves retain firearm locations without receiving extra tools");
+var versionThree=System.Text.Json.Nodes.JsonNode.Parse(allocation.Serialize())!;
+versionThree["Version"]=3;versionThree.AsObject().Remove("Additional");
+var migratedThree=FirearmRunState.Deserialize(versionThree.ToJsonString());
+Check(migratedThree.Version==4 && FirearmSpawnPolicy.Items.All(item=>migratedThree.Created(item)==allocation.Created(item) &&
+    migratedThree.Site(item).Id==allocation.Site(item).Id && migratedThree.GuidFor(item)==allocation.GuidFor(item)),"version-three migration preserves every original flag, location, and identity");
+Check(migratedThree.Additional.Count==4 && migratedThree.Additional.All(copy=>!copy.Created) &&
+    migratedThree.Lights.Select(light=>light.SiteId).SequenceEqual(allocation.Lights.Select(light=>light.SiteId)),"migration adds only four new unissued copies and preserves the flashlight plan");
+migratedThree.SetCreated("GEAR_Rifle",1,true);
+var migratedTwice=FirearmRunState.Deserialize(migratedThree.Serialize());
+Check(migratedTwice.Created("GEAR_Rifle",1) && !migratedTwice.Created("GEAR_Revolver",1) &&
+    copies.All(copy=>migratedTwice.GuidFor(copy.Item,copy.Copy)==migratedThree.GuidFor(copy.Item,copy.Copy)),"second-copy issuance and identities persist independently on repeated loads");
+var legacyCopies=FirearmRunState.Create(123,"legacy-copy-test");legacyCopies.Legacy=true;
+Check(FirearmRunState.Deserialize(legacyCopies.Serialize()).Legacy && FirearmSpawnPolicy.Items.All(legacyCopies.IsLegacy),"unknown pre-allocation runs remain excluded from both-copy issuance");
+bool RejectFinite(string text)
+{
+    try { FirearmRunState.Deserialize(text);return false; }
+    catch(Exception ex) when(ex is InvalidDataException or InvalidOperationException or ArgumentException) { return true; }
+}
+var badCopies=System.Text.Json.Nodes.JsonNode.Parse(before)!;badCopies.AsObject().Remove("Additional");
+Check(RejectFinite(badCopies.ToJsonString()),"version-four payloads missing second-copy data fail closed");
+badCopies=System.Text.Json.Nodes.JsonNode.Parse(before)!;badCopies["Additional"]![1]!["Item"]=badCopies["Additional"]![0]!["Item"]!.GetValue<string>();
+Check(RejectFinite(badCopies.ToJsonString()),"duplicate second-copy family allocations are rejected");
+badCopies=System.Text.Json.Nodes.JsonNode.Parse(before)!;
+badCopies["Additional"]![0]!["SiteId"]=FirearmSpawnPolicy.SecondSites.Single(site=>site.Item=="GEAR_Rifle" && FirearmSpawnPolicy.Destination(site)==FirearmSpawnPolicy.Destination(allocation.Site("GEAR_Rifle"))).Id;
+Check(RejectFinite(badCopies.ToJsonString()),"a second copy cannot be redirected to its first copy's destination");
 Check(!FirearmSpawnPolicy.IsFiniteItem("GEAR_KnifeImprovised") && !FirearmSpawnPolicy.IsFiniteItem("GEAR_HatchetImprovised"),
     "Improvised tools are outside the finite standard-tool allocation");
 Check(ManufacturingPolicy.Recipes.Select(recipe => recipe.BlueprintName).Distinct().Count() == 8, "Manufacturing recipes have stable unique identities");

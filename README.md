@@ -17,7 +17,7 @@ in the [changelog](CHANGELOG.md).
 | --- | --- | --- |
 | World and progression | Intact Coastal Highway houses, normal bunker distribution, restored containers, HRV and Tales rewards, region selection, three feats | [World restoration](docs/features.md#world-restoration-and-new-games) |
 | Exploration and rarity | Restored premium equipment is restricted to difficult destinations; generic locations and beachcombing stay sparse | [Loot rules](docs/features.md#exploration-and-loot-rarity) |
-| Finite equipment | One world rifle, revolver, hunting knife, and hatchet; two standard flashlights and one Miner's Flashlight per new run | [Finite equipment](docs/features.md#finite-world-equipment) |
+| Finite equipment | Two world rifles, revolvers, hunting knives, and hatchets; two standard flashlights and one Miner's Flashlight per new run | [Finite equipment](docs/features.md#finite-world-equipment) |
 | Variants | Find schematics at native variant sites, upgrade base items at the Cannery, and revert firearms for time only | [Variants and recipes](docs/features.md#variant-schematics-and-conversions) |
 | Manufacturing | Eight Cannery recipes, flare recycling, efficient arrow shafts, and milling restoration | [Manufacturing](docs/features.md#cannery-manufacturing-and-milling) |
 | Equipment and accessories | Lighter gear, warmer lanterns, repairable vest, permanent Tool Belt and Rifle Holster bonuses | [Equipment](docs/features.md#equipment-and-permanent-upgrades) |
@@ -51,13 +51,13 @@ See [installation and troubleshooting](docs/installation.md) for requirements,
 Steam launch options, paths, and removal. Close the game before setup or deployment.
 
 **Start a new Interloper game for the full world distribution and finite-item
-counts.** Existing saves keep searched containers, saved equipment, and allocation
-plans. Most item/skill/affliction changes also apply to existing saves; see
+counts.** Existing saves keep searched containers and saved equipment. Known allocation
+plans migrate to add a second firearm/tool of each eligible type. Most item/skill/affliction changes also apply to existing saves; see
 [save compatibility](docs/compatibility.md).
 
 ## Testing the mod
 
-Current automated baseline: **1,072 native runtime checks** and **3,306 policy
+Current automated baseline: **1,100 native runtime checks** and **3,319 policy
 checks**. These exercise native hooks and isolated fixtures at the main menu;
 full survival traversal, combat, and crafting interruptions still need playtesting. See [development and validation](docs/development.md) for commands,
 coverage, limitations, and a focused manual checklist.

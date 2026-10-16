@@ -41,8 +41,8 @@ git diff --check
 ./scripts/validate-runtime.sh
 ```
 
-The current verified baseline is **3,306 policy checks** and **1,072 native runtime
-checks** on game 2.55 / mod 0.23.2. Counts record that run, rather than promising
+The current verified baseline is **3,319 policy checks** and **1,100 native runtime
+checks** on game 2.55 / mod 0.24.0. Counts record that run, rather than promising
 coverage of every gameplay interaction. Documentation-only updates do not require
 opening the game or replacing the installed DLL.
 
@@ -75,7 +75,7 @@ is not evidence that those native/runtime issues are fixed.
 
 | Area | Automated coverage | Needs survival playtesting |
 | --- | --- | --- |
-| World/loot | Authored tables, excluded objects, rarity boundaries, source geography, allocation diversity, old snapshots, rejected beach opportunities | Complete world yield, expedition traversal/pickup, full beach respawn cycles |
+| World/loot | Authored tables, excluded objects, rarity boundaries, source geography, allocation diversity, old snapshots, second-copy migration/issuance, rejected beach opportunities | Complete world yield, expedition traversal/pickup, full beach respawn cycles |
 | Crafting/variants | Native recipes, tools/materials, Cannery start gate, reserved inputs, rollback, progress and identity serialization | Full UI flow, time acceleration, interruptions, Trader collection |
 | Items/accessories | Weights, contents/stacks, permanent unlocks, selection, repair setup, clothing/calorie migration, scene unload/asset collection followed by native pickup | Complete clothing/inventory/first-aid interactions during normal play |
 | Fire/skills/combat | Tinder display/rolls, feat values, existing/new unlock notification behavior, skill thresholds, controlled repair/morale/swipe hooks, cougar save round trips | Actual fire-start loops, ruined repair with resource consumption, combat |
@@ -96,9 +96,9 @@ Existing loot must not be mistaken for the distribution of a newly generated wor
 | --- | --- |
 | New-game setup | Region selection, random start, three unlocked feat slots |
 | Coastal Highway and bunkers | Intact house entrances; newly assigned cache distribution; save/reload consistency |
-| Expedition equipment | Four separate weapon/tool destinations; no generic or beach replacements; no reissue after pickup/loss/revisit |
+| Expedition equipment | Two copies per firearm/tool, eight identities across five expedition destinations; no generic or beach replacements; no reissue after pickup/loss/revisit |
 | Schematics | Native site gives the correct card/text; pickup learns one recipe; save/reload retains knowledge |
-| Cannery conversions | Correct light/tools/materials; empty input firearm; condition/identity preserved; interrupted work resumes; reversal costs only time |
+| Cannery conversions | Correct light/tools/materials; empty input firearm; condition/identity preserved while the other firearm stays untouched; interrupted work resumes; reversal costs only time |
 | Other manufacturing | Reject starts outside the Cannery; correct partial powder; fresh-flare requirements; milling restoration |
 | Pickup after travel | Collect research/common books, newsprint, and tools before/after multiple interior transitions; inspection models must disappear and items enter inventory |
 | Clothing and accessories | Full/worn values; vest repair; belt affects tools only; one heaviest per type; holster affects one rifle; duplicates do not stack |
