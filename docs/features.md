@@ -62,13 +62,13 @@ Sources: [world policy](../shared/WorldPolicy.cs),
 
 | Newly restored source | Premium clothing | Other restored clothing/tools | Ordinary restored supplies |
 | --- | --- | --- | --- |
-| Ordinary buildings, vehicles, containers | Excluded | Excluded | 15% retained |
-| Beachcombing, including large-find contents | Excluded | Excluded | 10% retained |
-| Remote destinations, ordinary memento/radio caches | Excluded | 5% retained | 25% retained |
-| Verified deep destinations, Tales bunkers | 5% retained | 15% retained | 35% retained |
+| Ordinary buildings, vehicles, containers | Excluded | Excluded | 10% retained |
+| Beachcombing, including large-find contents | Excluded | Excluded | 7.5% retained |
+| Remote destinations, ordinary memento/radio caches | Excluded | 3% retained | 15% retained |
+| Verified deep destinations, Tales bunkers | 3% retained | 10% retained | 20% retained |
 
 A retention rate is an **additional roll after native selection**, not a chance
-per container. For example, 5% retention keeps roughly one out of twenty
+per container. For example, 10% retention keeps roughly one out of ten
 eligible restored opportunities before accounting for how often the game selects
 that item. Rejected opportunities remain empty; no replacement roll is granted.
 
@@ -127,7 +127,7 @@ stump remover, and dusting sulfur.
 
 Remote/deep selections favor expedition supplies: cured leather, scrap, sewing
 kits, whetstones, bandages, matches, and the two ammunition chemicals. Only the
-**first slot of a deep memento** can select rare equipment, at **5%**: a
+**first slot of a deep memento** can select rare equipment, at **3%**: a
 firestriker, quality tools, gauntlets, or wool long underwear. Other slots and
 ordinary/remote mementos cannot roll this pool. No firearm, usable variant, or
 finished ammunition is introduced through this replacement pool.
@@ -136,7 +136,7 @@ finished ammunition is introduced through this replacement pool.
 | --- | --- | --- | --- |
 | Ordinary cache, any slot | 100% | 0% | 0% |
 | Remote cache, any slot | 30% | 70% | 0% |
-| Deep cache, first slot | 30% | 65% | 5% |
+| Deep cache, first slot | 30% | 67% | 3% |
 | Deep cache, later slots | 30% | 70% | 0% |
 
 These are selections between replacement pools. Items shared by two pools can

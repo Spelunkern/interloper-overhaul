@@ -4,6 +4,15 @@ This file records release history. Older entries describe behavior at that relea
 and may be superseded. See the [feature reference](docs/features.md) for current
 rules, values, and recipes.
 
+## 0.23.2
+
+- Set restored-loot retention halfway between the pre-increase and 0.23 rates:
+  ordinary supplies 10%, remote 15%, deep 20%, and beach 7.5%; restored equipment
+  3% remote / 10% deep, with premium clothing still deep-only at 3%.
+- Set the first deep-memento slot's rare-equipment selection to 3%.
+- Retain 0.23.1 mailbox/fuel rates, finite allocations, native Interloper sources,
+  ammunition/casing rarity, and existing saved loot.
+
 ## 0.23.1
 
 - Correct the roadside-loot balance direction: increase mailbox paper to 75%,

@@ -75,18 +75,18 @@ Check(WorldPolicy.IsBeachcombingObject("Root/CustomSpawnedItem_suitcase1/Contain
 Check(!WorldPolicy.IsBeachcombingObject("Design/Gear/GEAR_Arrow"), "Ordinary world arrows excluded from beach-only override");
 Check(!WorldPolicy.IsBeachcombingObject("CustomSpawnedItem_droppeddecorationstorage/Container"), "Player decoration storage excluded");
 Check(!WorldPolicy.IsBeachcombingObject("CustomSpawnedItem_canoe_fake/GEAR_Arrow"), "Unrelated prefix excluded");
-Check(LootBalancePolicy.Retention("GEAR_PeanutButter", true) == 0.15, "Restored ordinary loot retains fifteen percent");
+Check(LootBalancePolicy.Retention("GEAR_PeanutButter", true) == 0.10, "Restored ordinary loot retains ten percent");
 foreach (string name in new[] { "GEAR_HeavyParka", "GEAR_Hacksaw", "GEAR_CowichanSweater", "GEAR_PremiumWinterCoat" })
-    Check(LootBalancePolicy.Retention(name, true)==0 && LootBalancePolicy.Retention(name,true,LootAccess.Deep)==(ExplorationPolicy.IsPremium(name) ? 0.05 : 0.15), "Restored equipment requires an expedition source: " + name);
+    Check(LootBalancePolicy.Retention(name, true)==0 && LootBalancePolicy.Retention(name,true,LootAccess.Deep)==(ExplorationPolicy.IsPremium(name) ? 0.03 : 0.10), "Restored equipment requires an expedition source: " + name);
 foreach (string name in new[] { "GEAR_Rifle_Curators", "GEAR_Bow_Woodwrights", "GEAR_SurvivalKnife" })
     Check(LootBalancePolicy.Retention(name, true) == 0, "Physical variants remain excluded from generic loot: " + name);
-Check(LootBalancePolicy.Retention("GEAR_HeavyParka(Clone)", true,LootAccess.Deep) == 0.05, "Cloned gear uses the same rarity tier");
-Check(LootBalancePolicy.Retention("GEAR_Hacksaw (12)", true,LootAccess.Remote) == 0.05, "Authored numbered instances use the same tier");
+Check(LootBalancePolicy.Retention("GEAR_HeavyParka(Clone)", true,LootAccess.Deep) == 0.03, "Cloned gear uses the same rarity tier");
+Check(LootBalancePolicy.Retention("GEAR_Hacksaw (12)", true,LootAccess.Remote) == 0.03, "Authored numbered instances use the same tier");
 foreach (string name in new[] { "GEAR_Hammer", "GEAR_Stick" })
     Check(LootBalancePolicy.Retention(name, false) == 1, "Original Interloper sources retain availability: " + name);
 foreach (string name in new[] { "GEAR_TacticalJacket", "GEAR_RifleScabbardA", "GEAR_ToolBelt", "GEAR_TacticalGloves" })
     Check(LootBalancePolicy.Retention(name, true) == 0, "Progression rewards require an authenticated source: " + name);
-foreach (double retention in new[] { 0.35, 0.25, 0.15, 0.10, 0.05, 0.0025, 0.005 })
+foreach (double retention in new[] { 0.20, 0.15, 0.10, 0.075, 0.03, 0.0025, 0.005 })
 {
     int accepted = Enumerable.Range(0, 100000).Count(slot => LootBalancePolicy.Sample(12345, "CoastalRegion/container", slot) < retention);
     Check(Math.Abs(accepted - retention * 100000) < Math.Max(100,4*Math.Sqrt(retention*(1-retention)*100000)), "Retention distribution matches tier across independent slots: " + retention);
@@ -282,10 +282,10 @@ Check(mailOutcomes.Count==2+StreetLootPolicy.CommonBooks.Length+StreetLootPolicy
 Check(StreetLootPolicy.Mail(2718,"MailboxA")==StreetLootPolicy.Mail(2718,"MailboxA") && StreetLootPolicy.FuelLitres(2718,"CarA")==StreetLootPolicy.FuelLitres(2718,"CarA"),"street loot selection is stable on reload");
 foreach(var access in Enum.GetValues<LootAccess>())
 {
-    Check(LootBalancePolicy.Retention("GEAR_HeavyParka",true,access)==(access==LootAccess.Deep ? 0.05 : 0),"premium clothing is exclusive to deep exploration: "+access);
-    Check(LootBalancePolicy.Retention("GEAR_PeanutButter",true,access)==(access==LootAccess.Deep ? 0.35 : access==LootAccess.Remote ? 0.25 : access==LootAccess.Beach ? 0.10 : 0.15),"restored supply retention rewards finite exploration over renewable beach sources: "+access);
+    Check(LootBalancePolicy.Retention("GEAR_HeavyParka",true,access)==(access==LootAccess.Deep ? 0.03 : 0),"premium clothing is exclusive to deep exploration: "+access);
+    Check(LootBalancePolicy.Retention("GEAR_PeanutButter",true,access)==(access==LootAccess.Deep ? 0.20 : access==LootAccess.Remote ? 0.15 : access==LootAccess.Beach ? 0.075 : 0.10),"restored supply retention rewards finite exploration over renewable beach sources: "+access);
     Check(LootBalancePolicy.Retention("GEAR_Hacksaw",false,access)==1,"native Interloper sources survive geographic gating: "+access);
-    Check(LootBalancePolicy.Retention("GEAR_CottonScarf",true,access,true)==(access==LootAccess.Deep ? 0.15 : access==LootAccess.Remote ? 0.05 : 0),"restored clothing cannot bypass equipment gating: "+access);
+    Check(LootBalancePolicy.Retention("GEAR_CottonScarf",true,access,true)==(access==LootAccess.Deep ? 0.10 : access==LootAccess.Remote ? 0.03 : 0),"restored clothing cannot bypass equipment gating: "+access);
 }
 Check(ExplorationPolicy.Access("CrashMountainRegion","Design/Loot/PlaneTailStuff/Box")==LootAccess.Deep &&
     ExplorationPolicy.Access("CrashMountainRegion","Design/Loot/CargoCaches/cargo_creek/Box")==LootAccess.Ordinary,"summit access does not promote lower mountain cargo");
@@ -313,6 +313,6 @@ for(int seed=0;seed<10000;seed++)
     if(MementoRewardPolicy.RareEquipment.Contains(MementoRewardPolicy.Choose(seed,"deep-cache",1,LootAccess.Deep)) ||
        MementoRewardPolicy.RareEquipment.Contains(MementoRewardPolicy.Choose(seed,"deep-cache",0,LootAccess.Remote))) throw new Exception("Memento equipment escaped its one deep slot.");
 }
-Check(rareMementos>350 && rareMementos<650,"deep mementos have one rare equipment opportunity per cache");
+Check(rareMementos>200 && rareMementos<400,"deep mementos have one rare equipment opportunity per cache");
 Check(ManufacturingPolicy.Recipes.Where(recipe=>FirearmSpawnPolicy.IsLimitedTool(recipe.Result)).All(recipe=>recipe.Minutes>=240 && recipe.Tools.Contains("GEAR_HighQualityTools") && recipe.Ingredients.Any(item=>item.Item=="GEAR_Leather")),"tool refining has meaningful material, tool, and time requirements");
 Console.WriteLine($"PASS: {checks} policy boundary checks.");

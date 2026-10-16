@@ -24,7 +24,7 @@ internal static class LootBalanceValidation
         {
             foreach (var fixture in new[] { ("GEAR_Rifle", 0.0), ("GEAR_Revolver", 0.0), ("GEAR_Hacksaw", 0.0),
                 ("GEAR_HeavyParka", 0.0), ("GEAR_PremiumWinterCoat", 0.0), ("GEAR_CowichanSweater", 0.0),
-                ("GEAR_Rifle_Curators", 0.0), ("GEAR_SurvivalKnife", 0.0), ("GEAR_PeanutButter", 0.15),
+                ("GEAR_Rifle_Curators", 0.0), ("GEAR_SurvivalKnife", 0.0), ("GEAR_PeanutButter", 0.10),
                 ("GEAR_RifleAmmoSingle", 0.0025), ("GEAR_RifleAmmoCasing", 0.005), ("GEAR_TacticalJacket", 0.0) })
             {
                 var prefab = Game.GearItem.LoadGearItemPrefab(fixture.Item1);
@@ -186,7 +186,7 @@ internal static class LootBalanceValidation
             var summit=Child("SummitCave");summit.transform.SetParent(loot.transform,false);
             var deepBox=Child("ExpeditionCache").AddComponent<Game.Container>();deepBox.transform.SetParent(summit.transform,false);
             var premium=Game.GearItem.LoadGearItemPrefab("GEAR_HeavyParka").gameObject;
-            check(LootBalance.Retention(premium)==0 && LootBalance.Retention(premium,deepBox.gameObject)==0.05,
+            check(LootBalance.Retention(premium)==0 && LootBalance.Retention(premium,deepBox.gameObject)==0.03,
                 "container geography comes from the actual deep source rather than its shared gear prefab");
             string deepKey=LootBalance.Key(deepBox.gameObject);int retained=0;
             for(int index=0;index<1000;index++)
@@ -195,7 +195,7 @@ internal static class LootBalanceValidation
                 if(LootBalance.Keep(premium,deepKey,index,deepBox.gameObject)) retained++;
             }
             LootBalance.FilterPending(deepBox,0);
-            check(deepBox.m_GearToInstantiate.Count==retained && retained>=25 && retained<=80,
+            check(deepBox.m_GearToInstantiate.Count==retained && retained>=8 && retained<=55,
                 "native pending deep-cache loot applies rare clothing retention once using source context");
             var canoe=Child("CustomSpawnedItem_canoe");canoe.transform.SetParent(summit.transform,false);
             deepBox.transform.SetParent(canoe.transform,false);

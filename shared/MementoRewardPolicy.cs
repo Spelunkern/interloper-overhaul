@@ -28,7 +28,7 @@ public static class MementoRewardPolicy
         double roll=LootBalancePolicy.Sample(seed,"memento-value/"+cache,slot);
         // At most the first slot can roll premium gear; ordinary and remote caches
         // never bypass the deep-exploration restriction through replacements.
-        var pool=access==LootAccess.Deep && slot==0 && roll<0.05 ? RareEquipment :
+        var pool=access==LootAccess.Deep && slot==0 && roll<0.03 ? RareEquipment :
             access is LootAccess.Deep or LootAccess.Remote && roll<0.70 ? ExpeditionSupplies : Supplies;
         return pool[(int)(LootBalancePolicy.Sample(seed,"memento-supplies/"+cache,slot)*pool.Length)];
     }

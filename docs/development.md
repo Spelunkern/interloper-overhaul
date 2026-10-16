@@ -42,7 +42,7 @@ git diff --check
 ```
 
 The current verified baseline is **3,306 policy checks** and **1,072 native runtime
-checks** on game 2.55 / mod 0.23.1. Counts record that run, rather than promising
+checks** on game 2.55 / mod 0.23.2. Counts record that run, rather than promising
 coverage of every gameplay interaction. Documentation-only updates do not require
 opening the game or replacing the installed DLL.
 
