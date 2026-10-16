@@ -45,7 +45,7 @@ internal static class FiniteFirearms
                 // Preserve them without allocating two more or pretending to migrate it.
                 State.Legacy = slot != null && slot.HasData(Game.SlotData.GLOBAL_KEY);
                 if (State.Legacy)
-                    MelonLogger.Msg("[Finite firearms] Existing save preserved. Start a new Interloper game for exactly one allocated rifle and revolver.");
+                    MelonLogger.Msg("[Finite firearms] Existing save preserved. Start a new Interloper game for exactly one allocated rifle, revolver, hunting knife, and hatchet.");
             }
         }
         catch (Exception ex)
@@ -66,7 +66,7 @@ internal static class FiniteFirearms
 
     internal static void RememberDeserialized(Game.GearItem gear)
     {
-        if (FirearmSpawnPolicy.IsStandardFirearm(gear.name) || LootBalancePolicy.IsWeaponVariant(gear.name)) deserialized.Add(gear.GetInstanceID());
+        if (FirearmSpawnPolicy.IsFiniteItem(gear.name) || LootBalancePolicy.IsWeaponVariant(gear.name)) deserialized.Add(gear.GetInstanceID());
     }
 
     internal static void AfterStart(Game.GearItem gear)
@@ -79,18 +79,18 @@ internal static class FiniteFirearms
             return;
         }
         bool variant = LootBalancePolicy.IsWeaponVariant(gear.name);
-        if (!LootBalance.Active || (!variant && !FirearmSpawnPolicy.IsStandardFirearm(gear.name))) return;
+        if (!LootBalance.Active || (!variant && !FirearmSpawnPolicy.IsFiniteItem(gear.name))) return;
         if (Game.SaveGameSystem.IsRestoreInProgress() || Game.SaveGameSystem.IsSceneRestoreInProgress()) return;
         if (deserialized.Remove(id) || gear.m_BeenInPlayerInventory || gear.m_HasBeenOwnedByPlayer ||
             gear.m_BeenInContainer || IsManaged(gear)) return;
-        if (!variant && State?.Legacy == true) return;
+        if (!variant && FirearmSpawnPolicy.IsStandardFirearm(gear.name) && State?.Legacy == true) return;
         // Catch fresh weapons whose native spawner skipped RollSpawnChance entirely.
         gear.gameObject.SetActive(false);
     }
 
     internal static bool IsManaged(Game.GearItem gear)
     {
-        if (State == null || !FirearmSpawnPolicy.IsStandardFirearm(gear.name)) return false;
+        if (State == null || !FirearmSpawnPolicy.IsFiniteItem(gear.name)) return false;
         string guid = Game.ObjectGuid.GetGuidFromGameObject(gear.gameObject);
         return guid == State.GuidFor(LootBalancePolicy.ItemName(gear.name));
     }
@@ -139,14 +139,14 @@ internal static class FiniteFirearms
             Game.SaveGameSystem.IsRestoreInProgress() || Game.SaveGameSystem.IsSceneRestoreInProgress() || failedLoad) return;
         if (State == null) State = FirearmRunState.Create(Game.GameManager.GetRandomSeed(0), RunKey);
         if (State.Legacy) return;
-        foreach (string item in new[] { "GEAR_Rifle", "GEAR_Revolver" })
+        foreach (string item in FirearmSpawnPolicy.Items)
         {
-            if (State.Created(item)) continue;
+            if (State.IsLegacy(item) || State.Created(item)) continue;
             var site = State.Site(item);
             var scene = SceneManager.GetSceneByName(site.Scene);
             if (!scene.IsValid() || !scene.isLoaded) continue;
             try { CreateWeapon(item, site, scene); }
-            catch (Exception ex) { MelonLogger.Error("[Finite firearms] Failed to place allocated firearm: " + ex); }
+            catch (Exception ex) { MelonLogger.Error("[Finite firearms] Failed to place allocated item: " + ex); }
         }
     }
 
@@ -216,6 +216,6 @@ internal static class NoAdditionalStandardFirearmTrades
     {
         if (!__result || !LootBalance.Active || __instance.m_GainedItem == null) return;
         string item = LootBalancePolicy.TraderItem(__instance.m_GainedItem.AssetGUID);
-        if (FirearmSpawnPolicy.IsStandardFirearm(item) || LootBalancePolicy.IsWeaponVariant(item)) __result = false;
+        if (FirearmSpawnPolicy.IsFiniteItem(item) || LootBalancePolicy.IsWeaponVariant(item)) __result = false;
     }
 }

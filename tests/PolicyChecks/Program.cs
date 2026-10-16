@@ -76,12 +76,12 @@ Check(!WorldPolicy.IsBeachcombingObject("Design/Gear/GEAR_Arrow"), "Ordinary wor
 Check(!WorldPolicy.IsBeachcombingObject("CustomSpawnedItem_droppeddecorationstorage/Container"), "Player decoration storage excluded");
 Check(!WorldPolicy.IsBeachcombingObject("CustomSpawnedItem_canoe_fake/GEAR_Arrow"), "Unrelated prefix excluded");
 Check(LootBalancePolicy.Retention("GEAR_PeanutButter", true) == 0.05, "Restored ordinary loot retains five percent");
-foreach (string name in new[] { "GEAR_HeavyParka", "GEAR_Knife", "GEAR_CowichanSweater", "GEAR_PremiumWinterCoat" })
+foreach (string name in new[] { "GEAR_HeavyParka", "GEAR_Hacksaw", "GEAR_CowichanSweater", "GEAR_PremiumWinterCoat" })
     Check(LootBalancePolicy.Retention(name, true) == 0.01, "Premium restored loot retains one percent: " + name);
 foreach (string name in new[] { "GEAR_Rifle_Curators", "GEAR_Bow_Woodwrights", "GEAR_SurvivalKnife" })
     Check(LootBalancePolicy.Retention(name, true) == 0, "Special variants are temporarily disabled: " + name);
 Check(LootBalancePolicy.Retention("GEAR_HeavyParka(Clone)", true) == 0.01, "Cloned gear uses the same rarity tier");
-Check(LootBalancePolicy.Retention("GEAR_Knife (12)", true) == 0.01, "Authored numbered instances use the same tier");
+Check(LootBalancePolicy.Retention("GEAR_Hacksaw (12)", true) == 0.01, "Authored numbered instances use the same tier");
 foreach (string name in new[] { "GEAR_Hammer", "GEAR_Stick" })
     Check(LootBalancePolicy.Retention(name, false) == 1, "Original Interloper sources retain availability: " + name);
 foreach (string name in new[] { "GEAR_TacticalJacket", "GEAR_RifleScabbardA", "GEAR_ToolBelt", "GEAR_TacticalGloves" })
@@ -105,7 +105,7 @@ foreach (string name in new[] { "GEAR_RifleAmmoSingle", "GEAR_RifleAmmoBox", "GE
     Check(LootBalancePolicy.Retention(name, true) == 0.0025 && LootBalancePolicy.Retention(name, false) == 0.0025, "Found ammunition uses quarter-percent retention");
 foreach (string name in new[] { "GEAR_RifleAmmoCasing", "GEAR_RevolverAmmoCasing" })
     Check(LootBalancePolicy.Retention(name, true) == 0.005, "Found casings use half-percent retention");
-Check(FirearmSpawnPolicy.Sites.Length == 28 && FirearmSpawnPolicy.Sites.Select(site => site.Id).Distinct().Count() == 28, "Audited firearm site identities are unique");
+Check(FirearmSpawnPolicy.Sites.Count(site => FirearmSpawnPolicy.IsStandardFirearm(site.Item)) == 28 && FirearmSpawnPolicy.Sites.Select(site => site.Id).Distinct().Count() == FirearmSpawnPolicy.Sites.Length, "Audited firearm site identities are unique");
 Check(FirearmSpawnPolicy.Sites.All(site => !site.Path.Contains("Whiteout") && !site.Path.Contains("research")), "Challenge and quest-only positions excluded");
 var plans = Enumerable.Range(0, 1000).Select(seed => FirearmRunState.Create(seed, "Sandbox/123")).ToArray();
 Check(plans.All(plan => plan.Site("GEAR_Rifle").Item == "GEAR_Rifle" && plan.Site("GEAR_Revolver").Item == "GEAR_Revolver"), "Every seed allocates exactly one location for each standard firearm");
@@ -139,4 +139,23 @@ Check(LootBalancePolicy.TraderItem("118e9d9493692c44ba7a0acb6133fc21") == "GEAR_
 Check(LootBalancePolicy.TraderItem("b930bfe9aa379ec4885009a692cfea2e") == "GEAR_Rifle_Trader" && LootBalancePolicy.Retention("GearItemData_Rifle_Trader", false) == 0, "Variant authored identity and unrestricted source blocked: Rifle_Trader");
 Check(LootBalancePolicy.TraderItem("32ed5798a3d3189429b3d08ef20eec63") == "GEAR_Rifle_Vaughns" && LootBalancePolicy.Retention("GearItemData_Rifle_Vaughns", false) == 0, "Variant authored identity and unrestricted source blocked: Rifle_Vaughns");
 Check(!LootBalancePolicy.IsWeaponVariant("GEAR_Knife") && !LootBalancePolicy.IsWeaponVariant("GEAR_Bow") && !LootBalancePolicy.IsWeaponVariant("GEAR_TacticalJacket"), "Ordinary weapons and clothing are outside the variant ban");
+foreach (string item in new[] { "GEAR_Knife", "GEAR_Hatchet" })
+{
+    Check(FirearmSpawnPolicy.IsFiniteItem(item) && LootBalancePolicy.Retention(item, true) == 0 && LootBalancePolicy.Retention(item, false) == 0,
+        "Unallocated standard tools are excluded from all generated loot: " + item);
+    Check(plans.All(plan => plan.Site(item).Item == item) && plans.Select(plan => plan.Site(item).Id).Distinct().Count() > 1,
+        "Exactly one native tool placement is chosen per seed: " + item);
+    allocation.SetCreated(item, true);
+    var restoredPlan = FirearmRunState.Deserialize(allocation.Serialize());
+    Check(restoredPlan.Created(item) && restoredPlan.Site(item).Id == allocation.Site(item).Id && restoredPlan.GuidFor(item) == allocation.GuidFor(item),
+        "Tool issuance, placement, and identity survive save round trips: " + item);
+}
+var oldPlan = System.Text.Json.Nodes.JsonNode.Parse(before)!;
+oldPlan["Version"] = 1;
+foreach (string field in new[] { "KnifeSite", "HatchetSite", "KnifeCreated", "HatchetCreated", "ToolsLegacy" }) oldPlan.AsObject().Remove(field);
+var migratedPlan = FirearmRunState.Deserialize(oldPlan.ToJsonString());
+Check(migratedPlan.ToolsLegacy && migratedPlan.IsLegacy("GEAR_Knife") && !migratedPlan.IsLegacy("GEAR_Rifle") && migratedPlan.RifleSite == allocation.RifleSite,
+    "Version-one saves retain firearm locations without receiving extra tools");
+Check(!FirearmSpawnPolicy.IsFiniteItem("GEAR_KnifeImprovised") && !FirearmSpawnPolicy.IsFiniteItem("GEAR_HatchetImprovised"),
+    "Improvised tools are outside the finite standard-tool allocation");
 Console.WriteLine($"PASS: {checks} policy boundary checks.");

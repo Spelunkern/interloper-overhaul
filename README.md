@@ -3,7 +3,32 @@
 A personal mod for **The Long Dark**, focused on restoring content excluded from
 standard **Interloper**, with a few general quality-of-life changes. By Spelunkern.
 
-## Version 0.10.0: weapon variants temporarily disabled
+## Version 0.11.0: finite hunting knife and hatchet
+
+Each **new Interloper run** also allocates exactly **one hunting knife and one
+standard hatchet**, independently selected from 33 verified native outdoor tool
+placements. They start at a seed-selected condition from **1% to 100%**. Their
+locations, creation flags, and native object GUIDs persist with the save slot;
+loading, region revisits, losing, ruining, or harvesting them does not issue replacements.
+
+Additional hunting knives and standard hatchets are blocked in fresh world loot,
+random/scripted containers, reward caches, Trader offers (including special requests),
+and **all newly generated beachcombing loot**, including contents of large finds.
+The two allocated tools are placed in the world, never supplied by beachcombing.
+Improvised knives/hatchets and their crafting recipes retain their existing rules.
+
+Existing saved or acquired tools are preserved. **Start a new survival game for the
+one-of-each guarantee.** Version-one allocation snapshots keep their original firearm
+plan and do not receive extra tools; their pre-existing tool count is not migrated.
+The save payload is now version two, under the same save-slot key, and firearm
+identities and seed-based locations stay unchanged.
+
+Validation covers all four allocated items, native world and individual tool
+serialization, retained tool wear, repeated population, old payload migration,
+additional scripted/world gear, beachcombing rejection, and Trader filtering.
+Full travel/save/quit/reload playthrough testing remains necessary.
+
+## Weapon variants temporarily disabled (0.10.0)
 
 New weapon variants no longer spawn in standard Interloper: Barb's, Curator's,
 Vaughn's and Ranger rifles; Forester's, Warden's and Hunter's revolvers;
@@ -40,7 +65,7 @@ are preserved. Other ammunition types, such as flare shells, retain their own ru
 
 Trader ammunition/casing offers also use these retention rates, with a stable
 decision per world seed, item, and native aurora number. Reopening the radio or
-reloading cannot reroll the same aurora. Non-variant special requests, underlying exchange
+reloading cannot reroll the same aurora. Special requests without blocked weapons/tools, underlying exchange
 assets, other stock, prices, and existing active trades are preserved.
 
 The allocation and separate creation flags are stored as an opaque UTF-8 payload
@@ -68,7 +93,8 @@ Newly generated restored loot now receives an additional retention roll:
 | Restored item tier | Retention relative to the restoration baseline |
 | --- | --- |
 | Ordinary restored items, including food | 5% (1 in 20) |
-| Knives, hatchets, restored utility tools, and premium clothing | 1% (1 in 100) |
+| Hunting knife and standard hatchet | One allocated item each per new run (0.11.0) |
+| Other restored utility tools and premium clothing | 1% (1 in 100) |
 | Special rifle/revolver variants, special bows, and the Survival Knife | Disabled as of 0.10.0 |
 
 These are **additional retention rates**, not chances per container or guarantees
@@ -245,13 +271,14 @@ dotnet run --project tests/PolicyChecks/PolicyChecks.csproj -c Release
 Runtime validation requires a closed game and an installed Release DLL. It temporarily
 builds a validation DLL, opens the main menu without input, and exercises the actual
 Harmony patches against synthetic world objects, real gear prefabs and loot filters,
-and cloned bunker configurations. It never opens a survival save. The installed DLL
+and cloned bunker configurations. The isolated probe enables background execution
+so losing window focus does not pause its checks. It never opens a survival save. The installed DLL
 is restored afterward; the report is written to `.local/runtime-validation.log`.
 Validation code is excluded from the production build. Loader, Harmony, and native interop errors fail
 the validation even if individual checks report success. The injected probe may
 require forced termination during Unity/.NET shutdown after reporting its results;
 this does not validate a normal playthrough or normal shutdown behavior.
-The 0.10.0 probe was run with `DOTNET_TieredCompilation=0` and
+The 0.11.0 probe was run with `DOTNET_TieredCompilation=0` and
 `DOTNET_EnableWriteXorExecute=0`, as well as the launcher's `DOTNET_ReadyToRun=0`.
 This records the validation environment; it is not a claim
 that intermittent loader startup or probe shutdown failures have been resolved.

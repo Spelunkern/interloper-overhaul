@@ -1,6 +1,6 @@
 namespace InterloperOverhaul;
 
-// Authored base-game outdoor firearm positions, verified against the local 2.55 assets.
+// Authored base-game outdoor firearm and tool positions, verified against the local 2.55 assets.
 public sealed class FirearmSite
 {
     public string Scene { get; }
@@ -20,6 +20,10 @@ public sealed class FirearmSite
 public static class FirearmSpawnPolicy
 {
     public static bool IsStandardFirearm(string name) => LootBalancePolicy.ItemName(name) is "GEAR_Rifle" or "GEAR_Revolver";
+
+    public static bool IsLimitedTool(string name) => LootBalancePolicy.ItemName(name) is "GEAR_Knife" or "GEAR_Hatchet";
+    public static bool IsFiniteItem(string name) => IsStandardFirearm(name) || IsLimitedTool(name);
+    public static readonly string[] Items = { "GEAR_Rifle", "GEAR_Revolver", "GEAR_Knife", "GEAR_Hatchet" };
 
     public static readonly FirearmSite[] Sites =
     {
@@ -51,6 +55,39 @@ public static class FirearmSpawnPolicy
         new("RuralRegion_SANDBOX", "Design/Gear/Rifle/Rifle3/GEAR_Rifle", "GEAR_Rifle", 2365.236084f, 169.742844f, 253.167984f),
         new("RuralRegion_SANDBOX", "Design/Gear/Rifle/Rifle2/GEAR_Rifle", "GEAR_Rifle", 1945.954712f, 45.519508f, 1249.669067f),
         new("RuralRegion_SANDBOX", "Design/Gear/Revolver/GEAR_Revolver", "GEAR_Revolver", 2513.371094f, 185.882004f, 564.611023f),
+        new("CoastalRegion", "Design/Gear/Hatchet/Hatchet_tunnelCorpse/GEAR_Hatchet", "GEAR_Hatchet", -722.093018f, 204.731003f, 1311.561035f),
+        new("CoastalRegion", "Design/Gear/Hatchet/Hatchet_waterfrontCorpse/GEAR_Hatchet", "GEAR_Hatchet", 899.536987f, 37.367001f, 120.349998f),
+        new("CoastalRegion", "Design/Gear/Knife/Knife_littleIslandCorpse/GEAR_Knife", "GEAR_Knife", -495.656342f, 23.388000f, 406.991180f),
+        new("CoastalRegion", "Design/Gear/Hatchet/Hatchet_misanthrops/GEAR_Hatchet", "GEAR_Hatchet", 370.199005f, 57.308998f, 217.710999f),
+        new("CoastalRegion", "Design/Gear/Knife/Knife_house/GEAR_Knife", "GEAR_Knife", 945.826660f, 48.359001f, 505.229645f),
+        new("CoastalRegion", "Design/Gear/Hatchet/Hatchet_bearcamp/GEAR_Hatchet", "GEAR_Hatchet", -1272.009033f, 128.587997f, 858.948975f),
+        new("CoastalRegion", "Design/Gear/Knife/Knife_outlook/GEAR_Knife", "GEAR_Knife", 360.582214f, 204.483902f, 1154.930420f),
+        new("CoastalRegion", "Design/Gear/Knife/Knife_fishCabin/GEAR_Knife", "GEAR_Knife", -701.793701f, 28.804000f, 673.102358f),
+        new("CoastalRegion", "Design/Gear/Hatchet/Hatchet_fishBoat/GEAR_Hatchet", "GEAR_Hatchet", -654.710999f, 23.517000f, 639.023010f),
+        new("CoastalRegion", "Design/Gear/Hatchet/Hatchet_cabin/GEAR_Hatchet", "GEAR_Hatchet", -925.900024f, 71.073997f, 660.419983f),
+        new("CoastalRegion", "Design/Gear/Knife/Knife_car/GEAR_Knife", "GEAR_Knife", 686.957520f, 35.212299f, -423.285400f),
+        new("CoastalRegion", "Design/Gear/Knife/Knife_fishhut1/GEAR_Knife", "GEAR_Knife", 370.131500f, 24.101999f, 696.442871f),
+        new("CoastalRegion", "Design/Gear/Knife/Knife_deadEndRidgeCorpse/GEAR_Knife", "GEAR_Knife", -1108.635376f, 116.119003f, 311.080505f),
+        new("CoastalRegion", "Design/Gear/Hatchet/Hatchet_logSort/GEAR_Hatchet", "GEAR_Hatchet", -57.973000f, 25.298000f, 883.270020f),
+        new("LakeRegion_SANDBOX", "Design/Gear/Hatchet/Hatchet_outlook/GEAR_Hatchet", "GEAR_Hatchet", 786.579296f, 213.193743f, 969.487391f),
+        new("LakeRegion_SANDBOX", "Design/Gear/Knife/Knife_forestCorpse/GEAR_Knife", "GEAR_Knife", 491.165314f, 0.085000f, 316.261597f),
+        new("LakeRegion_SANDBOX", "Design/Gear/Knife/Knife_trainCorpse/GEAR_Knife", "GEAR_Knife", 995.274231f, 41.514641f, 642.563721f),
+        new("LakeRegion_SANDBOX", "Design/Gear/Knife/Knife_crummie/GEAR_Knife", "GEAR_Knife", 1244.873291f, 39.132507f, 1183.981079f),
+        new("LakeRegion_SANDBOX", "Design/Gear/Knife/Knife_outlook/GEAR_Knife", "GEAR_Knife", 787.701541f, 213.450640f, 967.020365f),
+        new("LakeRegion_SANDBOX", "Design/Gear/Knife/Knife_riverCorpse/GEAR_Knife", "GEAR_Knife", 1639.031006f, 16.393988f, 1376.362427f),
+        new("LakeRegion_SANDBOX", "Design/Gear/Hatchet/Hatchet_bridge/GEAR_Hatchet", "GEAR_Hatchet", 1561.510986f, 16.480000f, 1277.109009f),
+        new("LakeRegion_SANDBOX", "Design/Gear/Hatchet/Hatchet_damageCabin/GEAR_Hatchet", "GEAR_Hatchet", 564.994812f, -1.554000f, 264.926910f),
+        new("LakeRegion_SANDBOX", "Design/Gear/Hatchet/Hatchet_barn1/GEAR_Hatchet", "GEAR_Hatchet", 146.145126f, 3.616420f, 52.630100f),
+        new("LakeRegion_SANDBOX", "Design/Gear/Hatchet/Hatchet_logcamp1/GEAR_Hatchet", "GEAR_Hatchet", 889.775024f, 21.591000f, 1269.051025f),
+        new("LakeRegion_SANDBOX", "Design/Gear/Knife/Knife_fishhut/GEAR_Knife", "GEAR_Knife", 1529.151001f, 16.701000f, 224.223999f),
+        new("LakeRegion_SANDBOX", "Design/Gear/Knife/Knife_hunter1/GEAR_Knife", "GEAR_Knife", 130.673004f, 12.639000f, 661.716980f),
+        new("LakeRegion_SANDBOX", "Design/Gear/Knife/Knife_oldLookout/GEAR_Knife", "GEAR_Knife", 389.028046f, 109.898003f, 932.500610f),
+        new("LakeRegion_SANDBOX", "Design/Gear/Hatchet/Hatchet_lakeCabins/GEAR_Hatchet", "GEAR_Hatchet", 1464.300049f, 19.455999f, -63.200001f),
+        new("LakeRegion_SANDBOX", "Design/Gear/Hatchet/Hatchet_fishhut/GEAR_Hatchet", "GEAR_Hatchet", 1307.645020f, 16.639000f, 289.959015f),
+        new("MountainTownRegion_SANDBOX", "Design/Gear/Hatchet/hatchetGroup2/GEAR_Hatchet", "GEAR_Hatchet", 1479.654053f, 323.621002f, 1531.489990f),
+        new("MountainTownRegion_SANDBOX", "Design/Gear/knife/knifeGroup2/GEAR_Knife", "GEAR_Knife", 1321.467041f, 350.710999f, 1588.735962f),
+        new("MountainTownRegion_SANDBOX", "Design/Gear/knife/knifeGroup1/GEAR_Knife", "GEAR_Knife", 951.620972f, 311.829010f, 1151.031006f),
+        new("MountainTownRegion_SANDBOX", "Design/Gear/Hatchet/hatchetGroup1/GEAR_Hatchet", "GEAR_Hatchet", 1365.673950f, 263.625000f, 1201.352051f),
     };
 
     public static FirearmSite SelectSite(int seed, string item)

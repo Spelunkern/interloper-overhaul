@@ -54,7 +54,7 @@ internal static class LootBalance
         if (gear == null || gear.m_BeenInPlayerInventory || gear.m_HasBeenOwnedByPlayer || gear.m_BeenInContainer) return 1;
         string name = LootBalancePolicy.ItemName(go.name);
         if (RecoveredCasings.Active && WorldPolicy.IsSpentCasing(name)) return 1;
-        if (FirearmSpawnPolicy.IsStandardFirearm(name)) return FiniteFirearms.IsManaged(gear) ? 1 : 0;
+        if (FirearmSpawnPolicy.IsFiniteItem(name)) return FiniteFirearms.IsManaged(gear) ? 1 : 0;
         if (WorldPolicy.IsTaleReward(name) ||
             WorldPolicy.IsSignalFireSatchel(go.scene.name, WorldObjects.PathOf(go))) return 1;
         // Do not substitute canonical prefab restrictions for a scene instance.

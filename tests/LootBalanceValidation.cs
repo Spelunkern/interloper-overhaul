@@ -22,7 +22,7 @@ internal static class LootBalanceValidation
         }
         try
         {
-            foreach (var fixture in new[] { ("GEAR_Rifle", 0.0), ("GEAR_Revolver", 0.0), ("GEAR_Knife", 0.01),
+            foreach (var fixture in new[] { ("GEAR_Rifle", 0.0), ("GEAR_Revolver", 0.0), ("GEAR_Hacksaw", 0.01),
                 ("GEAR_HeavyParka", 0.01), ("GEAR_PremiumWinterCoat", 0.01), ("GEAR_CowichanSweater", 0.01),
                 ("GEAR_Rifle_Curators", 0.0), ("GEAR_SurvivalKnife", 0.0), ("GEAR_PeanutButter", 0.05),
                 ("GEAR_RifleAmmoSingle", 0.0025), ("GEAR_RifleAmmoCasing", 0.005), ("GEAR_TacticalJacket", 1.0) })
@@ -51,10 +51,22 @@ internal static class LootBalanceValidation
                 check(variant.gameObject.activeSelf && LootBalance.Retention(variant.gameObject) == 1,
                     "acquired variant remains usable: " + name);
             }
+            foreach (string item in new[] { "GEAR_Knife", "GEAR_Hatchet" })
+            {
+                var extraTool = Child(item).AddComponent<Game.GearItem>();
+                extraTool.m_RolledSpawnChance = true;
+                FiniteFirearms.AfterStart(extraTool);
+                check(!extraTool.gameObject.activeSelf, "unallocated tool cannot bypass the world spawn filter: " + item);
+                extraTool.gameObject.SetActive(true);
+                extraTool.m_HasBeenOwnedByPlayer = true;
+                FiniteFirearms.AfterStart(extraTool);
+                check(extraTool.gameObject.activeSelf && LootBalance.Retention(extraTool.gameObject) == 1,
+                    "existing owned tool is preserved: " + item);
+            }
             var hammerGo = Child("GEAR_Hammer");
             var hammer = hammerGo.AddComponent<Game.GearItem>();
             check(LootBalance.Retention(hammerGo) == 1, "native placed hammer is not confused with excluded container hammer");
-            var placed = Child("GEAR_Knife");
+            var placed = Child("GEAR_Hacksaw");
             var gear = placed.AddComponent<Game.GearItem>();
             var disabler = placed.AddComponent<Game.DisableObjectForXPMode>();
             disabler.m_XPModesToDisable = new Il2CppSystem.Collections.Generic.List<Game.ExperienceModeType>();
@@ -74,7 +86,7 @@ internal static class LootBalanceValidation
             check(placed != null && gear.m_RolledSpawnChance, "already rolled world gear is not removed on a later call");
             gear.m_RolledSpawnChance = false;
             gear.m_SpawnChance = 100;
-            for (int n = 0; LootBalance.Keep(placed, LootBalance.Key(placed), 0); n++) placed.name = "GEAR_Knife (" + n + ")";
+            for (int n = 0; LootBalance.Keep(placed, LootBalance.Key(placed), 0); n++) placed.name = "GEAR_Hacksaw (" + n + ")";
             check(placed.activeSelf, "fresh world test starts with an enabled authored item");
             gear.RollSpawnChance();
             check(gear.m_RolledSpawnChance && !placed.activeSelf && gear.m_SpawnChance == 100,
@@ -83,7 +95,7 @@ internal static class LootBalanceValidation
             var radial = Child("IO_Tideline").AddComponent<Game.RadialObjectSpawner>();
             radial.IsTidelineSpawner = true;
             RareRadialGear.Prefix(radial, out int firstSpawn);
-            var washedUp = Child("GEAR_Knife");
+            var washedUp = Child("GEAR_Hacksaw");
             var washedGear = washedUp.AddComponent<Game.GearItem>();
             LootBalance.MarkRestored(washedUp);
             radial.m_Spawns.Add(washedUp);
@@ -107,7 +119,7 @@ internal static class LootBalanceValidation
             check(radial.m_Spawns.Count == 1, "native radial items retain their original availability");
 
             var container = Child("CONTAINER_Test").AddComponent<Game.Container>();
-            var rifle = Game.GearItem.LoadGearItemPrefab("GEAR_Knife").gameObject;
+            var rifle = Game.GearItem.LoadGearItemPrefab("GEAR_Hacksaw").gameObject;
             container.m_GearToInstantiate.Add(rifle); // An earlier generation stage: preserve it.
             int expected = 1;
             string key = LootBalance.Key(container.gameObject);
@@ -138,6 +150,22 @@ internal static class LootBalanceValidation
             radial.m_Spawns.Add(variantFind);
             RareRadialGear.Postfix(radial, 0);
             check(radial.m_Spawns.Count == 0, "fresh beachcombing variants are rejected");
+
+            foreach (string item in new[] { "GEAR_Knife", "GEAR_Hatchet" })
+            {
+                var toolPrefab = Game.GearItem.LoadGearItemPrefab(item).gameObject;
+                container.m_GearToInstantiate.Clear();
+                container.m_ScriptedItemPrefabs = new Il2CppReferenceArray<GameObject>(new[] { toolPrefab });
+                container.PopulateWithScriptedGear();
+                check(container.m_GearToInstantiate.Count == 0, "scripted loot cannot add another finite tool: " + item);
+                radial.m_Spawns.Clear();
+                var beachTool = Child(item);
+                beachTool.AddComponent<Game.GearItem>();
+                radial.m_Spawns.Add(beachTool);
+                RareRadialGear.Postfix(radial, 0);
+                check(radial.m_Spawns.Count == 0 && LootBalance.Retention(toolPrefab) == 0,
+                    "beachcombing cannot supply a finite tool: " + item);
+            }
 
             RewardScope.Enter();
             try

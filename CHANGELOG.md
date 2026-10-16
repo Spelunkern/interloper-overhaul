@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.11.0
+
+- Allocate exactly one hunting knife and one standard hatchet per new Interloper run, with seed-selected native world positions and 1–100% initial condition.
+- Persist tool locations, creation flags, and stable native gear identities alongside the firearm allocation; never replace lost, ruined, or harvested tools.
+- Suppress additional standard tools in world/container/reward loot, Trader offers, and all fresh beachcombing finds, including large-find contents. Preserve improvised tools and crafting.
+- Upgrade allocation payloads to version two while preserving version-one firearm plans and existing tools without adding extras. Existing saves require a new run for the tool-count guarantee.
+- Validate tool serialization and wear, save migration, repeat population, additional world/scripted loot, beachcombing rejection, and Trader stock.
+
 ## 0.10.0
 
 - Temporarily disable new rifle/revolver variants, special bows, and the Survival Knife in standard Interloper.

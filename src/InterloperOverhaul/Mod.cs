@@ -1,7 +1,7 @@
 using MelonLoader;
 using InterloperOverhaul;
 
-[assembly: MelonInfo(typeof(Mod), "Interloper Overhaul", "0.10.0", "Spelunkern", "https://github.com/Spelunkern/interloper-overhaul")]
+[assembly: MelonInfo(typeof(Mod), "Interloper Overhaul", "0.11.0", "Spelunkern", "https://github.com/Spelunkern/interloper-overhaul")]
 [assembly: MelonGame("Hinterland", "TheLongDark")]
 
 namespace InterloperOverhaul;
@@ -12,6 +12,8 @@ public sealed class Mod : MelonMod
     public override void OnSceneWasInitialized(int buildIndex, string sceneName)
     {
 #if IO_VALIDATION
+        // Keep isolated menu probes advancing when their window loses focus.
+        UnityEngine.Application.runInBackground = true;
         if (sceneName.StartsWith("MainMenu", System.StringComparison.Ordinal))
             MelonCoroutines.Start(RuntimeValidation.WaitForMenu());
 #endif
@@ -21,6 +23,6 @@ public sealed class Mod : MelonMod
 
     public override void OnInitializeMelon()
     {
-        LoggerInstance.Msg("Interloper Overhaul 0.10.0 loaded. One allocated rifle and revolver per new Interloper run; found ammo retention 0.25%, casings 0.5%. Weapon variants disabled. Direct main menu enabled globally.");
+        LoggerInstance.Msg("Interloper Overhaul 0.11.0 loaded. One allocated rifle, revolver, hunting knife, and hatchet per new Interloper run; found ammo retention 0.25%, casings 0.5%. Weapon variants disabled. Direct main menu enabled globally.");
     }
 }

@@ -22,6 +22,8 @@ public static class LootBalancePolicy
     // synchronously loading assets while the native exchange catalog is loading.
     public static string TraderItem(string guid) => guid switch
     {
+        "0697541dfa8cd2644931091463697794" => "GEAR_Hatchet",
+        "5a7d6ed7004a60c49878b62497f2a63f" => "GEAR_Knife",
         "b9474d5e3b25bbe4e8c2f3772da8cdab" => "GEAR_Rifle",
         "406b6c4d772d92e4c8c2458e474f7856" => "GEAR_Revolver",
         "6f4b8ace7b43c3346ab5f8955fd6177d" => "GEAR_RifleAmmoSingle",
@@ -50,14 +52,13 @@ public static class LootBalancePolicy
     public static double Retention(string name, bool restored)
     {
         name = ItemName(name);
-        if (FirearmSpawnPolicy.IsStandardFirearm(name)) return 0; // Supplied only by the finite world allocation.
+        if (FirearmSpawnPolicy.IsFiniteItem(name)) return 0; // Supplied only by the finite world allocation.
         if (IsWeaponVariant(name)) return 0; // Temporarily disabled, regardless of authored difficulty restrictions.
         if (IsLiveFirearmAmmo(name)) return 0.0025;
         if (WorldPolicy.IsSpentCasing(name)) return 0.005;
         if (!restored || WorldPolicy.IsTaleReward(name)) return 1;
         return name switch
         {
-            "GEAR_Rifle" or "GEAR_Revolver" or "GEAR_Knife" or "GEAR_Hatchet" or
             "GEAR_Hammer" or "GEAR_Hacksaw" or "GEAR_MagnifyingLens" or "GEAR_Firestriker" or
             "GEAR_Balaclava" or "GEAR_HeavyParka" or "GEAR_MilitaryParka" or "GEAR_MuklukBoots" or
             "GEAR_JacketLeatherFlightA" or "GEAR_InsulatedBoots" or "GEAR_SkiBoots" or
